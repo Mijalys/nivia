@@ -1,0 +1,9 @@
+# dependencias y salidas
+node_modules/
+dist/
+.data/
+storage/
+.env
+.DS_Store
+# videos pesados: se guardan fuera del repo (ver prototipo/media/README.md)
+prototipo/media/*.mp4

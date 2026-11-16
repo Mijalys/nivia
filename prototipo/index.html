@@ -1,0 +1,1687 @@
+<meta charset="utf-8">
+<title>Nivia Aprendiz</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap">
+<style>
+/* Layout: una columna de app móvil (máx. 480 px), barra inferior fija; lección, reto y evaluación a pantalla completa. */
+:root {
+  color-scheme: dark;
+  --bg: #0E0F11;
+  --surface: #1A1C20;
+  --surface2: #22252A;
+  --line: #2A2D33;
+  --line2: #3A3D44;
+  --fg: #F2F2F0;
+  --muted: #A3A6AD;
+  --ok: #7FD69B;
+  --okbg: #16261C;
+  --rep: #F4A27A;
+  --repbg: #2B1A12;
+  --accent: #F26B1D;
+  --on-accent: #0E0F11;
+  --principal: #0E4D5C;
+  --ptext: #7CC3D0;
+  --paper: #FAF8F3;
+  --ink: #1A1A1A;
+  --ink2: #4D4D4D;
+  --demo: #F2F2F0;
+  --font: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --gl: max(20px, env(safe-area-inset-left, 0px));
+  --gr: max(20px, env(safe-area-inset-right, 0px));
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 18px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
+#app { max-width: 480px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; position: relative; background: var(--bg); }
+@media (min-width: 520px) { #app { border-left: 1px solid var(--line); border-right: 1px solid var(--line); } }
+.ic { flex-shrink: 0; }
+.scr { flex: 1; display: flex; flex-direction: column; gap: 24px; padding-block: 20px 28px; padding-left: var(--gl); padding-right: var(--gr); }
+.brand { display: flex; align-items: center; gap: 10px; background: var(--principal); padding-block: 14px; padding-left: var(--gl); padding-right: var(--gr); color: var(--fg); font-weight: 600; font-size: 15px; }
+.brand.logo { background: #FFFFFF; padding-block: 10px; border-bottom: 3px solid var(--principal); }
+.logoplate { background: #FFFFFF; border-radius: 16px; padding: 12px 18px; display: inline-flex; }
+.mono { width: 30px; height: 30px; border-radius: 9px; background: var(--fg); color: var(--principal); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; }
+.over { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+.title { font-size: 28px; line-height: 1.12; letter-spacing: -0.02em; font-weight: 200; }
+.title b { font-weight: 800; }
+.h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 15px; }
+.xs { font-size: 13px; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+.stack-s { display: flex; flex-direction: column; gap: 6px; }
+.row { display: flex; align-items: center; gap: 10px; }
+.btn { min-height: 56px; border-radius: 16px; font-weight: 800; font-size: 17px; width: 100%; border: 0; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 18px; text-align: center; text-decoration: none; }
+.btn-primary { background: var(--accent); color: var(--on-accent); }
+.btn-primary:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; }
+.btn-sec { background: transparent; border: 1px solid var(--line2); color: var(--fg); font-weight: 600; }
+.btn-sec:disabled { color: var(--muted); cursor: not-allowed; }
+.link { background: none; border: 0; color: var(--ptext); font-weight: 600; min-height: 48px; padding: 0; display: inline-flex; align-items: center; gap: 6px; text-align: left; font-size: 16px; }
+.reason { font-size: 14px; color: var(--muted); text-align: center; }
+.dock { position: sticky; bottom: 0; background: var(--bg); border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; padding-block: 12px calc(12px + env(safe-area-inset-bottom, 0px)); padding-left: var(--gl); padding-right: var(--gr); z-index: 5; }
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field label { font-size: 15px; font-weight: 600; }
+.input { min-height: 56px; width: 100%; background: var(--surface); border: 1.5px solid var(--line2); border-radius: 14px; padding: 0 16px; font-size: 18px; }
+.input:focus { outline: none; border-color: var(--accent); }
+.input[aria-invalid="true"] { border-color: var(--rep); }
+.inwrap { position: relative; }
+.inwrap .input { padding-right: 104px; }
+.inwrap .show { position: absolute; right: 4px; top: 4px; height: 48px; min-width: 92px; border: 0; background: none; color: var(--ptext); font-weight: 600; font-size: 15px; }
+textarea.input { min-height: 96px; padding: 14px 16px; resize: vertical; }
+select.input { appearance: none; background-image: none; }
+.err { display: flex; gap: 8px; align-items: flex-start; font-size: 15px; color: var(--rep); }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; padding: 5px 11px; border-radius: 99px; line-height: 1.2; white-space: nowrap; }
+.pill.ok { background: var(--okbg); color: var(--ok); }
+.pill.rep { background: var(--repbg); color: var(--rep); }
+.pill.lock { background: var(--surface); color: var(--muted); border: 1px solid var(--line); }
+.pill.cur { background: var(--accent); color: var(--on-accent); }
+.pill.av { border: 1px solid var(--accent); color: var(--accent); }
+.bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+.block { background: var(--surface); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.banner { display: flex; gap: 10px; align-items: flex-start; padding: 14px 16px; border-radius: 16px; font-size: 15px; }
+.banner.rep { background: var(--repbg); color: var(--rep); }
+.banner.info { background: var(--surface); color: var(--fg); border: 1px solid var(--line); }
+.offline { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: flex; gap: 10px; align-items: center; background: var(--repbg); color: var(--rep); font-size: 14px; font-weight: 600; padding-block: 10px; padding-left: var(--gl); padding-right: var(--gr); }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); padding-block: 8px 12px; padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: var(--gr); display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid var(--line); }
+.top .row { gap: 6px; }
+.exit { min-height: 48px; min-width: 48px; background: none; border: 0; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 16px; color: var(--fg); padding: 0 8px; }
+.top .ctx { font-size: 13px; color: var(--muted); flex: 1; text-align: right; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.top .bar { margin-left: 8px; }
+.tabs { position: sticky; bottom: 0; z-index: 8; display: flex; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+.tabs button { flex: 1; min-height: 64px; background: none; border: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 12px; color: var(--muted); font-weight: 600; }
+.tabs button[aria-current="page"] { color: var(--accent); }
+/* Inicio */
+.routeitem { width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.routeitem.late { border-color: var(--rep); }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 14px; color: var(--muted); }
+.meta b { color: var(--fg); font-weight: 600; }
+.next { background: var(--surface); border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 16px; border: 1px solid var(--line); }
+.next .thumb { display: flex; gap: 14px; align-items: center; }
+.tiny-video img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tiny-video { width: 54px; height: 96px; border-radius: 10px; overflow: hidden; flex-shrink: 0; position: relative; background: var(--principal); }
+.tiny-video svg.scene { width: 100%; height: 100%; display: block; }
+/* Ruta */
+.path { display: flex; flex-direction: column; }
+.node { display: flex; gap: 14px; }
+.rail { width: 48px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.dot { width: 44px; height: 44px; border-radius: 99px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.dot.done { border: 2px solid var(--accent); color: var(--accent); }
+.dot.cur { border: 1px dashed var(--accent); }
+.dot.cur span { width: 34px; height: 34px; border-radius: 99px; background: var(--accent); color: var(--on-accent); display: flex; align-items: center; justify-content: center; }
+.dot.av { border: 2px solid var(--accent); color: var(--fg); font-weight: 800; font-size: 15px; }
+.dot.lock { border: 2px solid var(--line2); color: var(--muted); }
+.trail { flex: 1; width: 0; border-left: 2px dotted var(--line2); min-height: 20px; margin: 4px 0; }
+.trail.done { border-left-color: var(--accent); }
+.ncontent { flex: 1; min-width: 0; padding: 4px 0 24px; display: flex; flex-direction: column; gap: 8px; }
+.lessonbtn { width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; min-height: 56px; display: flex; align-items: center; gap: 12px; }
+.lessonbtn .t { flex: 1; min-width: 0; font-size: 16px; font-weight: 600; line-height: 1.3; }
+.lockbtn { width: 100%; text-align: left; background: none; border: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; min-height: 48px; }
+/* Video */
+.video { position: relative; aspect-ratio: 9 / 16; width: min(100%, calc(62vh * 9 / 16)); max-width: 100%; margin: 0 auto; border-radius: 22px; overflow: hidden; background: #000; }
+.vslot, .vslot video { position: absolute; inset: 0; width: 100%; height: 100%; }
+.vslot video { object-fit: cover; display: block; }
+.video svg.scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+.vchip { position: absolute; left: 10px; top: 10px; background: rgba(14, 15, 17, .82); color: var(--fg); font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 99px; }
+.vdur { position: absolute; right: 10px; bottom: 10px; background: rgba(14, 15, 17, .82); color: var(--fg); font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 8px; font-variant-numeric: tabular-nums; }
+.vplay { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 68px; height: 68px; border-radius: 99px; border: 0; background: var(--accent); color: var(--on-accent); display: flex; align-items: center; justify-content: center; }
+.vcap { position: absolute; left: 12px; right: 12px; top: 48px; text-align: center; }
+.vcap span { background: rgba(0, 0, 0, .78); color: #FFFFFF; font-size: 15px; line-height: 1.4; padding: 3px 8px; border-radius: 6px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.vmsg { position: absolute; inset: 0; background: rgba(14, 15, 17, .9); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; text-align: center; font-size: 15px; }
+.vtouch { position: absolute; inset: 0; background: none; border: 0; }
+.vctrl { display: flex; flex-direction: column; gap: 10px; }
+.vctrl .row { gap: 8px; flex-wrap: wrap; }
+.chip { min-height: 48px; padding: 0 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; }
+.chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.time { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ailabel { background: none; border: 0; color: var(--muted); font-size: 14px; display: inline-flex; align-items: center; gap: 6px; min-height: 48px; padding: 0; }
+details.sum { background: var(--surface); border-radius: 16px; border: 1px solid var(--line); }
+details.sum summary { min-height: 56px; display: flex; align-items: center; gap: 10px; padding: 0 16px; font-weight: 600; cursor: pointer; list-style: none; }
+details.sum summary::-webkit-details-marker { display: none; }
+details.sum ul { margin: 0; padding: 0 16px 16px 36px; display: flex; flex-direction: column; gap: 8px; font-size: 16px; color: #D8DADF; }
+/* Reto y evaluación */
+.q { font-size: 24px; line-height: 1.25; font-weight: 800; letter-spacing: -0.01em; }
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt { width: 100%; min-height: 56px; text-align: left; background: var(--surface); border: 1.5px solid var(--line2); border-radius: 16px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; font-size: 17px; line-height: 1.35; }
+.opt .rad { width: 22px; height: 22px; border-radius: 99px; border: 2px solid var(--line2); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; }
+.opt[aria-checked="true"] { border-color: var(--accent); }
+.opt[aria-checked="true"] .rad { border-color: var(--accent); }
+.opt[aria-checked="true"] .rad::after { content: ""; width: 10px; height: 10px; border-radius: 99px; background: var(--accent); }
+.opt.right { border-color: var(--ok); }
+.opt.wrong { border-color: var(--rep); }
+.opt .tag { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; margin-top: 6px; }
+.opt.right .tag { color: var(--ok); }
+.opt.wrong .tag { color: var(--rep); }
+.opt:disabled { cursor: default; color: var(--fg); }
+.fb { border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+.fb.ok { background: var(--okbg); }
+.fb.rep { background: var(--repbg); }
+.fb .h { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; }
+.fb.ok .h { color: var(--ok); }
+.fb.rep .h { color: var(--rep); }
+.fb p { font-size: 16px; color: var(--fg); }
+.rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.rule { background: var(--surface); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.rule .big { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+.rule .ic { color: var(--accent); }
+.qlist { display: flex; flex-direction: column; gap: 8px; }
+.qitem { width: 100%; min-height: 56px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; text-align: left; }
+.qitem .n { width: 32px; height: 32px; border-radius: 99px; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; flex-shrink: 0; }
+.qitem .t { flex: 1; min-width: 0; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.score { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.score .big { font-size: 56px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.seal { width: 64px; height: 64px; border-radius: 99px; background: var(--accent); color: var(--on-accent); display: flex; align-items: center; justify-content: center; }
+.orbwrap { display: flex; justify-content: center; }
+.orbwrap canvas { border-radius: 50%; box-shadow: 0 0 90px -10px var(--accent); }
+/* Certificado */
+.cert { background: var(--paper); color: var(--ink); border-radius: 16px; border-top: 8px solid var(--principal); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+.cert .hd { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cert .mono { background: var(--principal); color: #F2F2F0; }
+.cert .co { font-weight: 800; font-size: 15px; color: var(--principal); }
+.cert .kind { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink2); font-weight: 600; }
+.cert .name { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.cert .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; border-top: 1px solid #E2DED6; padding-top: 12px; font-size: 12px; color: var(--ink2); }
+.cert .grid b { display: block; font-size: 15px; color: var(--ink); }
+.cert .foot { font-size: 11px; color: var(--ink2); }
+.certitem { width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: flex; gap: 14px; align-items: center; }
+.certitem .ic-wrap { width: 48px; height: 48px; border-radius: 14px; background: var(--principal); color: #F2F2F0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+/* Perfil */
+.dl { display: flex; flex-direction: column; background: var(--surface); border-radius: 18px; }
+.dl > div { display: flex; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); font-size: 16px; }
+.dl > div:last-child { border-bottom: 0; }
+.dl dt { color: var(--muted); }
+.dl dd { margin: 0; text-align: right; font-weight: 600; }
+.logo-hit { background: none; border: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+/* Reglas de contraseña */
+.prules { list-style: none; margin: 0; padding: 16px; background: var(--surface); border-radius: 16px; display: flex; flex-direction: column; gap: 10px; }
+.prules li { display: flex; align-items: center; gap: 10px; font-size: 16px; }
+.prules li .st { margin-left: auto; font-size: 13px; font-weight: 600; }
+.prules li[data-ok="true"] .st { color: var(--ok); }
+.prules li[data-ok="false"] .st { color: var(--muted); }
+.prules li[data-ok="miss"] .st { color: var(--rep); }
+.prules li .ic { color: var(--muted); }
+.prules li[data-ok="true"] .ic { color: var(--ok); }
+.codebox { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.codebox input { min-height: 56px; text-align: center; font-size: 22px; font-weight: 800; padding: 0; }
+/* Hojas y avisos */
+.scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, .62); z-index: 40; }
+.sheet { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: min(480px, 100%); max-height: 88vh; overflow-y: auto; background: var(--surface); border-radius: 24px 24px 0 0; z-index: 41; display: flex; flex-direction: column; gap: 16px; padding-block: 12px calc(20px + env(safe-area-inset-bottom, 0px)); padding-left: var(--gl); padding-right: var(--gr); }
+.sheet .grab { width: 40px; height: 4px; border-radius: 99px; background: var(--line2); align-self: center; }
+.radio { min-height: 56px; width: 100%; text-align: left; background: var(--bg); border: 1.5px solid var(--line2); border-radius: 14px; padding: 0 16px; display: flex; align-items: center; gap: 12px; font-size: 16px; }
+.radio[aria-checked="true"] { border-color: var(--accent); }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(84px + env(safe-area-inset-bottom, 0px)); z-index: 50; background: var(--fg); color: var(--bg); padding: 12px 16px; border-radius: 14px; font-size: 15px; font-weight: 600; width: max-content; max-width: calc(100% - 32px); display: flex; gap: 8px; align-items: center; }
+.sk { background: var(--surface2); border-radius: 14px; animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .55; } }
+.empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px; padding: 40px 8px; }
+.empty .ic { color: var(--muted); }
+/* Demostración */
+.demotab { position: fixed; right: env(safe-area-inset-right, 0px); top: 38%; z-index: 35; background: var(--demo); color: var(--bg); border: 0; border-radius: 12px 0 0 12px; min-height: 48px; min-width: 48px; padding: 10px 8px; font-size: 12px; font-weight: 800; letter-spacing: .08em; writing-mode: vertical-rl; transform: rotate(180deg); }
+.seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg button { min-height: 44px; padding: 0 12px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line2); font-size: 14px; font-weight: 600; }
+.seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.dlabel { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.switch { min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; background: var(--bg); border: 1px solid var(--line2); border-radius: 12px; padding: 0 14px; font-size: 15px; font-weight: 600; }
+.switch .knob { width: 44px; height: 26px; border-radius: 99px; background: var(--line2); position: relative; flex-shrink: 0; }
+.switch .knob::after { content: ""; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 99px; background: var(--muted); }
+.switch[aria-checked="true"] .knob { background: var(--fg); }
+.switch[aria-checked="true"] .knob::after { left: 21px; background: var(--bg); }
+.creds { font-size: 13px; color: var(--muted); line-height: 1.6; font-variant-numeric: tabular-nums; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* Corte 2: sin señal, descargas y avance pendiente */
+:root { --demo-h: 0px; }
+body.demo-on { --demo-h: calc(56px + env(safe-area-inset-bottom, 0px)); }
+#app { padding-bottom: var(--demo-h); }
+.tabs, .dock { bottom: var(--demo-h); }
+.toast { bottom: calc(84px + var(--demo-h) + env(safe-area-inset-bottom, 0px)); }
+.offline { background: var(--surface2); color: var(--fg); font-weight: 600; }
+.conn { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; width: 100%; min-height: 48px; display: flex; align-items: center; gap: 10px; padding-block: 8px; padding-left: var(--gl); padding-right: var(--gr); background: var(--surface); border: 0; border-bottom: 1px solid var(--line); color: var(--fg); font-size: 14px; font-weight: 600; text-align: left; }
+.conn .t { flex: 1; min-width: 0; }
+.conn.ok .ic:first-child { color: var(--ok); }
+.conn.warn { color: var(--rep); }
+.flash { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 10px); left: 50%; transform: translateX(-50%); width: min(448px, calc(100% - 32px)); z-index: 45; background: var(--surface2); border: 1px solid var(--line2); color: var(--fg); border-radius: 14px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; font-size: 15px; font-weight: 600; }
+.dlrow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.dlb { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.dlb.ready { color: var(--ok); }
+.dlb.err { color: var(--rep); }
+.dlb.dl { color: var(--fg); }
+.minibar { width: 64px; height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; display: inline-block; }
+.minibar i { display: block; height: 100%; background: var(--accent); }
+.mini { min-height: 48px; padding: 0 12px; border-radius: 12px; background: none; border: 1px solid var(--line2); color: var(--fg); font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.pill.pend { background: var(--surface2); color: var(--fg); border: 1px dashed var(--line2); }
+.lessonbtn.need { border-style: dashed; }
+.lessonbtn.need .t { color: var(--muted); }
+.lgroup { display: flex; flex-direction: column; gap: 6px; }
+.chkrow { width: 100%; min-height: 56px; display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; text-align: left; }
+.chkrow .box { width: 24px; height: 24px; border-radius: 7px; border: 2px solid var(--line2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--on-accent); }
+.chkrow[aria-checked="true"] .box { background: var(--accent); border-color: var(--accent); }
+.chkrow:disabled { cursor: default; }
+.chkrow:disabled .box { background: var(--surface2); border-color: var(--line2); color: var(--ok); }
+.chkrow.sub { margin-left: 24px; width: calc(100% - 24px); }
+.dlcard { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.demobar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 38; display: flex; align-items: center; gap: 6px; overflow-x: auto; background: var(--demo); color: var(--bg); padding-block: 6px calc(6px + env(safe-area-inset-bottom, 0px)); padding-left: max(10px, env(safe-area-inset-left, 0px)); padding-right: max(10px, env(safe-area-inset-right, 0px)); }
+.demobar .lbl { font-size: 11px; font-weight: 800; letter-spacing: .12em; flex-shrink: 0; }
+.demobar button { flex-shrink: 0; min-height: 44px; border-radius: 10px; border: 1px solid #C9CBD0; background: #FFFFFF; color: #0E0F11; font-size: 13px; font-weight: 600; padding: 0 10px; white-space: nowrap; }
+.demobar button.on { background: #0E0F11; color: #F2F2F0; border-color: #0E0F11; }
+@media (prefers-reduced-motion: reduce) { .sk { animation: none; } }
+</style>
+
+<div id="app" aria-live="off"></div>
+
+<script src="clients-extra.js" onerror="this.remove()"></script>
+<script>
+(function () {
+'use strict';
+
+/* ---------- Datos simulados ---------- */
+const SIM0 = new Date(2026, 10, 10, 15, 40);
+const DAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+const DAYS_S = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'setiembre', 'octubre', 'noviembre', 'diciembre'];
+const MONTHS_S = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'set', 'oct', 'nov', 'dic'];
+
+function Q(q, opts, right, why, t) { return { q, opts, right, why, t }; }
+
+const R1 = {
+  id: 'r1', title: 'Bloqueo y etiquetado de equipos', tA: 'Bloqueo y etiquetado de', tB: 'equipos', overline: 'Bloqueo y etiquetado',
+  levels: [
+    { title: 'Por qué bloqueamos', lessons: [{
+      id: 'a1', title: 'Por qué bloqueamos', format: 'presenter', dur: 230, mb: 62,
+      sum: ['Una máquina apagada puede volver a arrancar: por un botón, un temporizador o un compañero que no sabe que estás dentro.', 'El bloqueo y etiquetado impide que alguien energice el equipo mientras trabajas en él.', 'Se bloquea antes de cualquier mantenimiento, limpieza, ajuste o desatasco.', 'La duración de la tarea no cambia el riesgo: si metes las manos, bloqueas.', 'Cada persona que trabaja en el equipo coloca su propio candado.'],
+      qs: [
+        Q('¿Para qué sirve el bloqueo y etiquetado?', ['Para registrar quién usó la máquina', 'Para que nadie pueda energizar el equipo mientras trabajas en él', 'Para que la máquina se enfríe más rápido'], 1, 'El candado impide que alguien encienda el equipo por error mientras tienes las manos dentro.', 50),
+        Q('¿Cuándo debes bloquear un equipo?', ['Solo cuando el supervisor está presente', 'Solo si la tarea dura más de una hora', 'Antes de cualquier mantenimiento, limpieza o desatasco'], 2, 'Un desatasco de un minuto basta para un accidente. Si metes las manos, bloqueas.', 100),
+        Q('Un compañero dice: “Es rápido, no hace falta bloquear”. ¿Qué haces?', ['Bloqueas igual: la tarea corta no cambia el riesgo', 'Le haces caso, él tiene más experiencia', 'Trabajas rápido para terminar antes'], 0, 'El riesgo depende de la energía del equipo, no del tiempo que dure la tarea.', 150)
+      ] }] },
+    { title: 'Aislar la energía', lessons: [{
+      id: 'a2', title: 'Aislar la energía', format: 'animado', dur: 252, mb: 38,
+      sum: ['Apagar la máquina desde su botón no basta.', 'Aísla cada fuente de energía: corta el suministro eléctrico o cierra la válvula.', 'Algunos equipos guardan energía: presión, resortes o piezas en altura. Libérala o asegúrala.', 'Coloca tu candado y tu tarjeta en el punto de aislamiento.', 'Antes de trabajar, verifica: intenta arrancar el equipo con todos fuera de la zona de riesgo.'],
+      qs: [
+        Q('Ya apagaste la máquina. ¿Qué haces ahora?', ['Aislar la fuente de energía: cortar el suministro eléctrico o cerrar la válvula', 'Empezar el trabajo, ya está apagada', 'Avisar por radio que está apagada'], 0, 'Apagar no basta. El equipo puede volver a energizarse si alguien lo prende o si queda energía en la línea.', 100),
+        Q('Terminó el trabajo. ¿Quién retira el candado?', ['El supervisor del turno', 'Solo la persona que lo colocó', 'Cualquier compañero del área'], 1, 'Cada persona protege su propia seguridad con su propio candado.', 160),
+        Q('¿Cómo compruebas que el equipo quedó sin energía?', ['Mirando que las luces del tablero estén apagadas', 'Intentando arrancarlo desde sus controles, con todos fuera de la zona de riesgo', 'Preguntando al operador del turno anterior'], 1, 'Verificar con una prueba real evita suponer que ya está seguro.', 215)
+      ] }] },
+    { title: 'Candado y tarjeta', lessons: [{
+      id: 'a3', title: 'Candado y tarjeta', format: 'presenter', dur: 280, mb: 78,
+      sum: ['Tu candado es personal y tiene una sola llave: la tuya.', 'La tarjeta dice tu nombre, la fecha y el motivo del bloqueo.', 'Si trabajan varias personas, cada una pone su candado en un portacandados.', 'Guarda la llave contigo todo el tiempo que dure el trabajo.', 'Nadie retira un candado ajeno.'],
+      qs: [
+        Q('¿Qué datos lleva la tarjeta de bloqueo?', ['Solo el nombre del equipo', 'Tu nombre, la fecha y el motivo del bloqueo', 'El código de la máquina y la hora de salida'], 1, 'Quien vea la tarjeta debe saber quién está trabajando y por qué.', 70),
+        Q('Tres personas trabajan en el mismo equipo. ¿Cuántos candados se colocan?', ['Uno, el del supervisor', 'Dos, uno por turno', 'Tres: uno por persona, en un portacandados'], 2, 'Cada persona protege su propia seguridad con su propio candado.', 140),
+        Q('¿Dónde guardas la llave de tu candado?', ['Contigo, durante todo el trabajo', 'Colgada en el tablero, para que otro la use', 'En la oficina del supervisor'], 0, 'Si la llave está contigo, nadie más puede retirar tu candado.', 210)
+      ] }] },
+    { title: 'Verificar y devolver el equipo', lessons: [{
+      id: 'a4', title: 'Verificar y devolver el equipo', format: 'animado', dur: 245, mb: 34,
+      sum: ['Al terminar, retira herramientas y materiales del equipo.', 'Confirma que todas las personas estén fuera de la zona de riesgo.', 'Avisa a las personas del área que el equipo vuelve a operar.', 'Cada persona retira solo su propio candado y su tarjeta.', 'Si un candado quedó puesto y su dueño no está, avisa al supervisor.'],
+      qs: [
+        Q('Terminaste. ¿Qué haces antes de retirar tu candado?', ['Retirar el candado y luego avisar', 'Retirar herramientas y confirmar que todos estén fuera de la zona', 'Encender el equipo para probar'], 1, 'Al energizar, cualquier herramienta o persona dentro corre peligro.', 40),
+        Q('¿A quién avisas que el equipo vuelve a operar?', ['A todas las personas afectadas del área', 'A nadie, ya terminó el trabajo', 'Solo al almacén'], 0, 'Quien no sabe que el equipo va a arrancar puede estar cerca.', 120),
+        Q('Encuentras el candado de otra persona y ella ya se fue a casa. ¿Qué haces?', ['Lo cortas para no detener la producción', 'Lo retiras con una llave maestra', 'Avisas al supervisor para seguir el procedimiento de retiro'], 2, 'Solo la persona que lo colocó lo retira. Si no está, el supervisor sigue el procedimiento.', 200)
+      ] }] }
+  ]
+};
+
+const R2 = {
+  id: 'r2', title: 'Primeros pasos en el sistema de compras', tA: 'Primeros pasos en el sistema de', tB: 'compras', overline: 'Sistema de compras',
+  levels: [
+    { title: 'Tu acceso y tu bandeja', lessons: [{
+      id: 'b1', title: 'Tu acceso y tu bandeja', format: 'presenter', dur: 210, mb: 56,
+      sum: ['Ingresas al sistema de compras con tu usuario personal; no lo compartas.', 'La bandeja “Pendientes” reúne lo que necesita tu acción.', '“Mis solicitudes” muestra todo lo que creaste y su estado.', 'Una solicitud “Observada” vuelve a ti para corregirla.', 'Si olvidas tu clave, usa “Recuperar acceso”.'],
+      qs: [
+        Q('¿Dónde ves las solicitudes que esperan tu acción?', ['En el historial de compras', 'En la bandeja “Pendientes”', 'En el correo de bienvenida'], 1, '“Pendientes” reúne solo lo que necesita tu respuesta.', 60),
+        Q('Olvidaste tu clave del sistema de compras. ¿Qué haces?', ['Pides la clave a un compañero', 'Creas otra cuenta', 'Usas “Recuperar acceso” en la pantalla de ingreso'], 2, 'Tu cuenta registra tus aprobaciones. Si la compartes, quedan compras a tu nombre.', 180),
+        Q('¿Qué significa una solicitud en estado “Observada”?', ['Que el aprobador pidió un cambio antes de aprobarla', 'Que ya fue pagada', 'Que fue anulada'], 0, '“Observada” vuelve a ti para corregir y reenviar.', 140)
+      ] }] },
+    { title: 'Crear una solicitud de compra', lessons: [{
+      id: 'b2', title: 'Crear una solicitud de compra', format: 'animado', dur: 260, mb: 41,
+      sum: ['Ten a mano el centro de costo y una descripción clara del bien o servicio.', 'Registra una línea por artículo, con su cantidad.', 'Indica la fecha en que lo necesitas.', 'Si el monto supera el límite de tu área, adjunta cotizaciones.', 'Revisa el resumen antes de enviar.'],
+      qs: [
+        Q('¿Qué necesitas antes de crear una solicitud?', ['La factura del proveedor', 'El centro de costo y una descripción clara del bien o servicio', 'La firma del gerente general'], 1, 'Sin centro de costo, la solicitud no sabe a qué presupuesto cargarse.', 30),
+        Q('Necesitas 10 sillas iguales. ¿Cómo las registras?', ['Una línea con cantidad 10', 'Diez líneas de una silla', 'Diez solicitudes separadas'], 0, 'Una línea por artículo facilita la cotización y la aprobación.', 90),
+        Q('¿Cuándo adjuntas cotizaciones?', ['Nunca, Compras las pide después', 'Solo si el proveedor lo exige', 'Cuando el monto supera el límite que indica tu área'], 2, 'Sobre ese monto, el aprobador necesita comparar precios.', 200)
+      ] }, {
+      id: 'b3', title: 'Enviar y corregir la solicitud', format: 'presenter', dur: 235, mb: 64,
+      sum: ['Al enviar, el sistema te da un número de solicitud (SC-…).', 'Si notas un error, retírala desde “Mis solicitudes” y corrígela.', 'No crees una segunda solicitud por lo mismo.', 'Si está “Observada”, lee el comentario del aprobador y corrige lo que pide.', 'Usa el número SC para cualquier consulta con Compras.'],
+      qs: [
+        Q('Enviaste la solicitud con un error de cantidad. ¿Qué haces?', ['Creas otra igual y dejas las dos', 'La retiras desde “Mis solicitudes” y la corriges', 'Esperas a que el aprobador la corrija'], 1, 'Retirarla evita que se aprueben dos compras por lo mismo.', 60),
+        Q('Tu solicitud fue “Observada”. ¿Qué haces primero?', ['Lees el comentario del aprobador', 'La reenvías sin cambios', 'La anulas y empiezas de cero'], 0, 'El comentario dice exactamente qué corregir.', 140),
+        Q('¿Qué número usas para hacer seguimiento con Compras?', ['Tu número de DNI', 'El número de factura', 'El número de solicitud (SC-…)'], 2, 'Con el número SC, Compras encuentra tu pedido al instante.', 190)
+      ] }] },
+    { title: 'Aprobaciones y seguimiento', lessons: [{
+      id: 'b4', title: 'Aprobaciones y seguimiento', format: 'animado', dur: 250, mb: 36,
+      sum: ['El sistema envía tu solicitud al responsable del centro de costo, según el monto.', '“En aprobación” muestra quién la tiene en ese momento.', 'Si se demora, escribe al aprobador indicando el número SC.', '“Aprobada” autoriza la compra; “Orden emitida” significa que Compras ya la hizo.', 'Nunca compres por tu cuenta para adelantar.'],
+      qs: [
+        Q('¿Quién aprueba tu solicitud?', ['Cualquier jefe disponible', 'El responsable del centro de costo, según el monto', 'El proveedor'], 1, 'El sistema la envía según el centro de costo y el monto.', 40),
+        Q('La solicitud lleva 3 días “En aprobación”. ¿Qué haces?', ['Revisas quién la tiene y le escribes con el número SC', 'Creas una nueva solicitud', 'Compras con tu dinero y pides reembolso'], 0, 'Hacer seguimiento con el número evita duplicar compras.', 120),
+        Q('¿Qué estado indica que Compras ya emitió la orden?', ['“Aprobada”', '“Enviada”', '“Orden emitida”'], 2, '“Aprobada” solo autoriza. La compra existe cuando hay orden emitida.', 190)
+      ] }] }
+  ]
+};
+
+/* Video de demostración (formato vertical tipo Short) usado en todas las lecciones */
+const VSRC = 'media/leccion-demo.mp4';
+const VPOSTER = 'media/portada.jpg';
+const VDUR = 27.1;
+[R1, R2].forEach((r) => r.levels.forEach((lv) => lv.lessons.forEach((l) => {
+  l.qs.forEach((q) => { q.t = Math.max(1, Math.round(q.t / l.dur * VDUR)); });
+  l.dur = VDUR; l.format = 'presenter';
+})));
+
+const CLIENTS = {
+  A: {
+    id: 'A', name: 'Corporación Ríomar', mono: 'R', accent: '#F26B1D', principal: '#0E4D5C', ptext: '#7CC3D0', orb: [0.949, 0.42, 0.114],
+    route: R1, prefix: 'RIO', areas: ['Mantenimiento', 'Producción', 'Almacén', 'Calidad'],
+    rules: { min: 80, attempts: 3, wait: 60, n: 10, minutes: 15, exhausted: 'Habla con tu supervisor para habilitar un nuevo intento.' },
+    second: { title: 'Orden y limpieza en el área', levels: 2, starts: new Date(2026, 10, 16), due: new Date(2026, 11, 15) }
+  },
+  B: {
+    id: 'B', name: 'Grupo Altavista', mono: 'A', accent: '#F2B630', principal: '#1F4D3A', ptext: '#8FD0A5', orb: [0.949, 0.714, 0.188],
+    route: R2, prefix: 'ALT', areas: ['Administración', 'Finanzas', 'Logística', 'Recursos Humanos'],
+    rules: { min: 70, attempts: 2, wait: 0, n: 8, minutes: 12, exhausted: 'Tu ruta se reinicia el lunes; repasarás desde el Nivel 1.' },
+    second: { title: 'Atención a proveedores', levels: 2, starts: new Date(2026, 10, 16), due: new Date(2026, 11, 15) }
+  }
+};
+// Clientes adicionales (marcas reales para demostraciones privadas) viven en clients-extra.js,
+// que no se publica. Cada uno puede traer logo: { src, w, h } y opcionalmente default: true.
+(window.NIVIA_EXTRA_CLIENTS || []).forEach((c) => { CLIENTS[c.id] = Object.assign({ route: R1 }, c); });
+
+const PERSONAS = {
+  carlos: { first: 'Carlos', last: 'Mendoza Ríos', phone: '987654321', area: { A: 'Mantenimiento', B: 'Administración' }, done: 0, due: new Date(2026, 11, 4), second: true, free: 3400, dl: {} },
+  rosa: { first: 'Rosa', last: 'Quispe Huamán', phone: '987111222', area: { A: 'Mantenimiento', B: 'Finanzas' }, done: 2, due: new Date(2026, 10, 20), second: true, free: 2100, dl: { 2: 'ready', 3: 'ready', 4: 'ready' }, pendingIdx: 3, startOffline: true },
+  luis: { first: 'Luis', last: 'Huamaní Torres', phone: '987333444', area: { A: 'Producción', B: 'Logística' }, done: 3, due: new Date(2026, 9, 31), second: true, free: 1500, dl: { 4: 'error' } },
+  marisol: { first: 'Marisol', last: 'Paredes Vega', phone: '987555666', area: { A: 'Calidad', B: 'Administración' }, done: 2, due: new Date(2026, 10, 30), second: false, free: 40, dl: { 1: 'ready', 2: 'ready' }, renewal: true, cert: { issued: new Date(2025, 10, 30), expires: new Date(2026, 10, 30), score: { A: 90, B: 85, default: 90 } } }
+};
+const PERSONA_ORDER = ['carlos', 'rosa', 'luis', 'marisol'];
+const DEMO_PASS = 'Demo2026';
+const DEMO_CODE = '123456';
+
+/* ---------- Estado ---------- */
+const S = {
+  client: 'A', persona: null, screen: 'login', params: {},
+  offline: false, videoFail: false, forceNext: null, forceResult: null,
+  gate: null, gateSince: 0, gateSlow: false,
+  demo: true, sheet: null, toast: null, toastUntil: 0,
+  dlMode: 'normal', sendMode: 'ok', flash: null, flashUntil: 0, sel: new Set(), prev: null,
+  db: {}, simOffset: 0,
+  form: {}, video: null, quiz: null, dl: null
+};
+
+function C() { return CLIENTS[S.client]; }
+function P() { return PERSONAS[S.persona]; }
+function allLessons(route) { const out = []; route.levels.forEach((lv, li) => lv.lessons.forEach((l) => out.push(Object.assign({ level: li }, l)))); return out; }
+function lessonById(id) { return allLessons(C().route).find((l) => l.id === id); }
+
+function prog(client, persona) {
+  client = client || S.client; persona = persona || S.persona;
+  const key = client + ':' + persona;
+  if (!S.db[key]) {
+    const per = PERSONAS[persona];
+    const route = CLIENTS[client].route;
+    const ls = allLessons(route).map((l) => l.id);
+    const done = per.done === 'all' ? ls.slice() : ls.slice(0, per.done);
+    const p = {
+      password: DEMO_PASS, firstLogin: !!per.firstLogin, area: client in per.area ? per.area[client] : per.area.A,
+      completed: done, watched: {}, videoPos: {}, quizRes: {},
+      attempts: 0, lastFail: null, exam: null, passed: per.done === 'all', score: null, certs: [],
+      downloads: {}, pending: [], sendState: 'idle', freeMB: per.free, kept: {}, renewal: !!per.renewal
+    };
+    if (per.cert) {
+      p.certs.push({ route: route.title, issued: per.cert.issued, expires: per.cert.expires, score: per.cert.score[client] ?? per.cert.score.default, code: certCode(client, persona, per.cert.issued) });
+      p.score = per.cert.score[client] ?? per.cert.score.default;
+    }
+    Object.keys(per.dl).forEach((k) => { const st = per.dl[k]; p.downloads[ls[k - 1]] = { state: st, pct: st === 'error' ? 40 : 100, fails: st === 'error' ? 1 : 0 }; });
+    if (per.pendingIdx) {
+      const L = allLessons(route)[per.pendingIdx - 1];
+      p.completed.push(L.id); p.pending.push({ lid: L.id, label: 'Reto de «' + L.title + '»', at: '10:12' });
+    }
+    done.forEach((id) => { p.watched[id] = true; });
+    S.db[key] = p;
+  }
+  return S.db[key];
+}
+
+function certCode(client, persona, date) {
+  const s = client + persona + date.getFullYear();
+  let h = 7; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  let mid = ''; for (let i = 0; i < 4; i++) { mid += chars[h % chars.length]; h = Math.floor(h / chars.length) + 17 * (i + 3); }
+  return CLIENTS[client].prefix + '-' + date.getFullYear() + '-' + mid + '-' + String((h % 89) + 10);
+}
+
+/* ---------- Fechas ---------- */
+function now() { return new Date(SIM0.getTime() + S.simOffset * 60000); }
+function day0(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+function daysTo(d) { return Math.round((day0(d) - day0(now())) / 864e5); }
+function fShort(d) { return DAYS_S[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS_S[d.getMonth()]; }
+function fDM(d) { return d.getDate() + ' ' + MONTHS_S[d.getMonth()]; }
+function fLong(d) { return DAYS[d.getDay()] + ' ' + d.getDate() + ' de ' + MONTHS[d.getMonth()]; }
+function fNum(d) { return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear(); }
+function fHM(d) { return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+function fClock(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+function fPhone(p) { return p.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{0,3})/, '$1 $2 $3').trim(); }
+
+/* ---------- Progreso de ruta ---------- */
+function routeStats() {
+  const c = C(); const p = prog(); const ls = allLessons(c.route);
+  const total = ls.length + 1;
+  const doneUnits = ls.filter((l) => p.completed.includes(l.id)).length + (p.passed ? 1 : 0);
+  const pct = Math.round(doneUnits / total * 100);
+  const remaining = ls.filter((l) => !p.completed.includes(l.id)).length * 6 + (p.passed ? 0 : c.rules.minutes);
+  const next = ls.find((l) => !p.completed.includes(l.id)) || null;
+  const per = P();
+  return { pct, remaining, next, total, allLessonsDone: !next, due: per.due, late: daysTo(per.due) < 0 && !p.passed };
+}
+function levelState(li) {
+  const p = prog(); const lv = C().route.levels[li];
+  const doneIn = lv.lessons.filter((l) => p.completed.includes(l.id)).length;
+  if (doneIn === lv.lessons.length) return 'done';
+  const prevDone = li === 0 || C().route.levels[li - 1].lessons.every((l) => p.completed.includes(l.id));
+  if (!prevDone) return 'lock';
+  const started = doneIn > 0 || lv.lessons.some((l) => p.videoPos[l.id] > 0 || p.watched[l.id]);
+  return started ? 'cur' : 'av';
+}
+function canRetryAt() {
+  const p = prog(); const r = C().rules;
+  if (!p.lastFail || !r.wait) return null;
+  const t = new Date(SIM0.getTime() + (p.lastFail + r.wait) * 60000);
+  return t > now() ? t : null;
+}
+
+/* ---------- Íconos ---------- */
+const PATHS = {
+  check: 'M5 12l5 5 9-10', back: 'M15 18l-6-6 6-6', x: 'M6 6l12 12M18 6L6 18', chev: 'M9 6l6 6-6 6',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>',
+  home: 'M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z',
+  award: '<circle cx="12" cy="9" r="6"/><path d="M8.5 14l-1.5 7 5-3 5 3-1.5-7"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  late: '<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.01"/>',
+  redo: '<path d="M3 12a9 9 0 109-9"/><path d="M3 4v5h5"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.01"/>',
+  flag: 'M5 21V4M5 4h11l-2 4 2 4H5',
+  expand: 'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',
+  download: 'M12 4v11M7 10l5 5 5-5M5 20h14',
+  wifioff: 'M3 3l18 18M8.5 16.5a5 5 0 017 0M5 12.5a10 10 0 015-2.7M19 12.5a10 10 0 00-3.2-2.1M12 20h.01',
+  play: '<path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/>',
+  pause: 'M8 5v14M16 5v14',
+  doc: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>',
+  cc: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 15h4M13 15h4M7 11h10"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>',
+  list: 'M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01',
+  timer: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4M9 2h6"/>',
+  inbox: '<path d="M4 13l3-8h10l3 8v6H4z"/><path d="M4 13h5l1 2h4l1-2h5"/>',
+  key: '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3"/>',
+  nosignal: '<path d="M4 20v-3M9 20v-7M14 20V9M19 20V5"/><path d="M3 3l18 18"/>',
+  cloud: '<path d="M7 18h10a4 4 0 00.5-7.97A6 6 0 006.2 9.5 4.25 4.25 0 007 18z"/><path d="M9.5 13.5l2 2 3.5-4"/>',
+  sync: '<path d="M20 11a8 8 0 00-14.3-4.9L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0014.3 4.9L20 16"/><path d="M20 20v-4h-4"/>',
+  trash: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',
+  phoneok: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M9 12l2 2 4-4"/>',
+  dl: 'M12 4v11M7 10l5 5 5-5M5 20h14'
+};
+function icon(n, s) {
+  s = s || 24; const d = PATHS[n];
+  const inner = d.charAt(0) === '<' ? d : '<path d="' + d + '"/>';
+  return '<svg class="ic" width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + inner + '</svg>';
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+/* ---------- Escena de video (placeholder) ---------- */
+function scene(format) {
+  const c = C();
+  if (format === 'presenter') {
+    return '<svg class="scene" viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
+      '<rect width="160" height="90" fill="#15181B"/>' +
+      '<rect x="0" y="0" width="160" height="90" fill="' + c.principal + '" opacity=".55"/>' +
+      '<g stroke="#0E0F11" stroke-width="2" opacity=".6"><path d="M10 26h40M10 46h40M110 22h42M110 44h42"/></g>' +
+      '<g fill="#0E0F11" opacity=".45"><rect x="14" y="14" width="6" height="12"/><rect x="22" y="17" width="5" height="9"/><rect x="34" y="34" width="8" height="12"/><rect x="116" y="12" width="7" height="10"/><rect x="136" y="33" width="9" height="11"/></g>' +
+      '<rect x="146" y="8" width="3" height="60" fill="' + c.accent + '" opacity=".7"/>' +
+      '<ellipse cx="80" cy="96" rx="36" ry="30" fill="#2C3036"/>' +
+      '<rect x="74" y="58" width="12" height="10" fill="#C99C7E"/>' +
+      '<ellipse cx="80" cy="47" rx="13" ry="15" fill="#D8AE8F"/>' +
+      '<path d="M66 44c0-12 7-17 14-17s14 5 14 17c-3-6-8-8-14-8s-11 2-14 8z" fill="#2A1D16"/>' +
+      '<path d="M62 72h36l-4 18H66z" fill="' + c.accent + '" opacity=".9"/>' +
+      '</svg>';
+  }
+  return '<svg class="scene" viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
+    '<rect width="160" height="90" fill="#121417"/>' +
+    '<g stroke="#2A2D33" stroke-width=".6"><path d="M0 22h160M0 45h160M0 68h160M40 0v90M80 0v90M120 0v90"/></g>' +
+    '<rect x="22" y="30" width="34" height="30" rx="4" fill="none" stroke="#F2F2F0" stroke-width="2"/>' +
+    '<circle cx="39" cy="45" r="7" fill="none" stroke="' + c.accent + '" stroke-width="2"/>' +
+    '<path d="M56 45h30" stroke="#F2F2F0" stroke-width="2" stroke-dasharray="3 3"/>' +
+    '<rect x="86" y="34" width="22" height="22" rx="11" fill="' + c.accent + '"/>' +
+    '<path d="M108 45h30" stroke="#F2F2F0" stroke-width="2"/>' +
+    '<rect x="128" y="34" width="12" height="16" rx="2" fill="none" stroke="#F2F2F0" stroke-width="2"/>' +
+    '<path d="M130 34v-4a4 4 0 018 0v4" fill="none" stroke="#F2F2F0" stroke-width="2"/>' +
+    '</svg>';
+}
+function fmtLabel(f) { return f === 'presenter' ? 'Con presentador' : 'Animado'; }
+
+/* ---------- Orbe fluido (WebGL, un solo contexto compartido) ---------- */
+const Orb = (function () {
+  let gl = null, glc = null, prog0 = null, uRes, uT, uC, failed = false, raf = 0;
+  const SZ = 320;
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function init() {
+    if (gl || failed) return !!gl;
+    try {
+      glc = document.createElement('canvas'); glc.width = SZ; glc.height = SZ;
+      gl = glc.getContext('webgl', { premultipliedAlpha: true, preserveDrawingBuffer: true, alpha: true });
+      if (!gl) throw new Error('sin webgl');
+      const vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+      const fs = 'precision mediump float;uniform vec2 r;uniform float t;uniform vec3 c;' +
+        'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}' +
+        'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}' +
+        'float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<3;i++){v+=a*n(p);p*=2.02;a*=.5;}return v;}' +
+        'void main(){vec2 uv=(gl_FragCoord.xy/r)*2.-1.;float d=length(uv);float a=1.-smoothstep(.975,1.,d);' +
+        'vec2 p=uv*1.6;vec2 q=vec2(fbm(p+vec2(sin(t*.21),cos(t*.17))),fbm(p+vec2(5.2,1.3)+vec2(cos(t*.19),sin(t*.23))));' +
+        'float f=fbm(p+2.2*q);vec3 w=vec3(.98,.98,.96);vec3 m=mix(w,c,.5);vec3 col=mix(w,m,smoothstep(.25,.55,f));' +
+        'col=mix(col,c,smoothstep(.5,.85,f));float b=smoothstep(-.2,1.,-uv.y);col=mix(col,c*.55,b*.45);col*=.92+.08*(1.-d);' +
+        'gl_FragColor=vec4(col*a,a);}';
+      const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+      prog0 = gl.createProgram();
+      gl.attachShader(prog0, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(prog0, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(prog0);
+      gl.useProgram(prog0);
+      const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(prog0, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      uRes = gl.getUniformLocation(prog0, 'r'); uT = gl.getUniformLocation(prog0, 't'); uC = gl.getUniformLocation(prog0, 'c');
+      return true;
+    } catch (e) { failed = true; gl = null; return false; }
+  }
+  function drawFallback(cv) {
+    const x = cv.getContext('2d'); const w = cv.width; const c = C();
+    const g = x.createRadialGradient(w * .38, w * .32, 0, w / 2, w / 2, w / 2);
+    g.addColorStop(0, '#FBFAF6'); g.addColorStop(.55, c.accent); g.addColorStop(1, c.principal);
+    x.clearRect(0, 0, w, w); x.fillStyle = g; x.beginPath(); x.arc(w / 2, w / 2, w / 2, 0, Math.PI * 2); x.fill();
+  }
+  function frame(ts) {
+    const list = document.querySelectorAll('canvas[data-orb]');
+    if (!list.length) { raf = 0; return; }
+    if (init()) {
+      const c = C().orb;
+      gl.viewport(0, 0, SZ, SZ); gl.uniform2f(uRes, SZ, SZ); gl.uniform1f(uT, reduce ? 4.0 : ts / 1000); gl.uniform3f(uC, c[0], c[1], c[2]);
+      gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      list.forEach((cv) => { const x = cv.getContext('2d'); x.clearRect(0, 0, cv.width, cv.height); x.drawImage(glc, 0, 0, cv.width, cv.height); });
+    } else { list.forEach(drawFallback); }
+    raf = (reduce || document.hidden) ? 0 : requestAnimationFrame(frame);
+  }
+  function start() { if (!raf) raf = requestAnimationFrame(frame); }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) start(); });
+  return { start };
+})();
+function orb(size) {
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  return '<div class="orbwrap"><canvas data-orb width="' + Math.round(size * dpr) + '" height="' + Math.round(size * dpr) + '" style="width:' + size + 'px;height:' + size + 'px" aria-hidden="true"></canvas></div>';
+}
+
+/* ---------- Piezas comunes ---------- */
+function logoImg(h) { const c = C(); return '<img src="' + c.logo.src + '" alt="' + esc(c.name) + '" width="' + Math.round(h * c.logo.w / c.logo.h) + '" height="' + h + '" style="display:block;height:' + h + 'px;width:auto">'; }
+function brandBar() {
+  const c = C();
+  if (c.logo) return '<div class="brand logo">' + logoImg(30) + '</div>';
+  return '<div class="brand"><span class="mono">' + c.mono + '</span><span>' + esc(c.name) + '</span></div>';
+}
+function offlineBar() { return S.offline ? '<div class="offline" role="status">' + icon('nosignal', 20) + '<span>Sin señal · Tu avance se guarda en este celular.</span></div>' : ''; }
+function topBar(ctx, pct, exitAction) {
+  return '<div class="top"><div class="row"><button class="exit" data-a="' + (exitAction || 'exit') + '">' + icon('x', 22) + 'Salir</button><span class="ctx">' + esc(ctx) + '</span></div>' +
+    (pct != null ? '<div class="bar" role="progressbar" aria-label="Avance" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(pct) + '"><i style="width:' + pct + '%"></i></div>' : '') + '</div>';
+}
+function tabs(active) {
+  const t = (id, label, ic) => '<button data-a="go" data-to="' + id + '"' + (active === id ? ' aria-current="page"' : '') + '>' + icon(ic, 24) + label + '</button>';
+  return '<nav class="tabs" aria-label="Secciones">' + t('home', 'Inicio', 'home') + t('certs', 'Mis certificados', 'award') + t('profile', 'Perfil', 'user') + '</nav>';
+}
+function pill(kind, text, ic) { return '<span class="pill ' + kind + '">' + (ic ? icon(ic, 14) : '') + esc(text) + '</span>'; }
+function levelPill(st) {
+  return st === 'done' ? pill('ok', 'Completado', 'check') : st === 'cur' ? pill('cur', 'En curso', 'play') : st === 'av' ? pill('av', 'Disponible') : pill('lock', 'Bloqueado', 'lock');
+}
+
+/* Estados forzados desde la demostración: cargando, vacío, error */
+function gated(normal, emptyHtml, what) {
+  if (S.gate === 'cargando') {
+    return '<div class="stack" aria-busy="true"><span class="vh">Cargando</span>' +
+      '<div class="sk" style="height:22px;width:45%"></div><div class="sk" style="height:34px;width:85%"></div><div class="sk" style="height:160px"></div><div class="sk" style="height:96px"></div><div class="sk" style="height:96px"></div>' +
+      (S.gateSlow ? '<div class="banner info">' + icon('clock', 20) + '<span>Está demorando más de lo normal.</span></div><button class="btn btn-sec" data-a="retry">' + icon('redo', 20) + 'Volver a intentar</button>' : '') + '</div>';
+  }
+  if (S.gate === 'error') {
+    return '<div class="empty">' + icon('wifioff', 40) + '<p class="h2">No pudimos cargar ' + esc(what) + '.</p><p class="muted small">Revisa tu señal e inténtalo de nuevo.</p><button class="btn btn-primary" data-a="retry">' + icon('redo', 20) + 'Volver a intentar</button></div>';
+  }
+  if (S.gate === 'vacio') return emptyHtml;
+  return normal();
+}
+
+/* ---------- Pantallas ---------- */
+const SCREENS = {};
+
+SCREENS.login = function () {
+  const c = C(); const f = S.form;
+  return offlineBar() + '<main class="scr" style="justify-content:center;gap:28px">' +
+    '<button class="logo-hit" data-longpress="1" aria-label="' + esc(c.name) + '">' +
+      (c.logo ? orb(120) + '<span class="logoplate">' + logoImg(44) + '</span>' :
+      '<div style="position:relative;display:flex;align-items:center;justify-content:center">' + orb(160) +
+      '<span class="mono" style="position:absolute;width:56px;height:56px;border-radius:16px;font-size:28px;background:' + c.principal + ';color:#F2F2F0">' + c.mono + '</span></div>' +
+      '<span style="font-weight:800;font-size:18px">' + esc(c.name) + '</span>') + '</button>' +
+    '<div class="stack-s" style="text-align:center"><h1 class="title">Entra a tu <b>capacitación</b></h1><p class="muted small">Usa tu número de celular y tu contraseña.</p></div>' +
+    '<form class="stack" id="loginForm" novalidate>' +
+      '<div class="field"><label for="phone">Celular</label><input class="input" id="phone" inputmode="numeric" autocomplete="tel" placeholder="987 654 321" value="' + esc(f.phone || '') + '"' + (f.err === 'phone' ? ' aria-invalid="true"' : '') + '></div>' +
+      '<div class="field"><label for="pass">Contraseña</label><div class="inwrap"><input class="input" id="pass" type="' + (f.show ? 'text' : 'password') + '" autocomplete="current-password" value="' + esc(f.pass || '') + '"' + (f.err === 'pass' ? ' aria-invalid="true"' : '') + '><button type="button" class="show" data-a="togglePass">' + (f.show ? 'Ocultar' : 'Mostrar') + '</button></div></div>' +
+      (f.msg ? '<p class="err" role="alert">' + icon('info', 20) + '<span>' + esc(f.msg) + '</span></p>' : '') +
+      '<button class="btn btn-primary" type="submit"' + (S.offline || f.busy ? ' disabled' : '') + '>' + (f.busy ? 'Ingresando…' : 'Ingresar') + '</button>' +
+      (S.offline ? '<p class="reason">Necesitas señal para ingresar.</p>' : '') +
+    '</form>' +
+    '<button class="link" style="align-self:center" data-a="forgot">¿Olvidaste tu contraseña?</button></main>';
+};
+
+function passRulesHtml(val, temp, showMiss) {
+  const r = passRules(val, temp);
+  const li = (ok, txt) => {
+    const st = ok ? 'true' : (showMiss ? 'miss' : 'false');
+    return '<li data-ok="' + st + '">' + icon(ok ? 'check' : (showMiss ? 'info' : 'target'), 20) + '<span>' + txt + '</span><span class="st">' + (ok ? 'Cumple' : (showMiss ? 'Falta' : 'Pendiente')) + '</span></li>';
+  };
+  return li(r.len, 'Mínimo 8 caracteres') + li(r.num, 'Al menos un número') + li(r.diff, 'Distinta a la temporal');
+}
+function passRules(v, temp) { v = v || ''; return { len: v.length >= 8, num: /\d/.test(v), diff: v.length > 0 && v !== temp }; }
+
+SCREENS.newpass = function () {
+  const mode = S.params.mode; const f = S.form;
+  const step = mode === 'first' ? '<p class="over">Paso 1 de 2</p>' : mode === 'forgot' ? '<p class="over">Paso 3 de 3</p>' : '';
+  const head = mode === 'change' ? topBar('Perfil', null, 'toProfile') : (mode === 'forgot' ? '' : brandBar());
+  return head + offlineBar() + '<main class="scr">' + step +
+    '<div class="stack-s"><h1 class="title">Crea tu <b>contraseña</b></h1><p class="muted small">' + (mode === 'first' ? 'Es tu primer ingreso. Cambia la contraseña temporal por una tuya.' : 'Escribe una contraseña nueva.') + '</p></div>' +
+    '<div class="stack-s"><p class="small" style="font-weight:600">Tu contraseña debe tener:</p><ul class="prules" id="prules">' + passRulesHtml(f.np1, f.temp || DEMO_PASS, f.tried) + '</ul></div>' +
+    '<form class="stack" id="npForm" novalidate>' +
+      '<div class="field"><label for="np1">Nueva contraseña</label><div class="inwrap"><input class="input" id="np1" type="' + (f.show ? 'text' : 'password') + '" autocomplete="new-password" value="' + esc(f.np1 || '') + '"><button type="button" class="show" data-a="togglePass">' + (f.show ? 'Ocultar' : 'Mostrar') + '</button></div></div>' +
+      '<div class="field"><label for="np2">Repite la contraseña</label><input class="input" id="np2" type="' + (f.show ? 'text' : 'password') + '" autocomplete="new-password" value="' + esc(f.np2 || '') + '"></div>' +
+      (f.msg ? '<p class="err" role="alert">' + icon('info', 20) + '<span>' + esc(f.msg) + '</span></p>' : '') +
+      '<button class="btn btn-primary" type="submit"' + (S.offline ? ' disabled' : '') + '>Guardar contraseña</button>' +
+      (S.offline ? '<p class="reason">Necesitas señal para guardar tu contraseña.</p>' : '') +
+    '</form></main>';
+};
+
+SCREENS.ficha = function () {
+  const c = C(); const p = P(); const f = S.form;
+  return brandBar() + offlineBar() + '<main class="scr"><p class="over">Paso 2 de 2</p>' +
+    '<div class="stack-s"><h1 class="title">Completa tus <b>datos</b></h1><p class="muted small">Solo falta un dato.</p></div>' +
+    '<dl class="dl"><div><dt>Nombre</dt><dd>' + esc(p.first + ' ' + p.last) + '</dd></div><div><dt>Empresa</dt><dd>' + esc(c.name) + '</dd></div><div><dt>Celular</dt><dd>' + fPhone(p.phone) + '</dd></div></dl>' +
+    '<form class="stack" id="fichaForm" novalidate><div class="field"><label for="area">¿En qué área trabajas?</label>' +
+    '<select class="input" id="area"' + (f.err ? ' aria-invalid="true"' : '') + '><option value="">Elige tu área</option>' + c.areas.map((a) => '<option' + (f.area === a ? ' selected' : '') + '>' + esc(a) + '</option>').join('') + '</select></div>' +
+    (f.err ? '<p class="err" role="alert">' + icon('info', 20) + '<span>Elige tu área para continuar.</span></p>' : '') +
+    '<button class="btn btn-primary" type="submit"' + (S.offline ? ' disabled' : '') + '>Empezar</button>' +
+    (S.offline ? '<p class="reason">Necesitas señal para guardar tus datos.</p>' : '') + '</form></main>';
+};
+
+SCREENS.forgot = function () {
+  const f = S.form; const step = f.step || 1;
+  let body = '';
+  if (step === 1) {
+    body = '<p class="over">Paso 1 de 3</p><div class="stack-s"><h1 class="title">Recupera tu <b>contraseña</b></h1><p class="muted small">Te enviaremos un código a tu celular.</p></div>' +
+      '<form class="stack" id="fg1" novalidate><div class="field"><label for="fphone">Celular</label><input class="input" id="fphone" inputmode="numeric" placeholder="987 654 321" value="' + esc(f.phone || '') + '"></div>' +
+      (f.msg ? '<p class="err" role="alert">' + icon('info', 20) + '<span>' + esc(f.msg) + '</span></p>' : '') +
+      '<button class="btn btn-primary" type="submit"' + (S.offline ? ' disabled' : '') + '>Enviar código</button>' + (S.offline ? '<p class="reason">Necesitas señal para recibir el código.</p>' : '') + '</form>';
+  } else {
+    const d = String(f.phone || '').replace(/\D/g, '');
+    const left = Math.max(0, Math.ceil(((f.resendAt || 0) - Date.now()) / 1000));
+    body = '<p class="over">Paso 2 de 3</p><div class="stack-s"><h1 class="title">Escribe el <b>código</b></h1><p class="muted small">Te enviamos un código de 6 dígitos al ' + d.slice(0, 3) + ' *** ' + d.slice(6) + '.</p></div>' +
+      '<form class="stack" id="fg2" novalidate><div class="codebox" role="group" aria-label="Código de 6 dígitos">' +
+      [0, 1, 2, 3, 4, 5].map((i) => '<input class="input" id="cd' + i + '" inputmode="numeric" maxlength="1" aria-label="Dígito ' + (i + 1) + '" value="' + esc((f.code || '')[i] || '') + '">').join('') + '</div>' +
+      (f.msg ? '<p class="err" role="alert">' + icon('info', 20) + '<span>' + esc(f.msg) + '</span></p>' : '') +
+      '<button class="btn btn-primary" type="submit"' + (S.offline ? ' disabled' : '') + '>Validar</button>' +
+      '<button type="button" class="link" id="resend" data-a="resend"' + (left > 0 ? ' disabled' : '') + ' style="align-self:center">' + (left > 0 ? 'Reenviar en ' + left + ' s' : 'Reenviar código') + '</button></form>';
+  }
+  return topBar('Recuperar contraseña', null, 'toLogin') + offlineBar() + '<main class="scr">' + body + '</main>';
+};
+
+SCREENS.home = function () {
+  const p = P(); const pr = prog();
+  return brandBar() + connBar() + '<main class="scr">' + gated(() => homeBody(p, pr), homeEmpty(p, pr), 'tu inicio') + '</main>' + tabs('home');
+};
+function certSoon(pr) { return pr.certs.find((c) => { const d = daysTo(c.expires); return d >= 0 && d <= 30; }); }
+function homeEmpty(p, pr) {
+  const soon = certSoon(pr);
+  return '<div class="stack-s"><p class="muted small">' + esc(cap(fLong(now()))) + '</p><h1 class="title">Hola, <b>' + esc(p.first) + '</b></h1></div>' +
+    (soon ? '<div class="banner info">' + icon('clock', 20) + '<span>Tu certificado <b>' + esc(soon.route) + '</b> vence en ' + daysTo(soon.expires) + ' días, el ' + fDM(soon.expires) + '.</span></div>' : '') +
+    '<div class="empty">' + icon('inbox', 44) + '<p class="h2">No tienes capacitaciones pendientes</p><p class="muted small">Cuando tu empresa te asigne una, aparecerá aquí.</p></div>' +
+    '<button class="btn btn-primary" data-a="go" data-to="certs">' + icon('award', 20) + 'Ver mis certificados</button>';
+}
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+function homeBody(p, pr) {
+  const c = C(); const st = routeStats();
+  if (pr.passed && !p.second) return homeEmpty(p, pr);
+  const items = [];
+  if (!pr.passed) items.push({ kind: 'main', title: c.route.title, due: p.due, late: st.late, pct: st.pct, remaining: st.remaining, renewal: pr.renewal, pend: pr.pending.length });
+  if (p.second) items.push({ kind: 'second', title: c.second.title, due: c.second.due, late: false, pct: 0, starts: c.second.starts, remaining: c.second.levels * 6 + 10 });
+  items.sort((a, b) => (b.late - a.late) || (a.due - b.due));
+  const soon = certSoon(pr);
+  let next = '';
+  if (!pr.passed) {
+    const L = st.next;
+    const lvl = L ? L.level + 1 : null;
+    next = '<section class="next" aria-labelledby="nextT"><p class="over">' + (L ? 'Sigue donde te quedaste' : 'Te falta la evaluación') + '</p>' +
+      (L ? '<div class="thumb"><div class="tiny-video"><img src="' + VPOSTER + '" alt="" width="54" height="96"></div><div class="stack-s" style="gap:2px;min-width:0"><span class="xs muted">Nivel ' + lvl + ' de ' + c.route.levels.length + ' · ' + fmtLabel(L.format) + '</span><h2 id="nextT" style="font-size:18px;font-weight:800;line-height:1.25">' + esc(L.title) + '</h2><span class="xs muted">' + fClock(L.dur) + ' de video · reto de 3 preguntas</span></div></div>'
+        : '<h2 id="nextT" style="font-size:18px;font-weight:800">Evaluación final · ' + c.rules.n + ' preguntas</h2>') +
+      (L ? '<div class="dlrow">' + (dlOf(L.id).state === 'none' ? (S.offline ? '<span class="dlb">' + icon('nosignal', 16) + 'Necesita señal</span>' : '<span class="dlb">' + icon('dl', 16) + 'Descargar para ver sin señal · ' + L.mb + ' MB</span>') : dlBadge(L)) + '</div>' : '') +
+      '<button class="btn btn-primary" data-a="continue">Continuar ' + icon('chev', 20) + '</button>' +
+      (L && !S.offline && nextToDownload().length ? '<button class="btn btn-sec" data-a="dlNext">' + icon('dl', 20) + 'Descargar lo que sigue</button>' : '') + '</section>';
+  }
+  const list = items.map((it) => {
+    const d = daysTo(it.due);
+    const dueTxt = it.late ? 'Venció el ' + fDM(it.due) : 'Vence el ' + fShort(it.due) + ' · ' + (d === 0 ? 'hoy' : d === 1 ? 'mañana' : 'faltan ' + d + ' días');
+    const notYet = it.starts && it.starts > now();
+    return '<button class="routeitem' + (it.late ? ' late' : '') + '" data-a="openRoute" data-kind="' + it.kind + '">' +
+      (it.late ? '<span class="pill rep">' + icon('late', 14) + 'Vencida</span>' : notYet ? pill('lock', 'Disponible desde el ' + fShort(it.starts), 'clock') : it.renewal ? pill('av', 'Renovación de tu certificado') : '') +
+      '<span style="font-size:18px;font-weight:800;line-height:1.25">' + esc(it.title) + '</span>' +
+      '<div class="bar" aria-hidden="true"><i style="width:' + it.pct + '%"></i></div>' +
+      '<span class="meta"><b>' + it.pct + ' %</b><span>' + dueTxt + '</span><span>Te quedan ' + it.remaining + ' min aprox.</span></span>' +
+      (it.pend ? '<span>' + pill('pend', it.pend + (it.pend === 1 ? ' lección pendiente' : ' lecciones pendientes') + ' de enviar', 'clock') + '</span>' : '') + '</button>';
+  }).join('');
+  const lateBanner = items.some((i) => i.late) ? '<div class="banner rep" role="status">' + icon('late', 20) + '<span>La capacitación <b>' + esc(c.route.title) + '</b> venció el ' + fDM(p.due) + '. Aún puedes terminarla.</span></div>' : '';
+  return '<div class="stack-s"><p class="muted small">' + esc(cap(fLong(now()))) + '</p><h1 class="title">Hola, <b>' + esc(p.first) + '</b></h1></div>' +
+    lateBanner +
+    (soon ? '<div class="banner info">' + icon('clock', 20) + '<span>Tu certificado <b>' + esc(soon.route) + '</b> vence en ' + daysTo(soon.expires) + ' días.</span></div>' : '') +
+    (S.offline ? '<p class="small muted" style="margin-top:-12px">Sin señal · Actualizado hoy 08:15</p>' : '') +
+    next + '<section class="stack" aria-labelledby="capT"><h2 class="h2" id="capT">Tus capacitaciones</h2>' + list + '</section>' + downloadsRow();
+}
+function downloadsRow() {
+  const n = allLessons(C().route).filter((l) => isReady(l.id)).length;
+  return '<button class="lessonbtn" data-a="go" data-to="downloads">' + icon('phoneok', 20) + '<span class="t">Mis descargas<span class="xs muted" style="display:block;font-weight:400">' + (n ? n + (n === 1 ? ' lección' : ' lecciones') + ' · ' + fMB(usedMB()) : 'Aún no tienes lecciones descargadas') + '</span></span>' + icon('chev', 20) + '</button>';
+}
+
+SCREENS.route = function () {
+  const c = C();
+  if (S.params.kind === 'second') {
+    const s = c.second;
+    return brandBar() + connBar() + '<main class="scr"><button class="link" data-a="go" data-to="home">' + icon('back', 20) + 'Atrás</button>' +
+      '<div class="stack-s"><p class="over">Ruta asignada</p><h1 class="title">' + esc(s.title) + '</h1></div>' +
+      '<div class="banner info">' + icon('clock', 20) + '<span>Esta ruta se abre el ' + fLong(s.starts) + '. Vence el ' + fShort(s.due) + '.</span></div>' +
+      '<div class="path">' + Array.from({ length: s.levels }, (_, i) => nodeRow('lock', 'Nivel ' + (i + 1), 'Se abre el ' + fShort(s.starts), i < s.levels - 1, '')).join('') + '</div></main>' + tabs('home');
+  }
+  return brandBar() + connBar() + '<main class="scr">' + gated(routeBody, '<button class="link" data-a="go" data-to="home">' + icon('back', 20) + 'Atrás</button><div class="empty">' + icon('list', 44) + '<p class="h2">Esta ruta aún no tiene lecciones.</p><p class="muted small">Cuando tu empresa las publique, aparecerán aquí.</p><button class="btn btn-sec" data-a="go" data-to="home">Ir a Inicio</button></div>', 'la ruta') + '</main>' + tabs('home');
+};
+function nodeRow(st, tag, title, trail, extra, idx) {
+  const dot = st === 'done' ? '<div class="dot done">' + icon('check', 22) + '</div>' :
+    st === 'cur' ? '<div class="dot cur"><span>' + icon('play', 16) + '</span></div>' :
+    st === 'av' ? '<div class="dot av">' + (idx || '') + '</div>' : '<div class="dot lock">' + icon('lock', 18) + '</div>';
+  return '<div class="node"><div class="rail">' + dot + (trail ? '<div class="trail' + (st === 'done' ? ' done' : '') + '"></div>' : '') + '</div>' +
+    '<div class="ncontent"><span class="xs muted">' + esc(tag) + '</span><span style="font-size:17px;font-weight:800;line-height:1.25">' + esc(title) + '</span>' + extra + '</div></div>';
+}
+function routeBody() {
+  const c = C(); const st = routeStats(); const pr = prog(); const per = P();
+  const levels = c.route.levels.map((lv, i) => {
+    const s = levelState(i);
+    let extra = '<div>' + levelPill(s) + '</div>';
+    if (s === 'lock') {
+      extra ='<button class="lockbtn" data-a="locked" data-lv="' + i + '" aria-label="Nivel ' + (i + 1) + ' bloqueado. Ver qué falta">' + pill('lock', 'Bloqueado · Completa el Nivel ' + i, 'lock') + '<span class="xs muted">' + lv.lessons.length + ' ' + (lv.lessons.length > 1 ? 'lecciones' : 'lección') + ' · ' + (lv.lessons.length * 6) + ' min</span></button>';
+    } else {
+      extra += lv.lessons.map((l) => {
+        const done = pr.completed.includes(l.id);
+        const need = S.offline && !isReady(l.id);
+        return '<div class="lgroup"><button class="lessonbtn' + (need ? ' need' : '') + '" data-a="openLesson" data-id="' + l.id + '">' + (done ? '<span style="color:var(--ok)">' + icon('check', 20) + '</span>' : icon(need ? 'nosignal' : 'play', 20)) + '<span class="t">' + esc(l.title) + '<span class="xs muted" style="display:block;font-weight:400">' + (need ? 'Necesita señal · ' : '') + fmtLabel(l.format) + ' · ' + fClock(l.dur) + ' · ' + l.mb + ' MB' + (done ? ' · Completada' : '') + '</span></span>' + icon('chev', 20) + '</button>' + dlRow(l) + '</div>';
+      }).join('');
+    }
+    return nodeRow(s, 'Nivel ' + (i + 1) + ' de ' + c.route.levels.length, lv.title, true, extra, i + 1);
+  }).join('');
+  const examSt = pr.passed ? 'done' : st.allLessonsDone ? 'av' : 'lock';
+  const examExtra = pr.passed ? '<div>' + pill('ok', 'Aprobada · ' + pr.score + ' %', 'check') + '</div>' :
+    st.allLessonsDone ? '<div>' + pill('av', 'Disponible') + '</div><button class="lessonbtn" data-a="go" data-to="rules">' + icon('doc', 20) + '<span class="t">Ver reglas y empezar<span class="xs muted" style="display:block;font-weight:400">' + c.rules.n + ' preguntas · ' + c.rules.minutes + ' min</span></span>' + icon('chev', 20) + '</button>' :
+    '<button class="lockbtn" data-a="locked" data-lv="exam">' + pill('lock', 'Bloqueado · Completa los niveles', 'lock') + '<span class="xs muted">' + c.rules.n + ' preguntas · ' + c.rules.minutes + ' min</span></button>';
+  const d = daysTo(per.due);
+  const cta = pr.passed ? '<button class="btn btn-sec" data-a="go" data-to="certs">' + icon('award', 20) + 'Ver mi certificado</button>' :
+    st.next ? '<button class="btn btn-primary" data-a="continue">Continuar Nivel ' + (st.next.level + 1) + '</button>' : '<button class="btn btn-primary" data-a="go" data-to="rules">Ir a la evaluación final</button>';
+  return '<button class="link" data-a="go" data-to="home">' + icon('back', 20) + 'Atrás</button>' +
+    '<div class="stack-s"><p class="over">Ruta · ' + esc(c.route.overline) + '</p><h1 class="title">' + esc(c.route.tA) + ' <b>' + esc(c.route.tB) + '</b></h1></div>' +
+    '<div class="stack-s"><div class="bar" role="progressbar" aria-label="Avance de la ruta" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + st.pct + '"><i style="width:' + st.pct + '%"></i></div>' +
+    '<p class="small muted"><b style="color:var(--fg)">' + st.pct + ' %</b> · ' + (st.late ? '<span style="color:var(--rep)">Venció el ' + fDM(per.due) + '</span>' : 'Vence el ' + fShort(per.due) + ' · faltan ' + d + ' días') + ' · ' + st.remaining + ' min aprox.</p></div>' +
+    (S.offline ? '' : '<button class="btn btn-sec" data-a="go" data-to="select">' + icon('dl', 20) + 'Descargar para ver sin señal</button>') +
+    '<div class="path">' + levels + nodeRow(examSt, 'Final', 'Evaluación final', false, examExtra, '') + '</div>' + cta;
+}
+
+SCREENS.lesson = function () {
+  const c = C(); const L = lessonById(S.params.id); const pr = prog();
+  const v = S.video; const pos = pr.videoPos[L.id] || 0;
+  const can = !!(pr.watched[L.id] || pr.completed.includes(L.id));
+  const levelN = L.level + 1;
+  const pct = (pos / L.dur) * 100;
+  const capIdx = Math.min(L.sum.length - 1, Math.floor(pos / L.dur * L.sum.length));
+  let overlay = '';
+  if (v.phase === 'idle' || v.phase === 'paused' || v.phase === 'ended') {
+    overlay = '<button class="vplay" data-a="play" aria-label="' + (v.phase === 'ended' ? 'Ver de nuevo' : pos > 0 ? 'Retomar video' : 'Reproducir video') + '">' + icon(v.phase === 'ended' ? 'redo' : 'play', 30) + '</button>';
+  } else if (v.phase === 'loading') {
+    overlay = '<div class="vmsg" role="status">' + orb(72) + '<span>Preparando el video…</span></div>';
+  } else if (v.phase === 'error') {
+    overlay = '<div class="vmsg" role="alert">' + icon('info', 28) + '<span style="font-weight:600">El video no se pudo reproducir.</span><div class="row" style="flex-wrap:wrap;justify-content:center"><button class="chip" data-a="play">' + icon('redo', 18) + 'Volver a intentar</button><button class="chip" data-a="readSummary">' + icon('doc', 18) + 'Leer el resumen</button></div></div>';
+  } else if (v.phase === 'offline' || v.phase === 'lost') {
+    overlay = '<div class="vmsg" role="status">' + icon('nosignal', 28) + '<span style="font-weight:600">Se fue la señal y esta lección no está descargada.</span><span class="muted">Te quedaste en ' + fClock(pos) + '.</span><button class="chip" data-a="go" data-to="downloads">' + icon('phoneok', 18) + 'Ver lo que tengo descargado</button></div>';
+  } else if (v.phase === 'playing') {
+    overlay = '<button class="vtouch" data-a="pause" aria-label="Pausar video"></button>';
+  }
+  const caption = (v.phase === 'playing' || v.phase === 'paused') && v.cc ? '<div class="vcap" id="vcap" aria-hidden="true"><span>' + esc(L.sum[capIdx]) + '</span></div>' : '';
+  return topBar('Nivel ' + levelN + ' de ' + c.route.levels.length + ' · ' + L.title, (allLessons(c.route).findIndex((x) => x.id === L.id) + (can ? 1 : 0.5)) / (allLessons(c.route).length + 1) * 100) + offlineBar() +
+    '<main class="scr">' +
+    '<div class="stack-s"><p class="over">Nivel ' + levelN + ' · ' + esc(c.route.levels[L.level].title) + '</p><h1 class="title">' + titleSplit(L.title) + '</h1></div>' +
+    '<div class="stack" style="gap:10px"><div class="video" id="vbox"><div class="vslot" id="vslot"></div><span class="vchip">' + fmtLabel(L.format) + '</span><span class="vdur">' + fClock(L.dur) + '</span>' + caption + overlay + '</div>' +
+    '<div class="vctrl"><div class="row"><div class="bar" style="flex:1"><i id="vbar" style="width:' + pct + '%"></i></div><span class="time" id="vtime">' + fClock(pos) + ' / ' + fClock(L.dur) + '</span></div>' +
+    '<div class="row">' +
+      (v.phase === 'playing' ? '<button class="chip" data-a="pause">' + icon('pause', 18) + 'Pausar</button>' : '') +
+      '<button class="chip" data-a="cc" aria-pressed="' + v.cc + '">' + icon('cc', 18) + 'Subtítulos</button>' +
+      '<button class="chip" data-a="speed" aria-label="Velocidad ' + String(v.speed).replace('.', ',') + ' por">' + String(v.speed).replace('.', ',') + '×</button>' +
+      '<button class="chip" data-a="fullscreen" aria-label="Pantalla completa">' + icon('expand', 18) + '</button></div>' +
+    '<div class="row" style="justify-content:space-between;flex-wrap:wrap"><button class="ailabel" data-a="aiInfo">' + icon('info', 16) + 'Hecho con IA</button>' +
+      (pos > 0 && v.phase !== 'playing' && v.phase !== 'ended' ? '<span class="time">Retoma desde ' + fClock(pos) + '</span>' : '') + '</div></div></div>' +
+    dlRow(L) +
+    '<details class="sum" id="sumd"' + (v.sumOpen ? ' open' : '') + '><summary>' + icon('doc', 20) + 'Resumen de la lección</summary><ul>' + L.sum.map((s) => '<li>' + esc(s) + '</li>').join('') + '</ul></details>' +
+    '<button class="link" data-a="report">' + icon('flag', 18) + 'Reportar un problema con este contenido</button>' +
+    '</main><div class="dock"><button class="btn btn-primary" data-a="startQuiz"' + (can ? '' : ' disabled') + '>Hacer el reto (3 preguntas)</button>' +
+    (can ? '' : '<button class="link" data-a="seen" style="align-self:center">Ya lo vi</button>') + '</div>';
+};
+function titleSplit(t) { const w = t.split(' '); const last = w.pop(); return esc(w.join(' ')) + ' <b>' + esc(last) + '</b>'; }
+
+SCREENS.quiz = function () {
+  const L = lessonById(S.quiz.lessonId); const qz = S.quiz; const q = L.qs[qz.idx];
+  const opts = q.opts.map((o, i) => {
+    let cls = 'opt', tag = '';
+    if (qz.checked) {
+      if (i === q.right) { cls += ' right'; tag = '<span class="tag">' + icon('check', 16) + 'Respuesta correcta</span>'; }
+      else if (i === qz.sel) { cls += ' wrong'; tag = '<span class="tag">' + icon('redo', 16) + 'Tu respuesta</span>'; }
+    }
+    return '<button class="' + cls + '" role="radio" aria-checked="' + (qz.sel === i) + '" data-a="pick" data-i="' + i + '"' + (qz.checked ? ' disabled' : '') + '><span class="rad"></span><span style="flex:1">' + esc(o) + tag + '</span></button>';
+  }).join('');
+  let fb = '';
+  if (qz.checked) {
+    const ok = qz.sel === q.right;
+    fb = '<div class="fb ' + (ok ? 'ok' : 'rep') + '" role="status"><span class="h">' + icon(ok ? 'check' : 'redo', 22) + (ok ? 'Correcto' : 'Repasemos') + '</span><p>' + esc(q.why) + '</p>' +
+      (ok ? '' : '<button class="link" data-a="seekVideo" data-t="' + q.t + '">' + icon('play', 18) + 'Ver ese momento del video (' + fClock(q.t) + ')</button>') + '</div>';
+  }
+  const last = qz.idx === L.qs.length - 1;
+  return topBar('Reto · ' + L.title, ((qz.idx + (qz.checked ? 1 : 0)) / L.qs.length) * 100) + offlineBar() +
+    '<main class="scr"><p class="over">Pregunta ' + (qz.idx + 1) + ' de ' + L.qs.length + '</p><h1 class="q">' + esc(q.q) + '</h1>' +
+    '<div class="opts" role="radiogroup" aria-label="Opciones">' + opts + '</div>' + fb +
+    '<button class="link" data-a="report">' + icon('flag', 18) + 'Reportar un problema con este contenido</button></main>' +
+    '<div class="dock">' + (qz.checked ? '<button class="btn btn-primary" data-a="nextQ">' + (last ? 'Terminar el reto' : 'Siguiente') + '</button>' : '<button class="btn btn-primary" data-a="checkQ"' + (qz.sel == null ? ' disabled' : '') + '>Comprobar</button>') + '</div>';
+};
+
+SCREENS.lessonDone = function () {
+  const c = C(); const L = lessonById(S.params.id); const pr = prog(); const res = pr.quizRes[L.id] || [];
+  const okN = res.filter(Boolean).length; const st = routeStats();
+  const wrong = L.qs.map((q, i) => ({ q, i })).filter((x) => !res[x.i]);
+  const next = st.next;
+  return topBar('Lección completada', st.pct, 'toRoute') + offlineBar() + '<main class="scr">' +
+    '<div class="row" style="gap:14px"><div class="seal">' + icon('check', 32) + '</div><div class="stack-s" style="gap:2px"><p class="over">Nivel ' + (L.level + 1) + ' · Lección completada</p><h1 class="title" style="font-size:24px">' + titleSplit(L.title) + '</h1></div></div>' +
+    '<div class="block"><span class="score"><span class="big">' + okN + '</span><span class="muted">de ' + L.qs.length + ' correctas</span></span>' +
+    '<div class="stack-s"><div class="bar"><i style="width:' + st.pct + '%"></i></div><span class="small muted">Tu ruta va en <b style="color:var(--fg)">' + st.pct + ' %</b></span></div></div>' +
+    (isPending(L.id) ? '<div class="banner info">' + icon('clock', 20) + '<span><b>Pendiente de enviar.</b> Tu avance está guardado en este celular. Se enviará solo cuando vuelva la señal.</span></div>' : '') +
+    (isReady(L.id) && !pr.kept[L.id] ? '<div class="banner info" style="flex-direction:column;gap:10px"><span class="row" style="align-items:flex-start">' + icon('info', 20) + '<span>Ya completaste «' + esc(L.title) + '». Quitaremos su descarga mañana para liberar ' + L.mb + ' MB.</span></span><div class="row"><button class="mini" data-a="removeNow" data-id="' + L.id + '">' + icon('trash', 16) + 'Quitar ahora</button><button class="mini" data-a="keepDl" data-id="' + L.id + '">Mantener</button></div></div>' : '') +
+    (wrong.length ? '<section class="stack"><h2 class="h2">Para repasar</h2>' + wrong.map((w) => '<div class="fb rep"><span class="h" style="font-size:16px">' + icon('redo', 20) + esc(w.q.q) + '</span><p>' + esc(w.q.why) + '</p><button class="link" data-a="seekVideo" data-t="' + w.q.t + '">' + icon('play', 18) + 'Ver en el video (' + fClock(w.q.t) + ')</button></div>').join('') + '</section>' :
+      '<div class="fb ok"><span class="h">' + icon('check', 22) + 'Respondiste todo bien</span><p>Ya puedes seguir con la siguiente lección.</p></div>') +
+    '</main><div class="dock">' + (next ? '<button class="btn btn-primary" data-a="openLesson" data-id="' + next.id + '">Siguiente lección: ' + esc(next.title) + '</button>' : (pr.passed ? '<button class="btn btn-primary" data-a="go" data-to="route">Volver a la ruta</button>' : '<button class="btn btn-primary" data-a="go" data-to="rules">Ir a la evaluación final</button>')) +
+    '<button class="btn btn-sec" data-a="startQuiz" data-id="' + L.id + '">' + icon('redo', 20) + 'Repetir el reto</button></div>';
+};
+
+SCREENS.rules = function () {
+  const c = C(); const r = c.rules; const pr = prog();
+  const left = r.attempts - pr.attempts; const wait = canRetryAt();
+  const inProgress = pr.exam && !pr.exam.done;
+  const exhausted = left <= 0;
+  let reason = '';
+  if (S.offline) reason = 'Conéctate para empezar. La evaluación necesita señal.';
+  else if (exhausted) reason = 'Usaste tus ' + r.attempts + ' intentos. ' + r.exhausted;
+  else if (wait) reason = 'Podrás reintentar hoy a las ' + fHM(wait) + '.';
+  const disabled = !!reason;
+  return topBar('Evaluación final · ' + c.route.title, 0, 'toRoute') + offlineBar() + '<main class="scr">' +
+    '<div class="stack-s"><p class="over">Antes de empezar</p><h1 class="title">Reglas de la <b>evaluación</b></h1></div>' +
+    '<div class="rules">' +
+      '<div class="rule">' + icon('target', 24) + '<span class="big">' + r.min + ' %</span><span class="small">Apruebas con ' + r.min + ' % o más</span></div>' +
+      '<div class="rule">' + icon('redo', 24) + '<span class="big">' + Math.max(0, left) + ' de ' + r.attempts + '</span><span class="small">Intentos que te quedan</span></div>' +
+      '<div class="rule">' + icon('clock', 24) + '<span class="big">' + (r.wait ? (r.wait === 60 ? '1 hora' : r.wait + ' min') : 'Sin espera') + '</span><span class="small">' + (r.wait ? 'Si no apruebas, esperas ' + (r.wait === 60 ? '1 hora' : r.wait + ' min') + ' para reintentar' : 'Si no apruebas, puedes reintentar enseguida') + '</span></div>' +
+      '<div class="rule">' + icon('timer', 24) + '<span class="big">' + r.minutes + ' min</span><span class="small">' + r.n + ' preguntas</span></div>' +
+    '</div>' +
+    '<div class="banner info">' + icon('nosignal', 20) + '<span><b>Necesitas señal durante toda la evaluación.</b> Si se va, tus respuestas se guardan y el tiempo se pausa.</span></div>' +
+    '<div class="stack-s small"><p>' + icon('info', 18).replace('class="ic"', 'class="ic" style="vertical-align:-3px;margin-right:6px"') + 'Si se acaba el tiempo, se envía lo que respondiste.</p><p>' + icon('back', 18).replace('class="ic"', 'class="ic" style="vertical-align:-3px;margin-right:6px"') + 'Puedes volver a una pregunta antes de enviar.</p></div>' +
+    (exhausted && !S.offline ? '<div class="banner rep" role="status">' + icon('info', 20) + '<span>' + esc(reason) + '</span></div>' : '') +
+    '</main><div class="dock"><button class="btn btn-primary" data-a="startExam"' + (disabled ? ' disabled' : '') + '>' + (inProgress ? 'Continuar evaluación' : 'Empezar evaluación') + '</button>' + (reason && !exhausted ? '<p class="reason" role="status">' + esc(reason) + '</p>' : '') + '</div>';
+};
+
+function examQuestions() {
+  const c = C(); const ls = allLessons(c.route); const out = [];
+  for (let k = 0; k < 3; k++) ls.forEach((l) => out.push({ lid: l.id, qi: k }));
+  return out.slice(0, c.rules.n);
+}
+SCREENS.exam = function () {
+  if (prog().exam.interrupted) return examInterrupted();
+  const pr = prog(); const ex = pr.exam; const qs = ex.qs; const cur = qs[ex.idx]; const L = lessonById(cur.lid); const q = L.qs[cur.qi];
+  const unanswered = ex.answers.filter((a) => a == null).length;
+  const last = ex.idx === qs.length - 1;
+  return topBar('Evaluación final', ((qs.length - unanswered) / qs.length) * 100, 'exitExam') + offlineBar() +
+    (S.offline ? '<div class="scr" style="flex:0;padding-bottom:0"><div class="banner rep" role="alert">' + icon('wifioff', 20) + '<div class="stack-s" style="flex:1"><span>Se perdió la señal. Tus respuestas están guardadas y el tiempo está en pausa.</span><button class="chip" data-a="reconnect" style="align-self:flex-start">' + icon('redo', 18) + 'Reintentar</button></div></div></div>' : '') +
+    '<main class="scr"><div class="row" style="justify-content:space-between;flex-wrap:wrap"><p class="over">Pregunta ' + (ex.idx + 1) + ' de ' + qs.length + '</p><span class="time" style="font-size:15px">' + icon('timer', 18).replace('class="ic"', 'class="ic" style="vertical-align:-3px;margin-right:4px"') + '<span id="etimer">' + fClock(ex.remaining) + '</span> restantes</span></div>' +
+    '<p class="small muted">Te faltan ' + unanswered + ' por responder</p>' +
+    '<h1 class="q">' + esc(q.q) + '</h1><div class="opts" role="radiogroup" aria-label="Opciones">' +
+    q.opts.map((o, i) => '<button class="opt" role="radio" aria-checked="' + (ex.answers[ex.idx] === i) + '" data-a="answer" data-i="' + i + '"><span class="rad"></span><span style="flex:1">' + esc(o) + '</span></button>').join('') + '</div></main>' +
+    '<div class="dock"><div class="row"><button class="btn btn-sec" style="flex:1" data-a="prevQ"' + (ex.idx === 0 ? ' disabled' : '') + '>' + icon('back', 20) + 'Anterior</button>' +
+    '<button class="btn btn-primary" style="flex:1.4" data-a="' + (last ? 'review' : 'nextE') + '">' + (last ? 'Revisar respuestas' : 'Siguiente') + '</button></div></div>';
+};
+
+SCREENS.review = function () {
+  if (prog().exam.interrupted) return examInterrupted();
+  const pr = prog(); const ex = pr.exam;
+  const un = ex.answers.filter((a) => a == null).length;
+  return topBar('Revisar respuestas', ((ex.qs.length - un) / ex.qs.length) * 100, 'backExam') + offlineBar() + '<main class="scr">' +
+    '<div class="stack-s"><p class="over">Antes de enviar</p><h1 class="title">Revisa tus <b>respuestas</b></h1></div>' +
+    (un ? '<div class="banner rep" role="status">' + icon('info', 20) + '<span>Tienes ' + un + ' ' + (un === 1 ? 'pregunta' : 'preguntas') + ' sin responder. Tócala para responderla.</span></div>' : '<div class="banner info">' + icon('check', 20) + '<span>Respondiste todas las preguntas.</span></div>') +
+    '<div class="qlist">' + ex.qs.map((x, i) => {
+      const L = lessonById(x.lid); const q = L.qs[x.qi]; const done = ex.answers[i] != null;
+      return '<button class="qitem" data-a="gotoQ" data-i="' + i + '"><span class="n">' + (i + 1) + '</span><span class="t">' + esc(q.q) + '</span>' + (done ? pill('ok', 'Respondida', 'check') : pill('rep', 'Sin responder', 'info')) + '</button>';
+    }).join('') + '</div>' +
+    (S.form.sendErr ? '<div class="banner rep" role="alert">' + icon('info', 20) + '<span>No se pudo enviar. Tus respuestas siguen guardadas.</span></div>' : '') +
+    '</main><div class="dock"><button class="btn btn-primary" data-a="submitExam"' + (S.offline ? ' disabled' : '') + '>' + (un ? 'Enviar de todas formas' : 'Enviar evaluación') + '</button>' +
+    (S.offline ? '<p class="reason">Sin señal no se puede enviar. Tus respuestas están guardadas.</p><button class="btn btn-sec" data-a="reconnect">' + icon('redo', 20) + 'Reintentar</button>' : '') + '</div>';
+};
+
+SCREENS.result = function () {
+  const c = C(); const pr = prog(); const r = c.rules; const res = S.params;
+  if (res.pass) {
+    return topBar('Resultado', 100, 'toHome') + '<main class="scr" style="text-align:center;align-items:center">' + orb(200) +
+      '<div class="stack-s"><p class="over">' + esc(c.route.title) + '</p><h1 class="title" style="font-size:34px">¡<b>Aprobaste</b>!</h1></div>' +
+      '<span class="score" style="justify-content:center"><span class="big">' + res.score + ' %</span><span class="muted">mínimo ' + r.min + ' %</span></span>' +
+      '<p class="muted">Tu certificado está listo. Puedes verlo y descargarlo cuando quieras.</p></main>' +
+      '<div class="dock"><button class="btn btn-primary" data-a="viewCert" data-i="' + (pr.certs.length - 1) + '">' + icon('award', 20) + 'Ver mi certificado</button><button class="btn btn-sec" data-a="go" data-to="home">Ir a Inicio</button></div>';
+  }
+  const left = r.attempts - pr.attempts; const wait = canRetryAt();
+  const topics = res.topics.map((id) => lessonById(id));
+  let when;
+  if (left <= 0) when = '<div class="banner rep">' + icon('info', 20) + '<span><b>Usaste tus ' + r.attempts + ' intentos.</b> ' + esc(r.exhausted) + '</span></div>';
+  else when = '<div class="block" style="gap:6px"><span class="row small">' + icon('redo', 20) + '<span>Te ' + (left === 1 ? 'queda 1 intento' : 'quedan ' + left + ' intentos') + '</span></span><span class="row small">' + icon('clock', 20) + '<span>' + (wait ? 'Podrás reintentar hoy a las ' + fHM(wait) : 'Puedes reintentar cuando quieras') + '</span></span></div>';
+  return topBar('Resultado', null, 'toHome') + '<main class="scr">' +
+    '<div class="stack-s"><p class="over">' + esc(c.route.title) + '</p><h1 class="title">Esta vez <b>no alcanzó</b></h1></div>' +
+    '<span class="score"><span class="big">' + res.score + ' %</span><span class="muted">necesitas ' + r.min + ' %</span></span>' +
+    '<section class="stack"><h2 class="h2">Temas a reforzar</h2>' + (topics.length ? topics.map((L) => '<button class="lessonbtn" data-a="openLesson" data-id="' + L.id + '"><span style="color:var(--rep)">' + icon('redo', 20) + '</span><span class="t">' + esc(L.title) + '<span class="xs muted" style="display:block;font-weight:400">Nivel ' + (L.level + 1) + ' · ' + fmtLabel(L.format) + ' · ' + fClock(L.dur) + '</span></span>' + icon('chev', 20) + '</button>').join('') : '<p class="muted small">Repasa el resumen de cada lección.</p>') + '</section>' +
+    when + '</main><div class="dock">' +
+    (topics.length ? '<button class="btn btn-primary" data-a="openLesson" data-id="' + topics[0].id + '">Repasar: ' + esc(topics[0].title) + '</button>' : '') +
+    '<button class="btn btn-sec" data-a="go" data-to="route">Volver a la ruta</button></div>';
+};
+
+function certHtml(ct) {
+  const c = C(); const p = P();
+  return '<article class="cert" aria-label="Certificado"><div class="hd">' + (c.logo ? logoImg(32) : '<div class="row"><span class="mono">' + c.mono + '</span><span class="co">' + esc(c.name) + '</span></div>') + '<span class="kind">Certificado de capacitación interna</span></div>' +
+    '<p style="font-size:14px;color:var(--ink2)">' + esc(c.name) + ' certifica que</p><p class="name">' + esc(p.first + ' ' + p.last) + '</p>' +
+    '<p style="font-size:14px;line-height:1.5;color:#333333">aprobó la capacitación interna <b>«' + esc(ct.route) + '»</b>, definida por la empresa.</p>' +
+    '<div class="grid"><div>Fecha<b>' + fNum(ct.issued) + '</b></div><div>Resultado<b>' + ct.score + ' %</b></div><div>Vigente hasta<b>' + fNum(ct.expires) + '</b></div><div>Código de verificación<b>' + esc(ct.code) + '</b></div></div>' +
+    '<p class="foot">Capacitación interna de ' + esc(c.name) + '. No constituye una certificación externa.</p></article>';
+}
+SCREENS.cert = function () {
+  const pr = prog(); const ct = pr.certs[S.params.i];
+  const d = daysTo(ct.expires);
+  const dl = S.dl;
+  return brandBar() + offlineBar() + '<main class="scr"><button class="link" data-a="go" data-to="certs">' + icon('back', 20) + 'Mis certificados</button>' +
+    '<div class="stack-s"><p class="over">Certificado</p><h1 class="title">' + titleSplit(ct.route) + '</h1></div>' +
+    (d >= 0 && d <= 30 ? '<div class="banner info">' + icon('clock', 20) + '<span>Vence en ' + d + ' días, el ' + fLong(ct.expires) + '.</span></div>' : '') +
+    certHtml(ct) +
+    '<div class="stack"><button class="btn btn-primary" data-a="download"' + (S.offline || dl === 'busy' ? ' disabled' : '') + '>' + icon('download', 20) + (dl === 'busy' ? 'Descargando…' : 'Descargar PDF') + '</button>' +
+    (S.offline ? '<p class="reason">Necesitas señal para descargar el PDF.</p>' : '') +
+    (dl === 'error' ? '<p class="err" role="alert">' + icon('info', 20) + '<span>No se pudo descargar. Vuelve a intentar.</span></p>' : '') + '</div></main>' + tabs('certs');
+};
+
+SCREENS.certs = function () {
+  const pr = prog();
+  const empty = '<div class="empty">' + icon('award', 44) + '<p class="h2">Aún no tienes certificados</p><p class="muted small">Aparecerán aquí cuando apruebes una evaluación.</p><button class="btn btn-primary" data-a="go" data-to="home">Ir a Inicio</button></div>';
+  return brandBar() + offlineBar() + '<main class="scr"><div class="stack-s"><p class="over">Tus logros</p><h1 class="title">Mis <b>certificados</b></h1></div>' +
+    gated(() => {
+      if (!pr.certs.length) return empty;
+      const list = pr.certs.map((ct, i) => ({ ct, i, d: daysTo(ct.expires) }));
+      list.sort((a, b) => { const g = (x) => x.d < 0 ? 2 : x.d <= 30 ? 0 : 1; return g(a) - g(b) || a.d - b.d; });
+      return '<div class="stack">' + list.map((x) => {
+        const status = x.d < 0 ? pill('lock', 'Vencido', 'late') : x.d <= 30 ? pill('rep', 'Vence en ' + x.d + ' días', 'clock') : pill('ok', 'Vigente', 'check');
+        return '<button class="certitem" data-a="viewCert" data-i="' + x.i + '"><span class="ic-wrap">' + icon('award', 24) + '</span><span class="stack-s" style="flex:1;min-width:0;gap:4px"><span style="font-weight:800;line-height:1.25">' + esc(x.ct.route) + '</span><span class="xs muted">Emitido el ' + fNum(x.ct.issued) + ' · Vigente hasta ' + fNum(x.ct.expires) + '</span>' + '<span>' + status + '</span></span>' + icon('chev', 20) + '</button>';
+      }).join('') + '</div>';
+    }, empty, 'tus certificados') + '</main>' + tabs('certs');
+};
+
+SCREENS.profile = function () {
+  const c = C(); const p = P(); const pr = prog();
+  return brandBar() + offlineBar() + '<main class="scr">' +
+    '<button class="logo-hit" data-longpress="1" style="align-items:flex-start;gap:6px" aria-label="Perfil de ' + esc(p.first) + '"><span class="over">Perfil</span><span class="title" style="font-weight:800">' + esc(p.first + ' ' + p.last) + '</span></button>' +
+    '<dl class="dl"><div><dt>Celular</dt><dd>' + fPhone(p.phone) + '</dd></div><div><dt>Empresa</dt><dd>' + esc(c.name) + '</dd></div><div><dt>Área</dt><dd>' + esc(pr.area || 'Sin registrar') + '</dd></div></dl>' +
+    downloadsRow() +
+    '<button class="lessonbtn" data-a="changePass"' + (S.offline ? ' disabled' : '') + '>' + icon('key', 20) + '<span class="t">Cambiar contraseña' + (S.offline ? '<span class="xs muted" style="display:block;font-weight:400">Necesitas señal para cambiar tu contraseña</span>' : '') + '</span>' + icon('chev', 20) + '</button>' +
+    '<button class="btn btn-sec" data-a="logout">Cerrar sesión</button>' +
+    '<p class="xs muted" style="text-align:center;margin-top:auto">Con Nivia</p></main>' + tabs('profile');
+};
+
+/* ---------- Hojas ---------- */
+function sheetHtml() {
+  const sh = S.sheet; if (!sh) return '';
+  let body = '';
+  if (sh.type === 'locked') {
+    const c = C();
+    if (sh.lv === 'exam') body = '<h2 class="h2">La evaluación aún está bloqueada</h2><p class="muted">Primero completa todos los niveles de la ruta.</p><button class="btn btn-primary" data-a="continue">Ir a la siguiente lección</button>';
+    else {
+      const lv = +sh.lv; const prevT = c.route.levels[lv - 1].title;
+      body = '<h2 class="h2">Primero completa el Nivel ' + lv + ': ' + esc(prevT) + '</h2><p class="muted">Los niveles se abren en orden. Al terminar el Nivel ' + lv + ', se abre este.</p><button class="btn btn-primary" data-a="continue">Ir al Nivel ' + lv + '</button>';
+    }
+  } else if (sh.type === 'report') {
+    if (sh.sent) body = '<div class="empty" style="padding:16px 0">' + '<div class="seal">' + icon('check', 30) + '</div><p class="h2">Gracias. Lo revisaremos.</p>' + (S.offline ? '<p class="muted small">Se enviará cuando tengas señal.</p>' : '') + '</div>';
+    else {
+      const opts = ['La pregunta es confusa', 'Hay un error en el contenido', 'El video no se entiende'];
+      body = '<h2 class="h2">Reportar un problema</h2><p class="muted small">¿Qué pasó con este contenido?</p><div class="stack" role="radiogroup" aria-label="Motivo">' +
+        opts.map((o, i) => '<button class="radio" role="radio" aria-checked="' + (sh.reason === i) + '" data-a="reason" data-i="' + i + '">' + (sh.reason === i ? icon('check', 20) : icon('target', 20)) + esc(o) + '</button>').join('') + '</div>' +
+        '<div class="field"><label for="rcomment">Comentario (opcional)</label><textarea class="input" id="rcomment">' + esc(sh.comment || '') + '</textarea></div>' +
+        '<button class="btn btn-primary" data-a="sendReport"' + (sh.reason == null ? ' disabled' : '') + '>Enviar reporte</button><button class="btn btn-sec" data-a="closeSheet">Cancelar</button>';
+    }
+  } else if (sh.type === 'exitExam') {
+    body = '<h2 class="h2">¿Salir de la evaluación?</h2><p class="muted">Tus respuestas se guardan. El tiempo sigue corriendo.</p><button class="btn btn-primary" data-a="closeSheet">Seguir en la evaluación</button><button class="btn btn-sec" data-a="confirmExitExam">Salir</button>';
+  } else if (sh.type === 'aiInfo') {
+    body = '<h2 class="h2">Hecho con IA</h2><p class="muted">Este video se hizo con IA a partir del manual de ' + esc(C().name) + '.</p><button class="btn btn-primary" data-a="closeSheet">Entendido</button>';
+  } else if (sh.type === 'demo') {
+    body = demoPanel();
+  } else {
+    body = sheetC2(sh);
+  }
+  return '<div class="scrim" data-a="closeSheet"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="' + (sh.type === 'demo' ? 'Panel de demostración' : 'Detalle') + '"><div class="grab"></div>' + body + '</div>';
+}
+function demoPanel() {
+  const seg = (a, items, cur) => '<div class="seg">' + items.map((it) => '<button data-a="' + a + '" data-v="' + it[0] + '" aria-pressed="' + (cur === it[0]) + '">' + esc(it[1]) + '</button>').join('') + '</div>';
+  const sw = (a, label, on) => '<button class="switch" role="switch" aria-checked="' + on + '" data-a="' + a + '"><span>' + label + '</span><span class="knob"></span></button>';
+  return '<h2 class="h2">Panel de demostración</h2>' +
+    '<div class="stack-s"><span class="dlabel">Cliente</span>' + seg('dClient', Object.values(CLIENTS).map((c) => [c.id, c.name]), S.client) + '</div>' +
+    '<div class="stack-s"><span class="dlabel">Entrar como</span>' + seg('dPersona', PERSONA_ORDER.map((k) => [k, PERSONAS[k].first]), S.persona) +
+    '<p class="creds">Carlos 987 654 321 · Rosa 987 111 222 · Luis 987 333 444 · Marisol 987 555 666<br>Contraseña ' + DEMO_PASS + ' · Código ' + DEMO_CODE + '</p></div>' +
+    '<div class="stack-s"><span class="dlabel">Conexión y video</span>' + sw('dOffline', 'Sin señal', S.offline) + sw('dVideoFail', 'El video falla', S.videoFail) + '</div>' +
+    '<div class="stack-s"><span class="dlabel">Siguiente pantalla (Inicio, Ruta, Certificados)</span>' + seg('dForce', [['', 'Normal'], ['cargando', 'Cargando'], ['vacio', 'Vacío'], ['error', 'Error']], S.forceNext || '') + '</div>' +
+    '<div class="stack-s"><span class="dlabel">Resultado de la evaluación</span>' + seg('dResult', [['', 'Según respuestas'], ['pass', 'Aprobar'], ['fail', 'No aprobar'], ['exhaust', 'Agotar intentos']], S.forceResult || '') + '</div>' +
+    '<div class="seg"><button data-a="dSkipWait">Saltar la espera</button><button data-a="dReset">Restablecer datos</button><button data-a="dHide">Ocultar demo</button></div>' +
+    '<button class="btn btn-primary" data-a="closeSheet">Cerrar</button>';
+}
+
+/* ---------- Corte 2: descargas, señal y avance pendiente ---------- */
+function dlOf(id) { return (S.persona && prog().downloads[id]) || { state: 'none', pct: 0, fails: 0 }; }
+function isReady(id) { return dlOf(id).state === 'ready'; }
+function busyOrReady(id) { return ['ready', 'dl', 'queue'].includes(dlOf(id).state); }
+function isPending(id) { return prog().pending.some((x) => x.lid === id); }
+function fMB(mb) { return mb >= 1000 ? (mb / 1000).toFixed(1).replace('.', ',') + ' GB' : Math.max(0, Math.round(mb)) + ' MB'; }
+function usedMB() { return allLessons(C().route).filter((l) => isReady(l.id)).reduce((s, l) => s + l.mb, 0); }
+function sumMB(ids) { return ids.reduce((s, id) => s + lessonById(id).mb, 0); }
+function nextToDownload() { const pr = prog(); return allLessons(C().route).filter((l) => !pr.completed.includes(l.id) && !busyOrReady(l.id)).slice(0, 2); }
+function completedReady() { const pr = prog(); return allLessons(C().route).filter((l) => pr.completed.includes(l.id) && isReady(l.id)); }
+
+function connBar() {
+  const pr = prog(); const n = pr.pending.length;
+  let ic = 'cloud', t = 'Todo tu avance está guardado', cls = ' ok';
+  if (S.offline) { ic = n ? 'clock' : 'nosignal'; cls = ''; t = n ? 'Sin señal · ' + n + (n === 1 ? ' lección pendiente' : ' lecciones pendientes') + ' de enviar' : 'Sin señal · Puedes usar tus lecciones descargadas'; }
+  else if (pr.sendState === 'sending') { ic = 'sync'; cls = ''; t = 'Enviando tu avance…'; }
+  else if (pr.sendState === 'error') { ic = 'redo'; cls = ' warn'; t = 'No pudimos enviar tu avance · Reintentar'; }
+  else if (n) { ic = 'clock'; cls = ''; t = n + (n === 1 ? ' lección pendiente' : ' lecciones pendientes') + ' de enviar'; }
+  return '<button class="conn' + cls + '" data-a="syncInfo" aria-label="' + esc(t) + '. Ver detalle">' + icon(ic, 20) + '<span class="t">' + esc(t) + '</span>' + icon('chev', 18) + '</button>';
+}
+function dlBadge(L) {
+  const d = dlOf(L.id);
+  if (d.state === 'ready') return '<span class="dlb ready">' + icon('phoneok', 16) + 'Lista sin señal</span>';
+  if (d.state === 'queue') return '<span class="dlb">' + icon('clock', 16) + 'En espera</span>';
+  if (d.state === 'dl') return '<span class="dlb dl"><span class="minibar"><i data-dlb="' + L.id + '" style="width:' + d.pct + '%"></i></span><span data-dlp="' + L.id + '">Descargando ' + Math.floor(d.pct) + ' %</span></span>' + (S.dlMode === 'lenta' ? '<span class="dlb">Esto puede demorar unos minutos</span>' : '');
+  if (d.state === 'pause') return '<span class="dlb">' + icon('pause', 16) + 'En pausa · ' + Math.floor(d.pct) + ' %. Seguirá cuando vuelva la señal</span>';
+  if (d.state === 'error') return '<span class="dlb err">' + icon('redo', 16) + 'No se pudo descargar</span>';
+  return S.offline ? '<span class="dlb">' + icon('nosignal', 16) + 'Necesita señal</span>' : '<span class="dlb">' + icon('dl', 16) + 'Descargar · ' + L.mb + ' MB</span>';
+}
+function dlRow(L) {
+  const pr = prog(); const d = dlOf(L.id); let act = '', badge = '';
+  if (d.state === 'none') {
+    if (!S.offline && !pr.completed.includes(L.id)) act = '<button class="mini" data-a="dlOne" data-id="' + L.id + '">' + icon('dl', 16) + 'Descargar · ' + L.mb + ' MB</button>';
+  } else {
+    badge = dlBadge(L);
+    if (d.state === 'dl' || d.state === 'queue') act = '<button class="mini" data-a="cancelDl" data-id="' + L.id + '">Cancelar</button>';
+    if (d.state === 'error') act = '<button class="mini" data-a="dlFailOpen" data-id="' + L.id + '">' + icon('redo', 16) + 'Intentar de nuevo</button>';
+  }
+  const pend = isPending(L.id) ? pill('pend', 'Pendiente de enviar', 'clock') : '';
+  if (!badge && !act && !pend) return '';
+  return '<div class="dlrow">' + badge + pend + act + '</div>';
+}
+function demoBar() {
+  if (!S.demo || (S.sheet && S.sheet.type === 'demo')) return '';
+  const pr = S.persona ? prog() : null;
+  return '<div class="demobar" role="region" aria-label="Controles de demostración"><span class="lbl">DEMO</span>' +
+    '<button data-a="dSignal" class="' + (S.offline ? 'on' : '') + '" aria-pressed="' + S.offline + '">' + icon(S.offline ? 'nosignal' : 'cloud', 16) + (S.offline ? ' Sin señal' : ' Con señal') + '</button>' +
+    '<button data-a="dDl">Descargas: <b>' + { normal: 'Normales', lenta: 'Lentas', falla: 'Fallan' }[S.dlMode] + '</b></button>' +
+    '<button data-a="dSend">Envío: <b>' + (S.sendMode === 'ok' ? 'Funciona' : 'Falla') + '</b></button>' +
+    '<button data-a="dSpace"' + (pr ? '' : ' disabled') + '>Espacio: <b>' + (pr ? fMB(pr.freeMB) : '—') + '</b></button>' +
+    '<button data-a="openDemo">Más</button></div>';
+}
+
+function requestDownload(ids) {
+  ids = ids.filter((id) => !busyOrReady(id));
+  if (!ids.length) { toast('Ya tienes esas lecciones descargadas'); render(); return; }
+  if (sumMB(ids) > prog().freeMB) { S.sheet = { type: 'noSpace', ids }; render(); return; }
+  S.sheet = { type: 'confirmDl', ids }; render();
+}
+function confirmDownload(ids) {
+  const pr = prog(); const need = sumMB(ids);
+  if (need > pr.freeMB) { S.sheet = { type: 'noSpace', ids }; render(); return; }
+  ids.forEach((id) => { const d = dlOf(id); pr.downloads[id] = { state: 'queue', pct: d.pct || 0, fails: d.fails || 0 }; });
+  pr.freeMB -= need;
+  S.sheet = null;
+  if (S.screen === 'select') go('route'); else render();
+}
+function removeDownload(id) { const pr = prog(); if (!pr.downloads[id]) return; pr.freeMB += lessonById(id).mb; delete pr.downloads[id]; }
+function tickDownloads(dt) {
+  if (S.offline) return false;
+  const pr = prog(); const ls = allLessons(C().route);
+  let cur = ls.find((l) => dlOf(l.id).state === 'dl');
+  if (!cur) {
+    cur = ls.find((l) => dlOf(l.id).state === 'queue');
+    if (!cur) return false;
+    const d = pr.downloads[cur.id]; d.state = 'dl';
+    d.failAt = S.dlMode === 'falla' ? (d.pct < 40 ? 40 : Math.min(99, d.pct + 8)) : null;
+    render(); return true;
+  }
+  const d = pr.downloads[cur.id];
+  d.pct = Math.min(100, d.pct + dt * (S.dlMode === 'lenta' ? 5 : 34));
+  if (d.failAt != null && d.pct >= d.failAt) {
+    d.pct = Math.floor(d.failAt); d.state = 'error'; d.fails++;
+    if (!S.sheet) S.sheet = { type: 'dlFail', id: cur.id };
+    render(); return true;
+  }
+  if (d.pct >= 100) { d.state = 'ready'; d.pct = 100; toast('Listo. «' + cur.title + '» ya está lista para ver sin señal.', 3200); render(); return true; }
+  document.querySelectorAll('[data-dlp="' + cur.id + '"]').forEach((el) => { el.textContent = 'Descargando ' + Math.floor(d.pct) + ' %'; });
+  document.querySelectorAll('[data-dlb="' + cur.id + '"]').forEach((el) => { el.style.width = d.pct + '%'; });
+  return false;
+}
+function flash(t) { S.flash = t; S.flashUntil = Date.now() + 4000; }
+function setOffline(v) {
+  if (S.offline === v) return;
+  S.offline = v;
+  if (!S.persona) { render(); return; }
+  const pr = prog();
+  if (v) {
+    flash('Te quedaste sin señal. Tus lecciones descargadas siguen funcionando.');
+    Object.keys(pr.downloads).forEach((k) => { const d = pr.downloads[k]; if (d.state === 'dl' || d.state === 'queue') d.state = 'pause'; });
+    if (pr.exam && !pr.exam.done && (S.screen === 'exam' || S.screen === 'review')) pr.exam.interrupted = true;
+    if (S.screen === 'lesson' && S.video && !isReady(S.params.id) && ['playing', 'loading'].includes(S.video.phase)) S.video.phase = 'lost';
+    if (pr.sendState === 'sending') pr.sendState = 'idle';
+  } else {
+    Object.keys(pr.downloads).forEach((k) => { const d = pr.downloads[k]; if (d.state === 'pause') d.state = 'queue'; });
+    if (pr.pending.length) { flash('Volvió la señal. Enviando tu avance…'); sendPending(); return; }
+    flash('Volvió la señal.');
+  }
+  render();
+}
+function sendPending() {
+  const pr = prog(); if (!pr.pending.length || S.offline) { render(); return; }
+  pr.sendState = 'sending'; render();
+  setTimeout(() => {
+    if (S.offline) { pr.sendState = 'idle'; render(); return; }
+    if (S.sendMode === 'falla') { pr.sendState = 'error'; render(); return; }
+    pr.pending = []; pr.sendState = 'idle'; toast('Tu avance ya está guardado', 3000); render();
+  }, 1800);
+}
+
+function examInterrupted() {
+  const ex = prog().exam; const ans = ex.answers.filter((a) => a != null).length;
+  return topBar('Evaluación final', ans / ex.qs.length * 100, 'toRoute') + offlineBar() + '<main class="scr">' +
+    '<div class="stack-s"><p class="over">Evaluación en pausa</p><h1 class="title">Tus respuestas están <b>guardadas</b></h1></div>' +
+    (S.offline ? '<div class="banner info" role="status">' + icon('nosignal', 20) + '<span>Se fue la señal. Tus respuestas están guardadas y el tiempo está en pausa.</span></div>'
+      : '<div class="banner info" role="status">' + icon('check', 20) + '<span>Volvió la señal. Puedes seguir donde te quedaste.</span></div>') +
+    '<div class="block"><span class="score"><span class="big">' + ans + '</span><span class="muted">de ' + ex.qs.length + ' respondidas</span></span><span class="row small">' + icon('timer', 20) + '<span>Te quedan ' + fClock(ex.remaining) + '</span></span></div>' +
+    '</main><div class="dock"><button class="btn btn-primary" data-a="resumeExam"' + (S.offline ? ' disabled' : '') + '>Reanudar evaluación</button>' +
+    (S.offline ? '<p class="reason">Necesitas señal para seguir. Tus respuestas están guardadas.</p>' : '') +
+    '<button class="btn btn-sec" data-a="go" data-to="route">Salir</button></div>';
+}
+
+SCREENS.select = function () {
+  const c = C(); const pr = prog(); const sel = S.sel;
+  const nx = nextToDownload(); const nxMB = sumMB(nx.map((l) => l.id));
+  const allBusy = allLessons(c.route).every((l) => busyOrReady(l.id));
+  const levels = c.route.levels.map((lv, i) => {
+    const avail = lv.lessons.map((l) => l.id).filter((id) => !busyOrReady(id));
+    const all = avail.length > 0 && avail.every((id) => sel.has(id));
+    const lvMB = lv.lessons.reduce((s, l) => s + l.mb, 0);
+    return '<div class="stack" style="gap:8px"><button class="chkrow" role="checkbox" aria-checked="' + all + '" data-a="selLevel" data-lv="' + i + '"' + (avail.length ? '' : ' disabled') + '><span class="box">' + (all || !avail.length ? icon('check', 16) : '') + '</span><span style="flex:1;font-weight:800">Nivel ' + (i + 1) + ' · ' + esc(lv.title) + '</span><span class="xs muted">' + lvMB + ' MB</span></button>' +
+      lv.lessons.map((l) => {
+        const st = dlOf(l.id).state; const dis = busyOrReady(l.id); const on = sel.has(l.id);
+        const sub = dis ? (st === 'ready' ? 'Lista sin señal' : 'Descargando') : (pr.completed.includes(l.id) ? 'Completada · ' : '') + fmtLabel(l.format);
+        return '<button class="chkrow sub" role="checkbox" aria-checked="' + (dis || on) + '" data-a="selOne" data-id="' + l.id + '"' + (dis ? ' disabled' : '') + '><span class="box">' + (dis || on ? icon('check', 16) : '') + '</span><span style="flex:1;min-width:0"><span style="display:block;font-weight:600;font-size:16px;line-height:1.3">' + esc(l.title) + '</span><span class="xs muted">' + sub + '</span></span><span class="xs muted">' + l.mb + ' MB</span></button>';
+      }).join('') + '</div>';
+  }).join('');
+  const ids = Array.from(sel); const tot = sumMB(ids);
+  return topBar('Descargar para ver sin señal', null, 'toRoute') + offlineBar() + '<main class="scr">' +
+    '<div class="stack-s"><p class="over">' + esc(c.route.overline) + '</p><h1 class="title">Elige qué <b>descargar</b></h1><p class="muted small">Descarga ahora, con señal, para ver tus lecciones en la planta o en campo.</p></div>' +
+    (allBusy ? '<div class="empty">' + icon('phoneok', 44) + '<p class="h2">Ya tienes todo descargado.</p><button class="btn btn-sec" data-a="go" data-to="downloads">Ver mis descargas</button></div>'
+      : (nx.length ? '<button class="lessonbtn" data-a="dlNext">' + icon('dl', 20) + '<span class="t">Descargar lo que sigue<span class="xs muted" style="display:block;font-weight:400">' + nx.length + (nx.length === 1 ? ' lección' : ' lecciones') + ' · ' + nxMB + ' MB</span></span>' + icon('chev', 20) + '</button>' : '') + levels) +
+    '</main><div class="dock"><p class="small muted" style="text-align:center">' + ids.length + (ids.length === 1 ? ' lección' : ' lecciones') + ' · ' + tot + ' MB · Te quedan ' + fMB(pr.freeMB) + ' libres</p>' +
+    '<button class="btn btn-primary" data-a="dlSelected"' + (ids.length ? '' : ' disabled') + '>' + icon('dl', 20) + 'Descargar ' + tot + ' MB</button></div>';
+};
+
+SCREENS.downloads = function () {
+  const c = C(); const pr = prog();
+  const items = allLessons(c.route).filter((l) => pr.downloads[l.id]);
+  const used = usedMB(); const comp = completedReady(); const compMB = comp.reduce((s, l) => s + l.mb, 0);
+  const release = comp.find((l) => !pr.kept[l.id]);
+  const nx = nextToDownload();
+  const list = items.map((l) => {
+    const st = dlOf(l.id).state;
+    return '<div class="dlcard"><div class="row" style="align-items:flex-start"><span style="flex:1;min-width:0"><span class="xs muted" style="display:block">Nivel ' + (l.level + 1) + (pr.completed.includes(l.id) ? ' · Completada' : '') + '</span><span style="font-weight:800;line-height:1.25">' + esc(l.title) + '</span></span><span class="xs muted">' + l.mb + ' MB</span></div>' +
+      '<div class="dlrow">' + dlBadge(l) + (isPending(l.id) ? pill('pend', 'Pendiente de enviar', 'clock') : '') + '</div>' +
+      '<div class="row" style="flex-wrap:wrap">' + (st === 'ready' ? '<button class="mini" data-a="openLesson" data-id="' + l.id + '">' + icon('play', 16) + 'Ver lección</button>' : '') +
+      (st === 'error' ? '<button class="mini" data-a="dlFailOpen" data-id="' + l.id + '">' + icon('redo', 16) + 'Intentar de nuevo</button>' : '') +
+      '<button class="mini" data-a="askRemove" data-id="' + l.id + '">' + icon('trash', 16) + (st === 'dl' || st === 'queue' ? 'Cancelar' : 'Quitar') + '</button></div></div>';
+  }).join('');
+  const primary = comp.length ? '<button class="btn btn-primary" data-a="removeCompleted">' + icon('trash', 20) + 'Quitar lo ya completado (libera ' + compMB + ' MB)</button>'
+    : '<button class="btn btn-primary" data-a="dlNext"' + (S.offline || !nx.length ? ' disabled' : '') + '>' + icon('dl', 20) + 'Descargar lo que sigue</button>' + (S.offline ? '<p class="reason">Necesitas señal para descargar.</p>' : '');
+  const body = () => '<div class="stack-s"><div class="bar" role="img" aria-label="Espacio usado por tus descargas"><i style="width:' + Math.min(100, used / Math.max(1, used + pr.freeMB) * 100) + '%"></i></div><p class="small"><b>Usas ' + fMB(used) + '</b> <span class="muted">· Te quedan ' + fMB(pr.freeMB) + ' libres</span></p></div>' +
+    (release ? '<div class="banner info" style="flex-direction:column;gap:10px"><span class="row" style="align-items:flex-start">' + icon('info', 20) + '<span>Ya completaste «' + esc(release.title) + '». Quitaremos su descarga mañana para liberar ' + release.mb + ' MB.</span></span><div class="row"><button class="mini" data-a="removeNow" data-id="' + release.id + '">' + icon('trash', 16) + 'Quitar ahora</button><button class="mini" data-a="keepDl" data-id="' + release.id + '">Mantener</button></div></div>' : '') +
+    (items.length ? '<section class="stack" aria-labelledby="dlT"><h2 class="h2" id="dlT">' + esc(c.route.title) + '</h2>' + list + '</section>'
+      : '<div class="empty">' + icon('phoneok', 44) + '<p class="h2">Aún no tienes lecciones descargadas</p><p class="muted small">Descárgalas con señal para verlas en planta o en campo.</p></div>') + primary;
+  return brandBar() + connBar() + '<main class="scr"><button class="link" data-a="back">' + icon('back', 20) + 'Atrás</button>' +
+    '<div class="stack-s"><p class="over">Para ver sin señal</p><h1 class="title">Mis <b>descargas</b></h1></div>' +
+    gated(body, '<div class="empty">' + icon('phoneok', 44) + '<p class="h2">Aún no tienes lecciones descargadas</p></div>', 'tus descargas') + '</main>' + tabs(S.prev === 'profile' ? 'profile' : 'home');
+};
+
+SCREENS.examOffline = function () {
+  const c = C(); const r = c.rules; const pr = prog();
+  return topBar('Evaluación final · ' + c.route.title, 0, 'toRoute') + offlineBar() + '<main class="scr">' +
+    '<span class="muted">' + icon('nosignal', 40) + '</span><div class="stack-s"><p class="over">Evaluación final</p><h1 class="title">La evaluación necesita <b>señal</b></h1></div>' +
+    '<p>Tu avance está guardado. Cuando tengas señal, vuelve aquí para rendirla.</p>' +
+    '<div class="rules"><div class="rule">' + icon('target', 24) + '<span class="big">' + r.min + ' %</span><span class="small">Nota mínima</span></div>' +
+    '<div class="rule">' + icon('redo', 24) + '<span class="big">' + Math.max(0, r.attempts - pr.attempts) + ' de ' + r.attempts + '</span><span class="small">Intentos</span></div>' +
+    '<div class="rule">' + icon('timer', 24) + '<span class="big">' + r.minutes + ' min</span><span class="small">' + r.n + ' preguntas</span></div></div>' +
+    '</main><div class="dock"><button class="btn btn-primary" data-a="retryExam">' + icon('redo', 20) + 'Reintentar</button><button class="btn btn-sec" data-a="go" data-to="downloads">Seguir con mis lecciones descargadas</button></div>';
+};
+
+function sheetC2(sh) {
+  const pr = prog();
+  const row = (l) => '<div class="row small" style="justify-content:space-between"><span>' + esc(l.title) + '</span><span class="muted">' + l.mb + ' MB</span></div>';
+  if (sh.type === 'confirmDl') {
+    const tot = sumMB(sh.ids);
+    return '<h2 class="h2">Descargar para ver sin señal</h2><div class="stack" style="gap:6px">' + sh.ids.map((id) => row(lessonById(id))).join('') + '</div>' +
+      '<span class="score"><span class="big" style="font-size:40px">' + tot + ' MB</span><span class="muted">en total</span></span>' +
+      '<p class="small">Después te quedarán ' + fMB(pr.freeMB - tot) + ' libres.</p><p class="small muted row">' + icon('info', 18) + '<span>Si puedes, usa wifi para no gastar tus datos.</span></p>' +
+      '<button class="btn btn-primary" data-a="confirmDl"' + (S.offline ? ' disabled' : '') + '>' + icon('dl', 20) + 'Descargar</button>' +
+      (S.offline ? '<p class="reason">Se fue la señal. Tu selección queda guardada; descarga cuando vuelva.</p>' : '') + '<button class="btn btn-sec" data-a="closeSheet">Cancelar</button>';
+  }
+  if (sh.type === 'noSpace') {
+    const tot = sumMB(sh.ids); const comp = completedReady(); const compMB = comp.reduce((s, l) => s + l.mb, 0);
+    if (sh.freed) return '<div class="seal">' + icon('check', 30) + '</div><h2 class="h2">Listo, ahora tienes ' + fMB(pr.freeMB) + ' libres.</h2><button class="btn btn-primary" data-a="confirmDl">' + icon('dl', 20) + 'Descargar ' + tot + ' MB</button><button class="btn btn-sec" data-a="closeSheet">Ahora no</button>';
+    return '<h2 class="h2">Tu celular no tiene espacio suficiente</h2><p>Para descargar estas lecciones te faltan <b>' + fMB(tot - pr.freeMB) + '</b>.</p>' +
+      (comp.length ? '<p class="small muted">Puedes quitar lecciones que ya completaste. Tu avance no se borra.</p><div class="stack" style="gap:6px">' + comp.map(row).join('') + '</div><button class="btn btn-primary" data-a="freeCompleted">' + icon('trash', 20) + 'Quitar lo ya completado (libera ' + compMB + ' MB)</button>' : '') +
+      '<button class="btn btn-sec" data-a="selectLess">Elegir menos lecciones</button>' +
+      (sh.tip ? '<p class="small muted">Puedes borrar fotos, videos o apps que no uses desde la configuración de tu celular.</p>' : '<button class="link" data-a="spaceTip" style="align-self:center">Liberar espacio en tu celular</button>');
+  }
+  if (sh.type === 'dlFail') {
+    const l = lessonById(sh.id); const d = dlOf(sh.id);
+    return '<h2 class="h2">No se pudo descargar «' + esc(l.title) + '»</h2><p class="muted">La señal se cortó o está muy débil.</p><p>Lo que ya bajó se guarda: seguirá desde ' + Math.floor(d.pct) + ' %.</p><p class="small muted">Acércate a una zona con mejor señal o usa wifi.</p>' +
+      (d.fails >= 3 ? '<div class="banner info">' + icon('info', 20) + '<span>Si sigue fallando, intenta más tarde con wifi.</span></div>' : '') +
+      '<button class="btn btn-primary" data-a="retryDl" data-id="' + sh.id + '"' + (S.offline ? ' disabled' : '') + '>' + icon('redo', 20) + 'Intentar de nuevo</button>' +
+      (S.offline ? '<p class="reason">Necesitas señal para descargar.</p>' : '') + '<button class="btn btn-sec" data-a="removeDlNow" data-id="' + sh.id + '">Quitar esta descarga</button>';
+  }
+  if (sh.type === 'removeDl') {
+    const l = lessonById(sh.id);
+    return '<h2 class="h2">¿Quitar «' + esc(l.title) + '»?</h2><p class="muted">Liberas ' + l.mb + ' MB. Tu avance no se borra.</p><button class="btn btn-primary" data-a="removeDlNow" data-id="' + l.id + '">' + icon('trash', 20) + 'Quitar</button><button class="btn btn-sec" data-a="closeSheet">Cancelar</button>';
+  }
+  if (sh.type === 'noSignal') {
+    const ready = allLessons(C().route).filter((l) => isReady(l.id));
+    return '<span class="muted">' + icon('nosignal', 32) + '</span><h2 class="h2">' + (sh.noDl ? 'Para seguir sin señal, primero descarga tus lecciones' : 'Esto necesita señal') + '</h2><p class="muted">' + (sh.noDl ? 'Hazlo cuando tengas señal.' : 'No lo descargaste antes.') + '</p>' +
+      (ready.length ? '<p class="small" style="font-weight:600">Puedes hacer ahora:</p><div class="stack" style="gap:8px">' + ready.map((l) => '<button class="lessonbtn" data-a="openLesson" data-id="' + l.id + '">' + icon('phoneok', 20) + '<span class="t">' + esc(l.title) + '<span class="xs muted" style="display:block;font-weight:400">Lección y reto · Lista sin señal</span></span>' + icon('chev', 20) + '</button>').join('') +
+        '<button class="lessonbtn" data-a="go" data-to="certs">' + icon('award', 20) + '<span class="t">Mis certificados</span>' + icon('chev', 20) + '</button></div><button class="btn btn-primary" data-a="go" data-to="downloads">Ver mis lecciones descargadas</button>'
+        : '<p class="small">Cuando tengas señal, descarga lo que sigue.</p><button class="btn btn-primary" data-a="go" data-to="home">Volver a Inicio</button>') +
+      '<button class="btn btn-sec" data-a="closeSheet">Cerrar</button>';
+  }
+  if (sh.type === 'sync') {
+    const n = pr.pending.length; let head, txt = '', btn = '<button class="btn btn-primary" data-a="closeSheet">Entendido</button>';
+    if (pr.sendState === 'sending') head = 'Enviando tu avance…';
+    else if (pr.sendState === 'error' && !S.offline) { head = 'No pudimos enviar tu avance'; txt = 'Sigue guardado en este celular.'; btn = '<button class="btn btn-primary" data-a="retrySend">' + icon('redo', 20) + 'Reintentar</button><button class="btn btn-sec" data-a="closeSheet">Cerrar</button>'; }
+    else if (n) { head = 'Tu avance está guardado en este celular'; txt = S.offline ? 'Se enviará solo cuando vuelva la señal.' : 'Lo enviaremos en un momento.'; if (!S.offline) btn = '<button class="btn btn-primary" data-a="retrySend">Enviar ahora</button>'; }
+    else { head = 'Todo tu avance está guardado'; txt = S.offline ? 'Sin señal puedes seguir con tus lecciones descargadas.' : 'No tienes nada pendiente de enviar.'; }
+    return '<h2 class="h2">' + head + '</h2>' + (txt ? '<p class="muted">' + txt + '</p>' : '') +
+      (n ? '<div class="stack" style="gap:8px">' + pr.pending.map((p) => '<div class="row small">' + icon('clock', 18) + '<span>' + esc(p.label) + ' · hoy ' + p.at + '</span></div>').join('') + '</div>' : '') + btn;
+  }
+  return '';
+}
+
+/* ---------- Render ---------- */
+const FULL = ['lesson', 'quiz', 'lessonDone', 'rules', 'exam', 'review', 'result'];
+function applyTheme() {
+  const c = C(); const r = document.documentElement.style;
+  r.setProperty('--accent', c.accent); r.setProperty('--principal', c.principal); r.setProperty('--ptext', c.ptext);
+}
+/* Un solo elemento de video que se mueve a la lección abierta, para no recargarlo en cada pintado */
+const VID = document.createElement('video');
+VID.src = VSRC; VID.poster = VPOSTER; VID.preload = 'metadata'; VID.playsInline = true;
+VID.setAttribute('playsinline', ''); VID.setAttribute('aria-label', 'Video de la lección');
+VID.addEventListener('playing', () => { if (S.screen === 'lesson' && S.video && S.video.phase === 'loading') { S.video.phase = 'playing'; render(); } });
+VID.addEventListener('ended', () => {
+  if (S.screen !== 'lesson' || !S.video || !S.persona) return;
+  S.video.phase = 'ended'; const pr = prog(); pr.videoPos[S.params.id] = VDUR; pr.watched[S.params.id] = true; render();
+});
+VID.addEventListener('error', () => { if (S.screen === 'lesson' && S.video && S.video.phase === 'loading') { S.video.phase = 'error'; render(); } });
+function attachVideo() {
+  const slot = document.getElementById('vslot');
+  if (!slot || !S.video) { if (!VID.paused) VID.pause(); return; }
+  slot.appendChild(VID);
+  VID.playbackRate = S.video.speed;
+  if (S.video.seekTo != null) {
+    const t = Math.min(S.video.seekTo, VDUR - 0.2); S.video.seekTo = null;
+    if (VID.readyState >= 1) { try { VID.currentTime = t; } catch (e) { /* aún sin datos */ } }
+    else VID.addEventListener('loadedmetadata', () => { try { VID.currentTime = t; } catch (e) { /* aún sin datos */ } }, { once: true });
+  }
+  const want = S.video.phase === 'loading' || S.video.phase === 'playing';
+  if (want) { const p = VID.play(); if (p && p.catch) p.catch(() => { if (S.video) { S.video.phase = 'paused'; render(); } }); }
+  else if (!VID.paused) VID.pause();
+}
+let lastScreen = null;
+function render() {
+  applyTheme();
+  const html = SCREENS[S.screen]();
+  const toast = S.toast && Date.now() < S.toastUntil ? '<div class="toast" role="status">' + icon('check', 18) + esc(S.toast) + '</div>' : '';
+  const demo = demoBar();
+  const fl = S.flash && Date.now() < S.flashUntil ? '<div class="flash" role="status">' + icon(S.offline ? 'nosignal' : 'cloud', 20) + '<span>' + esc(S.flash) + '</span></div>' : '';
+  document.body.classList.toggle('demo-on', !!S.demo);
+  const active = document.activeElement && document.activeElement.id;
+  const sel = active && document.activeElement.selectionStart;
+  document.getElementById('app').innerHTML = html + sheetHtml() + fl + toast + demo;
+  if (active) { const el = document.getElementById(active); if (el) { el.focus(); try { if (sel != null) el.setSelectionRange(sel, sel); } catch (e) { /* select sin cursor */ } } }
+  if (lastScreen !== S.screen) { window.scrollTo(0, 0); lastScreen = S.screen; }
+  attachVideo();
+  document.title = 'Nivia Aprendiz';
+  Orb.start();
+}
+function toast(msg, ms) { S.toast = msg; S.toastUntil = Date.now() + (ms || 2800); }
+
+function go(to, params) {
+  if (to === 'rules' && !routeStats().allLessonsDone && !prog().passed) { S.sheet = { type: 'locked', lv: 'exam' }; render(); return; }
+  if (to === 'rules' && S.offline) to = 'examOffline';
+  if (to === 'select' && S.offline) { S.sheet = { type: 'noSignal' }; render(); return; }
+  if (to === 'select') S.sel = new Set();
+  if (to !== S.screen) S.prev = S.screen;
+  S.screen = to; S.params = params || {}; S.sheet = null; S.form = {}; S.dl = null;
+  if (['home', 'route', 'certs'].includes(to) && S.forceNext) { S.gate = S.forceNext; S.forceNext = null; S.gateSince = Date.now(); S.gateSlow = false; }
+  else S.gate = null;
+  if (to === 'lesson') S.video = { phase: 'idle', cc: false, speed: 1, sumOpen: false, seekTo: S.persona ? (prog().videoPos[(params || {}).id] || 0) : 0 };
+  render();
+}
+function openLesson(id, pos) {
+  if (S.offline && !isReady(id)) { S.sheet = { type: 'noSignal' }; render(); return; }
+  const pr = prog();
+  if (pos != null) pr.videoPos[id] = pos;
+  go('lesson', { id: id });
+}
+
+function login(phone, pass) {
+  const d = phone.replace(/\D/g, '');
+  const k = PERSONA_ORDER.find((x) => PERSONAS[x].phone === d);
+  if (!d) { S.form = { phone, pass, err: 'phone', msg: 'Escribe tu número de celular.' }; render(); return; }
+  if (!pass) { S.form = { phone, pass, err: 'pass', msg: 'Escribe tu contraseña.' }; render(); return; }
+  S.form = { phone, pass, busy: true }; render();
+  setTimeout(() => {
+    if (!k || prog(S.client, k).password !== pass) { S.form = { phone, pass: '', err: 'pass', msg: 'El celular o la contraseña no coinciden. Revisa e intenta de nuevo.' }; render(); return; }
+    S.persona = k; enterAs();
+  }, 500);
+}
+function enterAs() {
+  const pr = prog();
+  if (pr.firstLogin) { go('newpass', { mode: 'first' }); S.form = { temp: pr.password }; render(); }
+  else go('home');
+  if (P().startOffline && !S.offline) setOffline(true);
+}
+
+function startExam() {
+  const pr = prog(); const c = C();
+  if (!pr.exam || pr.exam.done) pr.exam = { qs: examQuestions(), answers: new Array(c.rules.n).fill(null), idx: 0, remaining: c.rules.minutes * 60, done: false };
+  go('exam');
+}
+function submitExam() {
+  const pr = prog(); const c = C(); const ex = pr.exam; const r = c.rules;
+  let correct = 0; const wrongL = [];
+  ex.qs.forEach((x, i) => { const q = lessonById(x.lid).qs[x.qi]; if (ex.answers[i] === q.right) correct++; else if (!wrongL.includes(x.lid)) wrongL.push(x.lid); });
+  let score = Math.round(correct / ex.qs.length * 100);
+  let pass = score >= r.min;
+  if (S.forceResult === 'pass') { pass = true; score = Math.max(score, 90); }
+  if (S.forceResult === 'fail' || S.forceResult === 'exhaust') { pass = false; score = Math.min(score, r.min - 20); }
+  ex.done = true;
+  if (pass) {
+    pr.passed = true; pr.score = score;
+    const issued = now(); const expires = new Date(issued.getFullYear() + 1, issued.getMonth(), issued.getDate());
+    pr.certs.push({ route: c.route.title, issued, expires, score, code: certCode(c.id, S.persona, issued) });
+  } else {
+    pr.attempts = S.forceResult === 'exhaust' ? r.attempts : pr.attempts + 1;
+    pr.lastFail = S.simOffset;
+    if (!wrongL.length) wrongL.push(allLessons(c.route)[0].id);
+  }
+  go('result', { pass, score, topics: pass ? [] : wrongL.slice(0, 3) });
+}
+
+/* ---------- Eventos ---------- */
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-a]'); if (!el || el.disabled) return;
+  const a = el.dataset.a; const pr = S.persona ? prog() : null;
+  switch (a) {
+    case 'go': go(el.dataset.to); break;
+    case 'togglePass': S.form.show = !S.form.show; syncForm(); render(); break;
+    case 'forgot': go('forgot'); S.form = { step: 1, phone: (document.getElementById('phone') || {}).value || '' }; render(); break;
+    case 'toLogin': go('login'); break;
+    case 'resend': S.form.resendAt = Date.now() + 30000; S.form.msg = ''; toast('Te enviamos un nuevo código'); render(); break;
+    case 'continue': {
+      S.sheet = null; const st = routeStats();
+      if (S.offline) {
+        const nx = allLessons(C().route).find((l) => !pr.completed.includes(l.id) && isReady(l.id));
+        if (nx) openLesson(nx.id); else if (st.allLessonsDone) go('rules'); else { S.sheet = { type: 'noSignal', noDl: true }; render(); }
+        break;
+      }
+      if (st.next) openLesson(st.next.id); else go('rules');
+      break;
+    }
+    case 'openRoute': go('route', { kind: el.dataset.kind }); break;
+    case 'locked': S.sheet = { type: 'locked', lv: el.dataset.lv }; render(); break;
+    case 'openLesson': openLesson(el.dataset.id); break;
+    case 'exit': case 'toRoute': go('route'); break;
+    case 'toHome': go('home'); break;
+    case 'toProfile': go('profile'); break;
+    case 'play': {
+      const v = S.video; const L = lessonById(S.params.id);
+      if (S.offline && !isReady(L.id)) { v.phase = 'lost'; render(); break; }
+      if (v.phase === 'ended') { pr.videoPos[L.id] = 0; v.seekTo = 0; }
+      if (S.videoFail) { v.phase = 'loading'; render(); setTimeout(() => { if (S.screen === 'lesson' && S.video === v) { v.phase = 'error'; render(); } }, 900); break; }
+      v.phase = 'loading'; render();
+      break;
+    }
+    case 'pause': S.video.phase = 'paused'; render(); break;
+    case 'cc': S.video.cc = !S.video.cc; render(); break;
+    case 'speed': { const sp = [0.75, 1, 1.25, 1.5]; S.video.speed = sp[(sp.indexOf(S.video.speed) + 1) % sp.length]; render(); break; }
+    case 'fullscreen': { const b = document.getElementById('vbox'); try { const p = b.requestFullscreen ? b.requestFullscreen() : b.webkitRequestFullscreen ? b.webkitRequestFullscreen() : (VID.webkitEnterFullscreen && VID.webkitEnterFullscreen()); if (p && p.catch) p.catch(() => { toast('Pantalla completa no disponible aquí'); render(); }); } catch (err) { toast('Pantalla completa no disponible aquí'); render(); } break; }
+    case 'readSummary': S.video.sumOpen = true; pr.watched[S.params.id] = true; if (S.video.phase !== 'playing') S.video.phase = 'idle'; render(); setTimeout(() => { const d = document.getElementById('sumd'); if (d) d.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30); break;
+    case 'seen': pr.watched[S.params.id] = true; render(); break;
+    case 'aiInfo': S.sheet = { type: 'aiInfo' }; render(); break;
+    case 'report': S.sheet = { type: 'report', reason: null }; render(); break;
+    case 'reason': S.sheet.comment = (document.getElementById('rcomment') || {}).value || ''; S.sheet.reason = +el.dataset.i; render(); break;
+    case 'sendReport': S.sheet.sent = true; render(); setTimeout(() => { if (S.sheet && S.sheet.type === 'report') { S.sheet = null; render(); } }, 3000); break;
+    case 'closeSheet': S.sheet = null; render(); break;
+    case 'startQuiz': { const id = el.dataset.id || S.params.id; S.quiz = { lessonId: id, idx: 0, sel: null, checked: false, results: [] }; go('quiz', { id }); break; }
+    case 'pick': S.quiz.sel = +el.dataset.i; render(); break;
+    case 'checkQ': { const L = lessonById(S.quiz.lessonId); S.quiz.checked = true; S.quiz.results[S.quiz.idx] = S.quiz.sel === L.qs[S.quiz.idx].right; render(); break; }
+    case 'nextQ': {
+      const L = lessonById(S.quiz.lessonId);
+      if (S.quiz.idx < L.qs.length - 1) { S.quiz.idx++; S.quiz.sel = null; S.quiz.checked = false; render(); window.scrollTo(0, 0); }
+      else {
+        pr.quizRes[L.id] = S.quiz.results.slice(); if (!pr.completed.includes(L.id)) pr.completed.push(L.id); pr.watched[L.id] = true;
+        if (S.offline && !isPending(L.id)) pr.pending.push({ lid: L.id, label: 'Reto de «' + L.title + '»', at: fHM(now()) });
+        go('lessonDone', { id: L.id });
+      }
+      break;
+    }
+    case 'seekVideo': openLesson(S.quiz ? S.quiz.lessonId : S.params.id, +el.dataset.t); break;
+    case 'startExam': startExam(); break;
+    case 'answer': pr.exam.answers[pr.exam.idx] = +el.dataset.i; render(); break;
+    case 'prevQ': pr.exam.idx = Math.max(0, pr.exam.idx - 1); render(); break;
+    case 'nextE': pr.exam.idx = Math.min(pr.exam.qs.length - 1, pr.exam.idx + 1); render(); window.scrollTo(0, 0); break;
+    case 'review': go('review'); break;
+    case 'gotoQ': pr.exam.idx = +el.dataset.i; go('exam'); break;
+    case 'backExam': go('exam'); break;
+    case 'exitExam': S.sheet = { type: 'exitExam' }; render(); break;
+    case 'confirmExitExam': go('route'); break;
+    case 'reconnect': if (S.offline) toast('Aún sin señal. Tus respuestas siguen guardadas.'); else toast('Conexión recuperada'); render(); break;
+    case 'submitExam': submitExam(); break;
+    case 'viewCert': go('cert', { i: +el.dataset.i }); break;
+    case 'download': {
+      S.dl = 'busy'; render();
+      setTimeout(() => { if (S.screen !== 'cert') return; S.dl = null; const ct = prog().certs[S.params.i]; toast('Guardado en Descargas · Certificado-' + ct.code + '.pdf', 3500); render(); }, 1200);
+      break;
+    }
+    case 'changePass': go('newpass', { mode: 'change' }); S.form = { temp: pr.password }; render(); break;
+    case 'logout': S.persona = null; go('login'); break;
+    case 'retry': S.gate = null; render(); break;
+    case 'openDemo': S.sheet = { type: 'demo' }; render(); break;
+    case 'dClient': S.client = el.dataset.v; if (S.persona) go('home'); else render(); break;
+    case 'dPersona': S.persona = el.dataset.v; S.sheet = null; enterAs(); break;
+    case 'dOffline': setOffline(!S.offline); break;
+    case 'dSignal': setOffline(!S.offline); break;
+    case 'dDl': { const m = ['normal', 'lenta', 'falla']; S.dlMode = m[(m.indexOf(S.dlMode) + 1) % 3]; render(); break; }
+    case 'dSend': S.sendMode = S.sendMode === 'ok' ? 'falla' : 'ok'; render(); break;
+    case 'dSpace': { if (!pr) break; const opts = [3400, 300, 40]; const i = opts.indexOf(pr.freeMB); pr.freeMB = opts[(i + 1) % 3]; render(); break; }
+    case 'syncInfo': S.sheet = { type: 'sync' }; render(); break;
+    case 'retrySend': S.sheet = null; sendPending(); break;
+    case 'dlNext': { const nx = nextToDownload(); if (!nx.length) { toast('Ya tienes descargado lo que sigue'); render(); break; } requestDownload(nx.map((l) => l.id)); break; }
+    case 'dlOne': requestDownload([el.dataset.id]); break;
+    case 'selOne': { const id = el.dataset.id; if (S.sel.has(id)) S.sel.delete(id); else S.sel.add(id); render(); break; }
+    case 'selLevel': {
+      const lv = C().route.levels[+el.dataset.lv];
+      const avail = lv.lessons.map((l) => l.id).filter((id) => !busyOrReady(id));
+      const all = avail.every((id) => S.sel.has(id));
+      avail.forEach((id) => { if (all) S.sel.delete(id); else S.sel.add(id); }); render(); break;
+    }
+    case 'dlSelected': requestDownload(Array.from(S.sel)); break;
+    case 'confirmDl': confirmDownload(S.sheet.ids); break;
+    case 'cancelDl': removeDownload(el.dataset.id); toast('Cancelaste la descarga. Puedes hacerla cuando quieras.'); render(); break;
+    case 'dlFailOpen': S.sheet = { type: 'dlFail', id: el.dataset.id }; render(); break;
+    case 'retryDl': { const d = pr.downloads[el.dataset.id]; if (d) d.state = 'queue'; S.sheet = null; render(); break; }
+    case 'askRemove': {
+      const st = dlOf(el.dataset.id).state;
+      if (st === 'dl' || st === 'queue') { removeDownload(el.dataset.id); toast('Cancelaste la descarga. Puedes hacerla cuando quieras.'); }
+      else S.sheet = { type: 'removeDl', id: el.dataset.id };
+      render(); break;
+    }
+    case 'removeDlNow': case 'removeNow': { const l = lessonById(el.dataset.id); removeDownload(l.id); S.sheet = null; toast('Quitaste «' + l.title + '». Liberaste ' + l.mb + ' MB.'); render(); break; }
+    case 'keepDl': pr.kept[el.dataset.id] = true; toast('Mantendremos la descarga'); render(); break;
+    case 'removeCompleted': { const comp = completedReady(); const mb = comp.reduce((s, l) => s + l.mb, 0); comp.forEach((l) => removeDownload(l.id)); toast('Liberaste ' + mb + ' MB. Tu avance no se borra.'); render(); break; }
+    case 'freeCompleted': { completedReady().forEach((l) => removeDownload(l.id)); if (pr.freeMB >= sumMB(S.sheet.ids)) S.sheet.freed = true; render(); break; }
+    case 'selectLess': S.sheet = null; go('select'); break;
+    case 'spaceTip': S.sheet.tip = true; render(); break;
+    case 'retryExam': if (S.offline) { toast('Aún sin señal. Prueba en otra zona.'); render(); } else go('rules'); break;
+    case 'resumeExam': pr.exam.interrupted = false; render(); break;
+    case 'back': go(['home', 'profile', 'route'].includes(S.prev) ? S.prev : 'home'); break;
+    case 'dVideoFail': S.videoFail = !S.videoFail; render(); break;
+    case 'dForce': S.forceNext = el.dataset.v || null; render(); break;
+    case 'dResult': S.forceResult = el.dataset.v || null; render(); break;
+    case 'dSkipWait': S.simOffset += 61; toast('Pasó 1 hora en la demostración'); render(); break;
+    case 'dReset': S.db = {}; S.simOffset = 0; S.dlMode = 'normal'; S.sendMode = 'ok'; S.flash = null; S.persona = null; S.offline = false; S.videoFail = false; S.forceNext = null; S.forceResult = null; go('login'); break;
+    case 'dHide': S.demo = false; S.sheet = null; render(); break;
+  }
+});
+
+function syncForm() {
+  ['phone', 'pass', 'np1', 'np2', 'fphone'].forEach((id) => { const el = document.getElementById(id); if (el) S.form[id === 'fphone' ? 'phone' : id] = el.value; });
+}
+
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.id === 'np1' || t.id === 'np2') {
+    S.form[t.id] = t.value;
+    const ul = document.getElementById('prules'); if (ul) ul.innerHTML = passRulesHtml(S.form.np1, S.form.temp || DEMO_PASS, S.form.tried);
+  } else if (t.id === 'phone' || t.id === 'pass') { S.form[t.id] = t.value; }
+  else if (t.id === 'fphone') { S.form.phone = t.value; }
+  else if (t.id === 'area') { S.form.area = t.value; }
+  else if (t.id === 'rcomment' && S.sheet) { S.sheet.comment = t.value; }
+  else if (/^cd\d$/.test(t.id)) {
+    const i = +t.id.slice(2); const v = t.value.replace(/\D/g, '');
+    if (v.length > 1) { const all = v.slice(0, 6); for (let k = 0; k < 6; k++) { const x = document.getElementById('cd' + k); if (x) x.value = all[k] || ''; } }
+    else { t.value = v; if (v && i < 5) document.getElementById('cd' + (i + 1)).focus(); }
+    S.form.code = [0, 1, 2, 3, 4, 5].map((k) => (document.getElementById('cd' + k) || {}).value || '').join('');
+  }
+});
+document.addEventListener('change', (e) => { if (e.target.id === 'area') S.form.area = e.target.value; });
+document.addEventListener('keydown', (e) => {
+  if (/^cd\d$/.test(e.target.id) && e.key === 'Backspace' && !e.target.value) { const i = +e.target.id.slice(2); if (i > 0) document.getElementById('cd' + (i - 1)).focus(); }
+  if (e.key === 'Escape' && S.sheet) { S.sheet = null; render(); }
+});
+document.addEventListener('toggle', (e) => {
+  if (e.target.id === 'sumd' && S.video) { S.video.sumOpen = e.target.open; if (e.target.open && S.persona) { prog().watched[S.params.id] = true; const b = document.querySelector('[data-a="startQuiz"]'); if (b && b.disabled) render(); } }
+}, true);
+
+document.addEventListener('submit', (e) => {
+  e.preventDefault(); const id = e.target.id;
+  if (id === 'loginForm') { syncForm(); login(S.form.phone || '', S.form.pass || ''); }
+  else if (id === 'npForm') {
+    syncForm(); const f = S.form; const r = passRules(f.np1, f.temp || DEMO_PASS);
+    if (!(r.len && r.num && r.diff)) { f.tried = true; f.msg = 'Tu contraseña aún no cumple todas las reglas.'; render(); return; }
+    if (f.np1 !== f.np2) { f.tried = true; f.msg = 'Las dos contraseñas no coinciden.'; render(); return; }
+    const mode = S.params.mode;
+    if (mode === 'forgot') { const k = f.who; prog(S.client, k).password = f.np1; prog(S.client, k).firstLogin = false; const ph = PERSONAS[k].phone; go('login'); S.form = { phone: fPhone(ph) }; toast('Listo, ya puedes ingresar'); render(); return; }
+    const pr = prog(); pr.password = f.np1; pr.firstLogin = false;
+    if (mode === 'first') { if (!pr.area) { go('ficha'); } else go('home'); toast('Contraseña guardada'); render(); }
+    else { go('profile'); toast('Contraseña actualizada'); render(); }
+  } else if (id === 'fichaForm') {
+    const v = (document.getElementById('area') || {}).value;
+    if (!v) { S.form.err = true; render(); return; }
+    prog().area = v; go('home');
+  } else if (id === 'fg1') {
+    const d = (S.form.phone || '').replace(/\D/g, ''); const k = PERSONA_ORDER.find((x) => PERSONAS[x].phone === d);
+    if (d.length !== 9) { S.form.msg = 'Escribe tu celular de 9 dígitos.'; render(); return; }
+    if (!k) { S.form.msg = 'Ese celular no está registrado. Consulta con tu supervisor.'; render(); return; }
+    S.form = { step: 2, phone: d, who: k, tries: 3, resendAt: Date.now() + 30000 }; toast('Código enviado'); render();
+    setTimeout(() => { const x = document.getElementById('cd0'); if (x) x.focus(); }, 30);
+  } else if (id === 'fg2') {
+    const f = S.form;
+    if ((f.code || '') === DEMO_CODE) { const who = f.who; go('newpass', { mode: 'forgot' }); S.form = { who, temp: '' }; render(); return; }
+    f.tries = (f.tries || 3) - 1; f.code = '';
+    f.msg = f.tries > 0 ? 'El código no coincide. Te ' + (f.tries === 1 ? 'queda 1 intento.' : 'quedan ' + f.tries + ' intentos.') : 'Agotaste los intentos. Pide un código nuevo.';
+    if (f.tries <= 0) { f.tries = 3; f.resendAt = 0; }
+    render();
+  }
+});
+
+/* Panel de demostración oculto: mantener presionado el logo 2 s */
+let lpTimer = 0;
+document.addEventListener('pointerdown', (e) => {
+  const el = e.target.closest('[data-longpress]'); if (!el) return;
+  lpTimer = setTimeout(() => { S.demo = true; S.sheet = { type: 'demo' }; render(); }, 2000);
+});
+['pointerup', 'pointerleave', 'pointercancel'].forEach((t) => document.addEventListener(t, () => clearTimeout(lpTimer)));
+document.addEventListener('contextmenu', (e) => { if (e.target.closest('[data-longpress]')) e.preventDefault(); });
+
+/* ---------- Reloj del prototipo ---------- */
+let lastT = Date.now();
+setInterval(() => {
+  const t = Date.now(); const dt = (t - lastT) / 1000; lastT = t;
+  if (S.flash && t > S.flashUntil) { S.flash = null; const fe = document.querySelector('.flash'); if (fe) fe.remove(); }
+  if (S.persona && tickDownloads(dt)) return;
+  if (S.screen === 'lesson' && S.video && S.video.phase === 'playing' && S.persona) {
+    const L = lessonById(S.params.id); const pr = prog();
+    if (S.offline && !isReady(L.id)) { S.video.phase = 'lost'; render(); return; }
+    pr.videoPos[L.id] = Math.min(L.dur, VID.currentTime || 0);
+    if (pr.videoPos[L.id] >= L.dur) { S.video.phase = 'ended'; pr.watched[L.id] = true; render(); }
+    else {
+      const pos = pr.videoPos[L.id];
+      const b = document.getElementById('vbar'); if (b) b.style.width = (pos / L.dur * 100) + '%';
+      const tm = document.getElementById('vtime'); if (tm) tm.textContent = fClock(pos) + ' / ' + fClock(L.dur);
+      const cp = document.querySelector('#vcap span'); if (cp) cp.textContent = L.sum[Math.min(L.sum.length - 1, Math.floor(pos / L.dur * L.sum.length))];
+    }
+  }
+  if (S.persona) {
+    const pr = prog();
+    if (pr.exam && !pr.exam.done && !S.offline && !pr.exam.interrupted) {
+      pr.exam.remaining -= dt;
+      if (pr.exam.remaining <= 0) { pr.exam.remaining = 0; toast('Se acabó el tiempo. Enviamos lo que respondiste.', 4000); submitExam(); return; }
+      const el = document.getElementById('etimer'); if (el) el.textContent = fClock(pr.exam.remaining);
+    }
+  }
+  if (S.screen === 'forgot' && S.form.step === 2) {
+    const b = document.getElementById('resend');
+    if (b) { const left = Math.max(0, Math.ceil(((S.form.resendAt || 0) - t) / 1000)); b.disabled = left > 0; b.textContent = left > 0 ? 'Reenviar en ' + left + ' s' : 'Reenviar código'; }
+  }
+  if (S.gate === 'cargando' && !S.gateSlow && t - S.gateSince > 8000) { S.gateSlow = true; render(); }
+  if (S.toast && t > S.toastUntil) { S.toast = null; const el = document.querySelector('.toast'); if (el) el.remove(); }
+}, 250);
+
+const def = Object.values(CLIENTS).find((c) => c.default);
+if (def) S.client = def.id;
+render();
+})();
+</script>

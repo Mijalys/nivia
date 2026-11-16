@@ -16,6 +16,10 @@ export async function seed(db: Db, clock: Clock): Promise<boolean> {
   const now = clock.now();
   const passwordHash = await hashPassword(DEMO_PASSWORD);
 
+  // Administrador de la plataforma para la consola. Contraseña: ADMIN_PASSWORD o la de demostración.
+  const adminHash = process.env.ADMIN_PASSWORD ? await hashPassword(process.env.ADMIN_PASSWORD) : passwordHash;
+  await db.system((q) => q.query('insert into platform_admin (username, password_hash) values ($1, $2)', ['admin', adminHash]));
+
   for (const t of TENANTS) {
     const issues = brandingContrastIssues(t.branding);
     if (issues.length) throw new Error(`La marca de ${t.name} no pasa contraste AA: ${JSON.stringify(issues)}`);

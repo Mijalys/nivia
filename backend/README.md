@@ -27,7 +27,7 @@ DATABASE_URL=postgres://nivia:nivia@localhost:5432/nivia APP_SECRET=cambia-esto 
 npm test
 ```
 
-18 pruebas de punta a punta contra la API real y PGlite en memoria, con reloj controlado. Cubren:
+26 pruebas de punta a punta contra la API real y PGlite en memoria, con reloj controlado. Cubren:
 
 - Ingreso, primer ingreso, recuperación por SMS y rotación de sesión.
 - Bloqueo por niveles y aislamiento entre empresas.
@@ -71,6 +71,52 @@ Todas las rutas, salvo las públicas, usan `Authorization: Bearer <access_token>
 | `GET /certificates/verify/:code` (pública) | Verificación por código dentro de la empresa |
 | `GET /media/*` (URL firmada) | Video, portada y paquetes, con soporte de rangos |
 
+## Consola de administración (API)
+
+Dos tipos de administrador:
+
+- **De plataforma (Nivia):** usuario `admin`. Contraseña: `ADMIN_PASSWORD` al arrancar, o `Demo2026` si no se define. Crea empresas y opera cualquiera.
+- **De empresa:** una persona de la empresa con rol `admin`. Entra con su celular por `POST /auth/login` y usa el mismo token; solo ve su empresa.
+
+| Método y ruta | Uso |
+|---|---|
+| `POST /admin/auth/login` | Usuario y contraseña del administrador de plataforma |
+| `GET /admin/tenants` · `POST /admin/tenants` | Listar y crear empresas (valida contraste AA de la marca) |
+| `GET /admin/tenants/:slug/users` · `POST /admin/tenants/:slug/users` | Listar y crear personas (una o una lista). Devuelve la contraseña temporal **una sola vez** |
+| `PUT /admin/tenants/:slug/users/:id/role` | `admin`, `supervisor` o `learner` |
+| `GET /admin/tenants/:slug/routes` · `POST /admin/tenants/:slug/routes` | Crear una ruta completa en borrador: niveles, lecciones, preguntas |
+| `POST /admin/tenants/:slug/routes/:id/publish` | Publicar: exige al menos una pregunta de evaluación por lección y congela la versión |
+| `POST /admin/tenants/:slug/assignments` | Asignar una ruta publicada a personas con fecha límite |
+| `GET /admin/tenants/:slug/progress` | Seguimiento: avance, intentos, aprobados, certificados y quién va tarde |
+
+### Crear una clase real en cinco llamadas
+
+```bash
+API=http://localhost:3000
+T=$(curl -s -X POST $API/admin/auth/login -H 'Content-Type: application/json' \
+  -d '{"username":"admin","password":"Clase2026!"}' | jq -r .access_token)
+
+# 1. Empresa
+curl -s -X POST $API/admin/tenants -H "Authorization: Bearer $T" -H 'Content-Type: application/json' -d '{
+  "slug":"minera-sur","name":"Minera Sur","cert_prefix":"MSU",
+  "branding":{"mono":"M","accent":"#F26B1D","principal":"#0E4D5C","principal_text":"#7CC3D0","areas":["Mina","Planta"]},
+  "exam_policy":{"min_score":80,"attempts":3,"wait_minutes":60,"question_count":10,"minutes":15,"exhausted_message":"Habla con tu supervisor."}}'
+
+# 2. Personas (guarda las contraseñas temporales que devuelve)
+curl -s -X POST $API/admin/tenants/minera-sur/users -H "Authorization: Bearer $T" -H 'Content-Type: application/json' \
+  -d '[{"first_name":"Jorge","last_name":"Ticona","phone":"988000222","area":"Mina"}]'
+
+# 3. Ruta (ver test/admin.e2e.spec.ts para el formato completo de lecciones y preguntas)
+curl -s -X POST $API/admin/tenants/minera-sur/routes -H "Authorization: Bearer $T" -H 'Content-Type: application/json' -d @ruta.json
+
+# 4. Publicar y 5. asignar
+curl -s -X POST $API/admin/tenants/minera-sur/routes/<route_id>/publish -H "Authorization: Bearer $T"
+curl -s -X POST $API/admin/tenants/minera-sur/assignments -H "Authorization: Bearer $T" -H 'Content-Type: application/json' \
+  -d '{"route_id":"<route_id>","user_ids":["<user_id>"],"due_at":"2026-12-15T23:59:00-05:00"}'
+```
+
+Las preguntas llevan `in_quiz` (reto, viaja con la respuesta) e `in_exam` (evaluación, la respuesta nunca sale del servidor). Una pregunta puede estar en ambos, pero conviene separar los bancos. Sin `video_key`, la lección usa el video de demostración hasta que se suba uno.
+
 ## Estructura
 
 ```
@@ -86,13 +132,14 @@ src/
     certification.ts   emisión, PDF, verificación
     media.ts           archivos con URL firmada
     notifications.ts   SMS (consola en desarrollo)
+    admin.ts           consola: empresas, personas, rutas, publicación, asignaciones, seguimiento
 test/                  pruebas de punta a punta
 ```
 
 ## Qué falta para producción
 
 - **Pipeline de contenido con IA:** está en la arquitectura, pero aún no tiene código.
-- **Consola de administración:** aún no existe.
+- **Consola de administración:** existe la API; falta la interfaz web.
 - **Paso a la nube:** almacenamiento S3 con CDN y video HLS real; hoy los archivos se sirven de una carpeta local y todas las lecciones usan el MP4 de demostración.
 - **Proveedor real de SMS o WhatsApp:** hoy los mensajes se escriben en el log.
 - **Límite de intentos compartido** (Redis) cuando haya más de una instancia; hoy vive en memoria.

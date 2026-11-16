@@ -4,6 +4,7 @@ import { AuthGuard } from './common/auth';
 import { ApiErrorFilter } from './common/errors';
 import { CLOCK, CONFIG, Clock, Config, DB, SMS } from './config';
 import { Db } from './db/db';
+import { AdminAuthController, AdminController, AdminGuard, AdminService } from './modules/admin';
 import { AssessmentController, AssessmentService } from './modules/assessment';
 import { CertificationController, CertificationService } from './modules/certification';
 import { AuthController, AuthService, MeController } from './modules/identity';
@@ -35,9 +36,10 @@ export class AppModule {
     return {
       module: AppModule,
       imports: [CoreModule.with(deps)],
-      controllers: [TenantsController, AuthController, MeController, LearningController, AssessmentController, CertificationController, MediaController],
+      controllers: [TenantsController, AuthController, MeController, LearningController, AssessmentController, CertificationController, MediaController,
+        AdminAuthController, AdminController],
       providers: [
-        TenantsService, AuthService, LearningService, AssessmentService, CertificationService,
+        TenantsService, AuthService, LearningService, AssessmentService, CertificationService, AdminService, AdminGuard,
         { provide: APP_GUARD, useClass: AuthGuard },
         { provide: APP_FILTER, useClass: ApiErrorFilter }
       ]

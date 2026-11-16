@@ -277,5 +277,35 @@ create table outbox (
 
 ${rls}
 `
+  },
+  {
+    id: '002_admin',
+    sql: `
+-- Administradores de Nivia (plataforma): crean empresas y operan cualquiera de ellas.
+create table platform_admin (
+  id uuid primary key default gen_random_uuid(),
+  username text not null unique,
+  password_hash text not null,
+  created_at timestamptz not null default now()
+);
+
+-- Rol de una persona dentro de su empresa. Sin fila = aprendiz.
+create table membership (
+  tenant_id uuid not null references tenant(id),
+  user_id uuid not null references app_user(id),
+  role text not null check (role in ('admin', 'supervisor')),
+  created_at timestamptz not null default now(),
+  primary key (tenant_id, user_id)
+);
+alter table membership enable row level security;
+alter table membership force row level security;
+create policy tenant_isolation on membership
+  using (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid)
+  with check (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+grant select, insert, update, delete on membership to nivia_app;
+
+-- La app también necesita crear empresas desde la consola.
+grant insert, update on tenant to nivia_app;
+`
   }
 ];

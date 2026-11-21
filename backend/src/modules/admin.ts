@@ -1,7 +1,6 @@
 import { Body, CanActivate, Controller, ExecutionContext, Get, HttpCode, Inject, Injectable, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { hash, verify } from '@node-rs/argon2';
 import { Request } from 'express';
-import { randomInt } from 'node:crypto';
 import { z } from 'zod';
 import { Public } from '../common/auth';
 import { brandingContrastIssues } from '../common/color';
@@ -11,10 +10,15 @@ import { RateLimiter } from '../common/rate-limit';
 import { CLOCK, CONFIG, Clock, Config, DB } from '../config';
 import { Db, Q } from '../db/db';
 import { DEMO_POSTER_KEY, DEMO_VIDEO_KEY } from '../db/seed-data';
-import { audit } from './identity';
+import { audit, AuthService, normEmail } from './identity';
 import { AssignmentRow, routeState } from './learning';
-import { toE164 } from './notifications';
 import { Tenant, TenantsService } from './tenants';
+
+/** Celular peruano de 9 dígitos a formato E.164 (+51…). Es un dato de contacto opcional, no sirve para ingresar. */
+const toE164 = (phone: string) => {
+  const d = phone.replace(/\D/g, '');
+  return d.length === 9 ? `+51${d}` : `+${d}`;
+};
 
 /**
  * Consola de administración (paso 1 para una clase real).
@@ -67,8 +71,10 @@ const TenantIn = z.object({
   branding: BrandingIn, exam_policy: PolicyIn
 });
 const UserIn = z.object({
-  first_name: z.string().min(1), last_name: z.string().min(1), phone: z.string().min(9).max(16),
+  first_name: z.string().min(1), last_name: z.string().min(1), email: z.string().email().max(200),
+  phone: z.string().min(9).max(16).optional(),
   area: z.string().optional(), role: z.enum(['admin', 'supervisor']).optional(),
+  /** Por defecto se envía una invitación por correo. Con contraseña temporal no se envía nada. */
   temporary_password: z.string().min(8).optional()
 });
 const QuestionIn = z.object({
@@ -93,20 +99,12 @@ const AssignIn = z.object({
   kind: z.enum(['initial', 'renewal']).default('initial')
 });
 
-const ALPHA = 'abcdefghjkmnpqrstuvwxyz23456789';
-/** Contraseña temporal legible: 6 letras + 2 dígitos. Se entrega una sola vez. */
-function tempPassword() {
-  let s = '';
-  for (let i = 0; i < 6; i++) s += ALPHA[randomInt(0, ALPHA.length)];
-  return s + String(randomInt(10, 100));
-}
-
 @Injectable()
 export class AdminService {
   private limiter = new RateLimiter(5, 15 * 60_000);
   constructor(
     @Inject(DB) private db: Db, @Inject(CONFIG) private cfg: Config, @Inject(CLOCK) private clock: Clock,
-    private tenants: TenantsService
+    private tenants: TenantsService, private auth: AuthService
   ) {}
 
   async login(username: string, password: string) {
@@ -155,18 +153,21 @@ export class AdminService {
       const created = [];
       for (const u of list) {
         if (u.area && !t.branding.areas.includes(u.area)) throw new ApiError(400, 'VALIDATION_ERROR', `Área desconocida: ${u.area}`);
-        const phone = toE164(u.phone);
-        const dup = (await q.query('select 1 from app_user where phone = $1', [phone])).rows.length;
-        if (dup) throw new ApiError(409, 'PHONE_TAKEN', `El celular ${u.phone} ya está registrado.`);
-        const pw = u.temporary_password || tempPassword();
-        const id = (await q.query<{ id: string }>(
-          'insert into app_user (tenant_id, first_name, last_name, phone, area) values ($1, $2, $3, $4, $5) returning id',
-          [t.id, u.first_name, u.last_name, phone, u.area ?? null])).rows[0].id;
-        await q.query('insert into credential (user_id, tenant_id, password_hash, is_temporary) values ($1, $2, $3, true)', [id, t.id, await hash(pw)]);
-        if (u.role) await q.query('insert into membership (tenant_id, user_id, role) values ($1, $2, $3)', [t.id, id, u.role]);
-        await audit(q, t.id, admin.kind === 'tenant' ? admin.id : null, 'admin.user_created', { user_id: id, by: admin.kind, role: u.role ?? 'learner' });
-        // La contraseña temporal se devuelve una sola vez, para entregarla a la persona.
-        created.push({ id, first_name: u.first_name, last_name: u.last_name, phone, role: u.role ?? 'learner', temporary_password: pw });
+        const email = normEmail(u.email);
+        const dup = (await q.query('select 1 from app_user where lower(email) = $1', [email])).rows.length;
+        if (dup) throw new ApiError(409, 'EMAIL_TAKEN', `El correo ${u.email} ya está registrado.`);
+        const row = (await q.query<{ id: string; first_name: string; last_name: string; email: string; email_verified_at: Date | null }>(
+          `insert into app_user (tenant_id, first_name, last_name, email, phone, area) values ($1, $2, $3, $4, $5, $6)
+           returning id, first_name, last_name, email, email_verified_at`,
+          [t.id, u.first_name, u.last_name, email, u.phone ? toE164(u.phone) : null, u.area ?? null])).rows[0];
+        await q.query('insert into credential (user_id, tenant_id, password_hash, is_temporary) values ($1, $2, $3, $4)',
+          [row.id, t.id, u.temporary_password ? await hash(u.temporary_password) : null, !!u.temporary_password]);
+        if (u.role) await q.query('insert into membership (tenant_id, user_id, role) values ($1, $2, $3)', [t.id, row.id, u.role]);
+        await audit(q, t.id, admin.kind === 'tenant' ? admin.id : null, 'admin.user_created', { user_id: row.id, by: admin.kind, role: u.role ?? 'learner' });
+        // Sin contraseña temporal: se envía la invitación. El enlace también vuelve aquí por si hay que compartirlo a mano.
+        const inviteUrl = u.temporary_password ? null : await this.auth.sendInvite(q, t, row);
+        created.push({ id: row.id, first_name: row.first_name, last_name: row.last_name, email, role: u.role ?? 'learner',
+          invite_sent: !!inviteUrl, invite_url: inviteUrl });
       }
       return { users: created };
     });
@@ -176,10 +177,26 @@ export class AdminService {
     const t = await this.scope(admin, slug);
     return this.db.tenant(t.id, async (q) => ({
       users: (await q.query(
-        `select u.id, u.first_name, u.last_name, u.phone, u.area, coalesce(m.role, 'learner') as role, c.is_temporary as password_pending
+        `select u.id, u.first_name, u.last_name, u.email, u.phone, u.area, coalesce(m.role, 'learner') as role,
+                case when u.email_verified_at is null then 'invited' else 'active' end as status,
+                (c.password_hash is not null and not c.is_temporary) as has_password,
+                exists (select 1 from user_identity i where i.user_id = u.id) as has_google
            from app_user u left join membership m on m.user_id = u.id left join credential c on c.user_id = u.id
           order by u.last_name, u.first_name`)).rows
     }));
+  }
+
+  /** Reenvía la invitación (por ejemplo, si venció o no llegó). */
+  async resendInvite(admin: AdminCtx, slug: string, userId: string) {
+    const t = await this.scope(admin, slug);
+    return this.db.tenant(t.id, async (q) => {
+      const u = (await q.query<{ id: string; first_name: string; last_name: string; email: string; email_verified_at: Date | null }>(
+        'select id, first_name, last_name, email, email_verified_at from app_user where id = $1', [userId])).rows[0];
+      if (!u) throw notFound('Persona');
+      const url = await this.auth.sendInvite(q, t, u);
+      await audit(q, t.id, admin.kind === 'tenant' ? admin.id : null, 'admin.invite_sent', { user_id: userId });
+      return { invite_sent: true, invite_url: url };
+    });
   }
 
   async setRole(admin: AdminCtx, slug: string, userId: string, raw: unknown) {
@@ -291,8 +308,8 @@ export class AdminService {
     const t = await this.scope(admin, slug);
     return this.db.tenant(t.id, async (q) => {
       const now = this.clock.now();
-      const rows = (await q.query<AssignmentRow & { first_name: string; last_name: string; phone: string }>(
-        `select a.*, rv.title, rv.overline, u.first_name, u.last_name, u.phone
+      const rows = (await q.query<AssignmentRow & { first_name: string; last_name: string; email: string }>(
+        `select a.*, rv.title, rv.overline, u.first_name, u.last_name, u.email
            from assignment a join route_version rv on rv.id = a.route_version_id join app_user u on u.id = a.user_id
           where a.status <> 'cancelled' order by u.last_name, u.first_name, a.assigned_at`)).rows;
       const people = [];
@@ -302,7 +319,7 @@ export class AdminService {
           `select count(*)::int as n, max(score) as last from exam_attempt where assignment_id = $1 and status <> 'in_progress'`, [a.id])).rows[0];
         const cert = (await q.query<{ code: string; expires_at: Date }>('select code, expires_at from certificate where assignment_id = $1', [a.id])).rows[0];
         people.push({
-          user: { id: a.user_id, name: `${a.first_name} ${a.last_name}`, phone: a.phone },
+          user: { id: a.user_id, name: `${a.first_name} ${a.last_name}`, email: a.email },
           assignment_id: a.id, route_title: a.title, kind: a.kind, status: a.status,
           pct: st.pct, due_at: a.due_at.toISOString(), late: a.due_at < now && !st.passed,
           exam: { attempts: attempts.n, best_score: attempts.last, passed: st.passed },
@@ -348,6 +365,7 @@ export class AdminController {
   @Post() create(@Req() req: Request, @Body() body: unknown) { return this.svc.createTenant(ctx(req), body); }
   @Get(':slug/users') users(@Req() req: Request, @Param('slug') slug: string) { return this.svc.listUsers(ctx(req), slug); }
   @Post(':slug/users') createUsers(@Req() req: Request, @Param('slug') slug: string, @Body() body: unknown) { return this.svc.createUsers(ctx(req), slug, body); }
+  @Post(':slug/users/:id/invite') @HttpCode(200) invite(@Req() req: Request, @Param('slug') slug: string, @Param('id') id: string) { return this.svc.resendInvite(ctx(req), slug, parse(uuid, id)); }
   @Put(':slug/users/:id/role') role(@Req() req: Request, @Param('slug') slug: string, @Param('id') id: string, @Body() body: unknown) { return this.svc.setRole(ctx(req), slug, parse(uuid, id), body); }
   @Get(':slug/routes') routes(@Req() req: Request, @Param('slug') slug: string) { return this.svc.listRoutes(ctx(req), slug); }
   @Post(':slug/routes') createRoute(@Req() req: Request, @Param('slug') slug: string, @Body() body: unknown) { return this.svc.createRoute(ctx(req), slug, body); }

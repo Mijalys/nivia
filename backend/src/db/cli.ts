@@ -12,7 +12,7 @@ async function run(cmd: string) {
     }
     if (cmd === 'seed') {
       console.log((await seed(db, systemClock)) ? 'Datos de demostración cargados' : 'La base ya tenía datos; no se cargó nada');
-      copyDemoMedia(cfg.storageDir, process.env.DEMO_MEDIA_DIR || '../prototipo-corte2/media');
+      copyDemoMedia(cfg.storageDir, process.env.DEMO_MEDIA_DIR || '../prototipo/media');
     }
   } finally {
     await db.close();

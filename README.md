@@ -106,13 +106,13 @@ Barra inferior fija: Inicio · Mis certificados · Perfil
 - **Error:** "No pudimos cargar [cosa]. Revisa tu señal." y "Volver a intentar". Lo escrito se conserva.
 - **Sin conexión:** franja fija arriba: "Sin conexión. Lo que ya cargaste sigue disponible." Las acciones que necesitan red se desactivan con el motivo escrito.
 
-**P1. Ingreso.** Propósito: entrar. Acción: "Ingresar". Contenido: orbe y logo del cliente, "Celular" (teclado numérico, 987 654 321), "Contraseña" con "Mostrar", "¿Olvidaste tu contraseña?". Cargando: "Ingresando…" en el botón. Vacío: indica el campo que falta. Error: "El celular o la contraseña no coinciden." Sin conexión: "Necesitas señal para ingresar".
+**P1. Ingreso.** Propósito: entrar. Acción: "Continuar con Google". Contenido: orbe y logo del cliente; "Usa el correo con el que te invitó tu empresa"; botón "Continuar con Google"; separador "o con tu correo"; "Correo" y "Contraseña" con "Mostrar" e "Ingresar"; enlaces "¿Olvidaste tu contraseña?" y "Entrar con un enlace". Si la página se abrió dentro de WhatsApp o Facebook: "Para entrar con Google, abre esta página en Chrome". Cargando: "Ingresando…" en el botón. Vacío: indica el campo que falta. Error: "El correo o la contraseña no coinciden." Google con un correo no invitado: "Tu empresa aún no te invitó. Pide acceso a tu supervisor." Sin conexión: "Necesitas señal para ingresar".
 
 **P2. Crea tu contraseña.** Propósito: reemplazar la temporal. Acción: "Guardar contraseña". Contenido: "Paso 1 de 2"; reglas antes del campo (8 caracteres, un número, distinta a la temporal), cada una pasa a check y "Cumple" al escribir; confirmación. Error: la regla incumplida dice "Falta".
 
 **P3. Completa tus datos.** Propósito: completar la ficha. Acción: "Empezar". Contenido: "Paso 2 de 2"; nombre, empresa y celular de solo lectura; pide lo faltante (Carlos: "Área"). Vacío: si no falta nada, se salta.
 
-**P4. Recuperar contraseña.** Acción: "Enviar código", luego "Validar", luego "Guardar contraseña". Contenido: celular; "Te enviamos un código al 987 *** 321", seis casillas, "Reenviar en 30 s"; nueva contraseña con reglas de P2. Error: "El código no coincide. Te quedan 2 intentos."
+**P4. Recuperar contraseña o entrar con un enlace.** Acción: "Enviar enlace". Contenido: "Correo"; luego "Revisa tu correo": "Si r•••@empresa.com tiene una cuenta, te llegó un enlace", vence en 30 minutos (restablecer) o 15 (entrar), sirve una vez; "¿No llegó? Revisa la carpeta de spam". El enlace abre P2 para crear la contraseña y deja la sesión abierta, o entra directo. Se responde igual exista o no la cuenta. Error: "Este enlace ya no sirve. Pide uno nuevo."
 
 **P5. Inicio.** Propósito: saber qué hacer y para cuándo. Acción: "Continuar". Contenido: "Hola, Rosa"; bloque "Sigue donde te quedaste"; lista "Tus capacitaciones" con barra y "40 %", "Vence el vie 20 nov · faltan 10 días", "Te quedan 27 min aprox."; aviso de certificado próximo a vencer. Ruta vencida: primera, con franja "Venció el 31 oct. Aún puedes terminarla." Vacío: "No tienes capacitaciones pendientes. Cuando tu empresa te asigne una, aparecerá aquí." y "Ver mis certificados" como acción principal. Sin conexión: lo último cargado con su hora.
 
@@ -156,14 +156,14 @@ Barra inferior fija: Inicio · Mis certificados · Perfil
 
 **Aprendices** (existen en ambos clientes):
 
-| Aprendiz | Celular | Estado |
+| Aprendiz | Correo | Estado |
 |---|---|---|
-| Carlos Mendoza Ríos | 987 654 321 | Primer ingreso, sin área, 0 %. |
-| Rosa Quispe Huamán | 987 111 222 | 40 %, lecciones 1 y 2 completas, vence el 20/11/2026. |
-| Luis Huamaní Torres | 987 333 444 | 60 %, venció el 31/10/2026. |
-| Marisol Paredes Vega | 987 555 666 | Sin asignaciones; certificado vence el 30/11/2026. |
+| Carlos Mendoza Ríos | carlos@riomar.example | Primer ingreso, sin área, 0 %. |
+| Rosa Quispe Huamán | rosa@riomar.example | 40 %, lecciones 1 y 2 completas, vence el 20/11/2026. |
+| Luis Huamaní Torres | luis@riomar.example | 60 %, venció el 31/10/2026. |
+| Marisol Paredes Vega | marisol@riomar.example | Sin asignaciones; certificado vence el 30/11/2026. |
 
-Contraseña de demostración `Demo2026`; código `123456`.
+Contraseña de demostración `Demo2026`. En Altavista los correos terminan en `@altavista.example`. El dominio `.example` está reservado: nunca llega a nadie real.
 
 **Reglas de evaluación.** Ríomar: 80 %, 3 intentos, 1 hora de espera, 10 preguntas, 15 minutos; sin intentos: "Habla con tu supervisor para habilitar un nuevo intento". Altavista: 70 %, 2 intentos, sin espera, 8 preguntas, 12 minutos; sin intentos: "Tu ruta se reinicia el lunes desde el Nivel 1". Cada pregunta guarda su lección de origen para "Temas a reforzar".
 
@@ -190,7 +190,7 @@ El resto del contenido sigue esta claridad: preguntas de situación, tres opcion
 
 Cada uno puede retirarse sin romper el flujo.
 
-1. Recuperación de contraseña por código al celular, simulada.
+1. Ingreso con correo (contraseña o enlace) y con Google; recuperación por enlace al correo. Reemplaza el celular con código por SMS.
 2. Etiqueta "Hecho con IA" en la lección.
 3. "Reportar un problema con este contenido" con confirmación breve.
 4. Una ruta vencida sigue disponible.

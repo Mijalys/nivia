@@ -157,7 +157,7 @@ Cargando, vacío, error y sin conexión siguen los patrones del Corte 1 salvo lo
 | Descargar lecciones | Sí. | No; una descarga en curso queda en pausa. |
 | Quitar descargas | Sí. | Sí. |
 | Cambiar contraseña | Sí. | No: "Necesitas señal para cambiar tu contraseña". |
-| Ingresar a la app | Sí. | Solo si la sesión ya estaba abierta en este celular. |
+| Ingresar a la app | Sí, con correo o Google. | Solo si la sesión ya estaba abierta en este celular. |
 
 ## 8. Contenido y datos simulados
 

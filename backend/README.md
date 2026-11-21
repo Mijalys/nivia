@@ -6,7 +6,7 @@ Backend de Nivia según [la propuesta de arquitectura](../arquitectura/README.md
 
 ```bash
 npm install
-APP_SECRET=cambia-esto DEV_OTP_CODE=123456 npm run dev
+APP_SECRET=cambia-esto npm run dev
 ```
 
 - La API queda en `http://localhost:3000`.
@@ -27,9 +27,9 @@ DATABASE_URL=postgres://nivia:nivia@localhost:5432/nivia APP_SECRET=cambia-esto 
 npm test
 ```
 
-26 pruebas de punta a punta contra la API real y PGlite en memoria, con reloj controlado. Cubren:
+38 pruebas contra la API real y PGlite en memoria, con reloj controlado. Cubren:
 
-- Ingreso, primer ingreso, recuperación por SMS y rotación de sesión.
+- Ingreso con correo, Google y enlace; recuperación por correo; invitaciones; rotación de sesión.
 - Bloqueo por niveles y aislamiento entre empresas.
 - Video con URL firmada y descargas.
 - Avance sin señal idempotente.
@@ -37,14 +37,14 @@ npm test
 
 ## Datos de demostración
 
-Empresas `riomar` (Corporación Ríomar) y `altavista` (Grupo Altavista). Se indican con la cabecera `X-Tenant` o el subdominio. Contraseña de todos: `Demo2026`.
+Empresas `riomar` (Corporación Ríomar) y `altavista` (Grupo Altavista). Se indican con la cabecera `X-Tenant` o el subdominio. Contraseña de todos: `Demo2026`. Correo: `<nombre>@<empresa>.example` (por ejemplo `rosa@riomar.example`).
 
-| Aprendiz | Celular | Estado |
+| Aprendiz | Correo | Estado |
 |---|---|---|
-| Carlos | 987 654 321 | Contraseña temporal, sin área, 0 % |
-| Rosa | 987 111 222 | 40 %, vence en 10 días |
-| Luis | 987 333 444 | 60 %, venció hace 10 días |
-| Marisol | 987 555 666 | Certificado que vence en 20 días y renovación al 40 % |
+| Carlos | carlos@… | Contraseña temporal, sin área, 0 % |
+| Rosa | rosa@… | 40 %, vence en 10 días |
+| Luis | luis@… | 60 %, venció hace 10 días |
+| Marisol | marisol@… | Certificado que vence en 20 días y renovación al 40 % |
 
 ## API
 
@@ -53,9 +53,11 @@ Todas las rutas, salvo las públicas, usan `Authorization: Bearer <access_token>
 | Método y ruta | Uso |
 |---|---|
 | `GET /tenant/config` (pública) | Marca, áreas y reglas de evaluación del cliente |
-| `POST /auth/login` (pública) | Celular y contraseña. Devuelve `password_change_required` |
+| `POST /auth/login` (pública) | Correo y contraseña. Devuelve `password_change_required` |
 | `POST /auth/password` | Crear o cambiar contraseña (8 caracteres, un número, distinta a la anterior) |
-| `POST /auth/otp` · `POST /auth/otp/verify` · `POST /auth/password/reset` (públicas) | Recuperación por código de 6 dígitos |
+| `POST /auth/google` (pública) | Ingreso con Google: `id_token` del botón de Google. Solo personas invitadas por la empresa |
+| `POST /auth/password/forgot` · `POST /auth/email-link` (públicas) | Envían un enlace al correo: restablecer (30 min) o entrar sin contraseña (15 min) |
+| `GET /auth/link-info` · `POST /auth/password/set` · `POST /auth/email-link/verify` (públicas) | Lo que hace la app al abrir el enlace: saludar, crear contraseña (invitación o restablecer) o entrar |
 | `POST /auth/refresh` (pública) · `POST /auth/logout` | Sesión por dispositivo con token de renovación rotativo |
 | `GET /me` · `PATCH /me` | Ficha y área faltante |
 | `GET /home` | Inicio: asignaciones por urgencia, siguiente lección, certificados por vencer |
@@ -76,13 +78,14 @@ Todas las rutas, salvo las públicas, usan `Authorization: Bearer <access_token>
 Dos tipos de administrador:
 
 - **De plataforma (Nivia):** usuario `admin`. Contraseña: `ADMIN_PASSWORD` al arrancar, o `Demo2026` si no se define. Crea empresas y opera cualquiera.
-- **De empresa:** una persona de la empresa con rol `admin`. Entra con su celular por `POST /auth/login` y usa el mismo token; solo ve su empresa.
+- **De empresa:** una persona de la empresa con rol `admin`. Entra con su correo por `POST /auth/login` o con Google y usa el mismo token; solo ve su empresa.
 
 | Método y ruta | Uso |
 |---|---|
 | `POST /admin/auth/login` | Usuario y contraseña del administrador de plataforma |
 | `GET /admin/tenants` · `POST /admin/tenants` | Listar y crear empresas (valida contraste AA de la marca) |
-| `GET /admin/tenants/:slug/users` · `POST /admin/tenants/:slug/users` | Listar y crear personas (una o una lista). Devuelve la contraseña temporal **una sola vez** |
+| `GET /admin/tenants/:slug/users` · `POST /admin/tenants/:slug/users` | Listar y crear personas por correo (una o una lista). Envía la invitación con la marca de la empresa |
+| `POST /admin/tenants/:slug/users/:id/invite` | Reenviar la invitación |
 | `PUT /admin/tenants/:slug/users/:id/role` | `admin`, `supervisor` o `learner` |
 | `GET /admin/tenants/:slug/routes` · `POST /admin/tenants/:slug/routes` | Crear una ruta completa en borrador: niveles, lecciones, preguntas |
 | `POST /admin/tenants/:slug/routes/:id/publish` | Publicar: exige al menos una pregunta de evaluación por lección y congela la versión |
@@ -102,9 +105,9 @@ curl -s -X POST $API/admin/tenants -H "Authorization: Bearer $T" -H 'Content-Typ
   "branding":{"mono":"M","accent":"#F26B1D","principal":"#0E4D5C","principal_text":"#7CC3D0","areas":["Mina","Planta"]},
   "exam_policy":{"min_score":80,"attempts":3,"wait_minutes":60,"question_count":10,"minutes":15,"exhausted_message":"Habla con tu supervisor."}}'
 
-# 2. Personas (guarda las contraseñas temporales que devuelve)
+# 2. Personas: a cada una le llega una invitación al correo (también vuelve invite_url, por si hay que compartirla a mano)
 curl -s -X POST $API/admin/tenants/minera-sur/users -H "Authorization: Bearer $T" -H 'Content-Type: application/json' \
-  -d '[{"first_name":"Jorge","last_name":"Ticona","phone":"988000222","area":"Mina"}]'
+  -d '[{"first_name":"Jorge","last_name":"Ticona","email":"jorge@minerasur.pe","area":"Mina"}]'
 
 # 3. Ruta (ver test/admin.e2e.spec.ts para el formato completo de lecciones y preguntas)
 curl -s -X POST $API/admin/tenants/minera-sur/routes -H "Authorization: Bearer $T" -H 'Content-Type: application/json' -d @ruta.json
@@ -131,7 +134,8 @@ src/
     assessment.ts      evaluación, reloj con pausa, calificación
     certification.ts   emisión, PDF, verificación
     media.ts           archivos con URL firmada
-    notifications.ts   SMS (consola en desarrollo)
+    email.ts           correos con la marca del cliente (Brevo, o el log en desarrollo)
+    google.ts          verificación del token de "Continuar con Google"
     admin.ts           consola: empresas, personas, rutas, publicación, asignaciones, seguimiento
 test/                  pruebas de punta a punta
 ```
@@ -141,7 +145,8 @@ test/                  pruebas de punta a punta
 - **Pipeline de contenido con IA:** está en la arquitectura, pero aún no tiene código.
 - **Consola de administración:** existe la API; falta la interfaz web.
 - **Paso a la nube:** almacenamiento S3 con CDN y video HLS real; hoy los archivos se sirven de una carpeta local y todas las lecciones usan el MP4 de demostración.
-- **Proveedor real de SMS o WhatsApp:** hoy los mensajes se escriben en el log.
+- **Correos:** con `BREVO_API_KEY` y un remitente verificado en Brevo (`EMAIL_FROM`) salen de verdad; sin eso se escriben en el log.
+- **Google:** necesita `GOOGLE_CLIENT_ID`. Pasos en [../arquitectura/google-cloud.md](../arquitectura/google-cloud.md).
 - **Límite de intentos compartido** (Redis) cuando haya más de una instancia; hoy vive en memoria.
 - **Pruebas contra PostgreSQL real:** las pruebas corren en PGlite. El mismo SQL y las mismas políticas RLS deberían funcionar igual, pero no se probó.
 - **Certificado:** el PDF usa pdfkit con fuentes base; el diseño final con el logo del cliente va con plantilla HTML.

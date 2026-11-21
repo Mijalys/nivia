@@ -1,4 +1,4 @@
-import { bearer, boot, Ctx, login } from './helpers';
+import { bearer, boot, Ctx, login, tokenFrom } from './helpers';
 
 let ctx: Ctx;
 beforeAll(async () => { ctx = await boot(); });
@@ -8,7 +8,6 @@ const DAY = 86_400_000;
 let adminToken = '';
 let routeId = '';
 let learnerId = '';
-let learnerPw = '';
 
 const lesson = (title: string, i: number) => ({
   title, duration_s: 180, summary: [`Resumen de ${title}.`],
@@ -30,7 +29,7 @@ describe('Consola de administración', () => {
   });
 
   it('un aprendiz sin rol no entra a la consola', async () => {
-    const s = await login(ctx, 'riomar', '987111222');
+    const s = await login(ctx, 'riomar', 'rosa');
     const r = await ctx.http.get('/admin/tenants').set(bearer(s.access_token));
     expect(r.body.error.code).toBe('FORBIDDEN');
   });
@@ -50,20 +49,25 @@ describe('Consola de administración', () => {
     expect((await ctx.http.post('/admin/tenants').set(bearer(adminToken)).send(base)).body.error.code).toBe('SLUG_TAKEN');
   });
 
-  it('crea personas con contraseña temporal y un administrador de empresa', async () => {
+  it('crea personas por correo y les envía una invitación con la marca de la empresa', async () => {
     const r = await ctx.http.post('/admin/tenants/minera-sur/users').set(bearer(adminToken)).send([
-      { first_name: 'Elena', last_name: 'Cárdenas', phone: '988000111', area: 'Planta', role: 'admin' },
-      { first_name: 'Jorge', last_name: 'Ticona', phone: '988000222', area: 'Mina' }
+      { first_name: 'Elena', last_name: 'Cárdenas', email: 'elena@minerasur.example', area: 'Planta', role: 'admin' },
+      { first_name: 'Jorge', last_name: 'Ticona', email: 'Jorge.Ticona@minerasur.example', phone: '988000222', area: 'Mina' }
     ]);
     expect(r.status).toBe(201);
     expect(r.body.users).toHaveLength(2);
-    expect(r.body.users[1].temporary_password).toMatch(/^[a-z0-9]{6}\d{2}$/);
-    learnerId = r.body.users[1].id; learnerPw = r.body.users[1].temporary_password;
-    const dup = await ctx.http.post('/admin/tenants/minera-sur/users').set(bearer(adminToken)).send({ first_name: 'X', last_name: 'Y', phone: '988000222' });
-    expect(dup.body.error.code).toBe('PHONE_TAKEN');
+    expect(r.body.users[1]).toMatchObject({ email: 'jorge.ticona@minerasur.example', invite_sent: true });
+    learnerId = r.body.users[1].id;
+    const mail = ctx.mail.sent.find((m) => m.to === 'jorge.ticona@minerasur.example')!;
+    expect(mail.subject).toBe('Minera Sur te invita a tu capacitación');
+    expect(mail.text).toContain('accion=invitacion');
+    const dup = await ctx.http.post('/admin/tenants/minera-sur/users').set(bearer(adminToken)).send({ first_name: 'X', last_name: 'Y', email: 'JORGE.TICONA@minerasur.example' });
+    expect(dup.body.error.code).toBe('EMAIL_TAKEN');
     const list = await ctx.http.get('/admin/tenants/minera-sur/users').set(bearer(adminToken));
     expect(list.body.users.find((u: any) => u.first_name === 'Elena').role).toBe('admin');
-    expect(list.body.users.every((u: any) => u.password_pending)).toBe(true);
+    expect(list.body.users.every((u: any) => u.status === 'invited' && !u.has_password)).toBe(true);
+    const again = await ctx.http.post(`/admin/tenants/minera-sur/users/${learnerId}/invite`).set(bearer(adminToken));
+    expect(again.body.invite_sent).toBe(true);
   });
 
   it('crea una ruta, no la asigna hasta publicarla, y luego sí', async () => {
@@ -85,28 +89,35 @@ describe('Consola de administración', () => {
     expect(again.body.assignments[0].created).toBe(false);
   });
 
-  it('la persona creada entra con su contraseña temporal y ve la ruta; el reto no trae preguntas de evaluación', async () => {
-    const s = await login(ctx, 'minera-sur', '988000222', learnerPw);
-    expect(s.password_change_required).toBe(true);
-    const ch = await ctx.http.post('/auth/password').set(bearer(s.access_token)).send({ new_password: 'Jorge2026x' });
-    const token = ch.body.access_token;
+  it('la persona acepta la invitación, crea su contraseña y ve la ruta; el reto no trae preguntas de evaluación', async () => {
+    const url = ctx.mail.lastLink('jorge.ticona@minerasur.example')!;
+    const info = await ctx.http.get('/auth/link-info').query({ token: tokenFrom(url) });
+    expect(info.body).toMatchObject({ purpose: 'invite', first_name: 'Jorge', company: 'Minera Sur' });
+    const s = await ctx.http.post('/auth/password/set').send({ token: tokenFrom(url), new_password: 'Jorge2026x' });
+    expect(s.status).toBe(200);
+    expect(s.body.password_change_required).toBe(false);
+    const token = s.body.access_token;
     const home = (await ctx.http.get('/home').set(bearer(token))).body;
     expect(home.assignments[0].route_title).toBe('Inducción en mina');
     const l = (await ctx.http.get(`/lessons/${home.next.lesson.id}`).set(bearer(token))).body;
     expect(l.quiz).toHaveLength(1);
     expect(l.quiz[0].prompt).toBe('Pregunta 1.1');
+    expect((await login(ctx, 'minera-sur', 'jorge.ticona@minerasur.example', 'Jorge2026x')).access_token).toBeTruthy();
+    const list = await ctx.http.get('/admin/tenants/minera-sur/users').set(bearer(adminToken));
+    expect(list.body.users.find((u: any) => u.first_name === 'Jorge')).toMatchObject({ status: 'active', has_password: true });
   });
 
   it('seguimiento: avance por persona', async () => {
     const p = (await ctx.http.get('/admin/tenants/minera-sur/progress').set(bearer(adminToken))).body;
     expect(p.summary).toMatchObject({ people: 1, completed: 0, not_started: 1, late: 0 });
-    expect(p.people[0]).toMatchObject({ user: { name: 'Jorge Ticona' }, pct: 0, exam: { attempts: 0, passed: false }, certificate: null });
+    expect(p.people[0]).toMatchObject({ user: { name: 'Jorge Ticona', email: 'jorge.ticona@minerasur.example' }, pct: 0, exam: { attempts: 0, passed: false }, certificate: null });
   });
 
   it('un administrador de empresa no puede operar otra empresa', async () => {
     const elena = (await ctx.http.post('/admin/tenants/minera-sur/users').set(bearer(adminToken))
-      .send({ first_name: 'Ana', last_name: 'Admin', phone: '988000333', role: 'admin', temporary_password: 'Temporal1' })).body.users[0];
-    const s = await login(ctx, 'minera-sur', elena.phone, 'Temporal1');
+      .send({ first_name: 'Ana', last_name: 'Admin', email: 'ana@minerasur.example', role: 'admin', temporary_password: 'Temporal1' })).body.users[0];
+    expect(elena.invite_sent).toBe(false);
+    const s = await login(ctx, 'minera-sur', elena.email, 'Temporal1');
     const ch = await ctx.http.post('/auth/password').set(bearer(s.access_token)).send({ new_password: 'Ana2026xx' });
     const own = await ctx.http.get('/admin/tenants/minera-sur/progress').set(bearer(ch.body.access_token));
     expect(own.status).toBe(200);

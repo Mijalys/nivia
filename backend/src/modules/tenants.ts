@@ -2,7 +2,7 @@ import { Controller, Get, Inject, Injectable, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { Public, tenantSlugFrom } from '../common/auth';
 import { ApiError } from '../common/errors';
-import { DB } from '../config';
+import { CONFIG, Config, DB } from '../config';
 import { Db, Q } from '../db/db';
 
 export interface Branding {
@@ -39,7 +39,7 @@ export interface Tenant {
 
 @Injectable()
 export class TenantsService {
-  constructor(@Inject(DB) private db: Db) {}
+  constructor(@Inject(DB) private db: Db, @Inject(CONFIG) private cfg: Config) {}
 
   async bySlug(slug: string): Promise<Tenant> {
     const row = await this.db.anon((q) => q.query<Tenant>('select * from tenant where slug = $1', [slug]));
@@ -59,7 +59,9 @@ export class TenantsService {
       slug: t.slug,
       name: t.name,
       branding: t.branding,
-      exam_policy: t.exam_policy
+      exam_policy: t.exam_policy,
+      // La app muestra "Continuar con Google" solo si hay un Client ID configurado.
+      sign_in: { email_password: true, email_link: true, google_client_id: this.cfg.googleClientId ?? null }
     };
   }
 }

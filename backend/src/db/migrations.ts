@@ -307,5 +307,52 @@ grant select, insert, update, delete on membership to nivia_app;
 -- La app también necesita crear empresas desde la consola.
 grant insert, update on tenant to nivia_app;
 `
+  },
+  {
+    id: '003_email_google',
+    sql: `
+-- El ingreso pasa de celular + SMS a correo, contraseña y Google.
+alter table app_user add column email text;
+alter table app_user add column email_verified_at timestamptz;
+alter table app_user alter column phone drop not null;
+create unique index app_user_email_idx on app_user (tenant_id, lower(email)) where email is not null;
+
+-- Quien entra solo con Google no tiene contraseña.
+alter table credential alter column password_hash drop not null;
+
+-- Cuenta de Google vinculada a una persona invitada.
+create table user_identity (
+  tenant_id uuid not null references tenant(id),
+  user_id uuid not null references app_user(id),
+  provider text not null check (provider in ('google')),
+  subject text not null,
+  email text not null,
+  created_at timestamptz not null default now(),
+  primary key (tenant_id, provider, subject)
+);
+
+-- Enlaces de un solo uso que llegan por correo.
+create table email_token (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references tenant(id),
+  user_id uuid not null references app_user(id),
+  purpose text not null check (purpose in ('invite', 'reset', 'login')),
+  token_hash text not null unique,
+  expires_at timestamptz not null,
+  consumed_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+${['user_identity', 'email_token'].map((t) => `
+alter table ${t} enable row level security;
+alter table ${t} force row level security;
+create policy tenant_isolation on ${t}
+  using (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid)
+  with check (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+grant select, insert, update, delete on ${t} to nivia_app;`).join('\n')}
+
+-- Ya no se usa: la recuperación es por correo.
+drop table otp_challenge;
+`
   }
 ];

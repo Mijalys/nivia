@@ -66,9 +66,11 @@ export async function seed(db: Db, clock: Clock): Promise<boolean> {
 
       for (const p of PERSONAS) {
         const area = t.areas[p.key];
+        // Correos de demostración en el dominio reservado .example: nunca llegan a nadie real.
         const userId = (await q.query<{ id: string }>(
-          'insert into app_user (tenant_id, first_name, last_name, phone, area) values ($1, $2, $3, $4, $5) returning id',
-          [tenantId, p.first, p.last, `+51${p.phone}`, p.temporary ? null : area])).rows[0].id;
+          `insert into app_user (tenant_id, first_name, last_name, email, email_verified_at, phone, area)
+           values ($1, $2, $3, $4, $5, $6, $7) returning id`,
+          [tenantId, p.first, p.last, `${p.key}@${t.slug}.example`, p.temporary ? null : now, `+51${p.phone}`, p.temporary ? null : area])).rows[0].id;
         await q.query('insert into credential (user_id, tenant_id, password_hash, is_temporary) values ($1, $2, $3, $4)',
           [userId, tenantId, passwordHash, p.temporary]);
 

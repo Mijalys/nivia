@@ -258,6 +258,10 @@ body.demo-on { --demo-h: calc(56px + env(safe-area-inset-bottom, 0px)); }
 .lessonbtn.need { border-style: dashed; }
 .lessonbtn.need .t { color: var(--muted); }
 .lgroup { display: flex; flex-direction: column; gap: 6px; }
+.btn-google { background: #FFFFFF; color: #1F1F1F; border: 1px solid #DADCE0; font-weight: 600; }
+.btn-google:disabled { background: var(--surface2); color: var(--muted); border-color: var(--line); }
+.divider { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 14px; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--line2); }
 .chkrow { width: 100%; min-height: 56px; display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; text-align: left; }
 .chkrow .box { width: 24px; height: 24px; border-radius: 7px; border: 2px solid var(--line2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--on-accent); }
 .chkrow[aria-checked="true"] .box { background: var(--accent); border-color: var(--accent); }
@@ -374,13 +378,13 @@ const VDUR = 27.1;
 
 const CLIENTS = {
   A: {
-    id: 'A', name: 'Corporación Ríomar', mono: 'R', accent: '#F26B1D', principal: '#0E4D5C', ptext: '#7CC3D0', orb: [0.949, 0.42, 0.114],
+    id: 'A', slug: 'riomar', name: 'Corporación Ríomar', mono: 'R', accent: '#F26B1D', principal: '#0E4D5C', ptext: '#7CC3D0', orb: [0.949, 0.42, 0.114],
     route: R1, prefix: 'RIO', areas: ['Mantenimiento', 'Producción', 'Almacén', 'Calidad'],
     rules: { min: 80, attempts: 3, wait: 60, n: 10, minutes: 15, exhausted: 'Habla con tu supervisor para habilitar un nuevo intento.' },
     second: { title: 'Orden y limpieza en el área', levels: 2, starts: new Date(2026, 10, 16), due: new Date(2026, 11, 15) }
   },
   B: {
-    id: 'B', name: 'Grupo Altavista', mono: 'A', accent: '#F2B630', principal: '#1F4D3A', ptext: '#8FD0A5', orb: [0.949, 0.714, 0.188],
+    id: 'B', slug: 'altavista', name: 'Grupo Altavista', mono: 'A', accent: '#F2B630', principal: '#1F4D3A', ptext: '#8FD0A5', orb: [0.949, 0.714, 0.188],
     route: R2, prefix: 'ALT', areas: ['Administración', 'Finanzas', 'Logística', 'Recursos Humanos'],
     rules: { min: 70, attempts: 2, wait: 0, n: 8, minutes: 12, exhausted: 'Tu ruta se reinicia el lunes; repasarás desde el Nivel 1.' },
     second: { title: 'Atención a proveedores', levels: 2, starts: new Date(2026, 10, 16), due: new Date(2026, 11, 15) }
@@ -398,7 +402,9 @@ const PERSONAS = {
 };
 const PERSONA_ORDER = ['carlos', 'rosa', 'luis', 'marisol'];
 const DEMO_PASS = 'Demo2026';
-const DEMO_CODE = '123456';
+// Google bloquea su ingreso dentro de los navegadores de WhatsApp, Facebook e Instagram.
+const IN_APP_BROWSER = /FBAN|FBAV|Instagram|WhatsApp|Line\//i.test(navigator.userAgent || '');
+const GOOGLE_G = '<svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.6 13.2l7.8 6.1C12.3 13.5 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.6c0-1.6-.1-3.2-.4-4.6H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.5 5.8c4.4-4 6.8-10 6.8-17.1z"/><path fill="#FBBC05" d="M10.4 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.8-6.1C1 16.5 0 20.1 0 24s1 7.5 2.6 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.8-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.3 2.3-6.3 0-11.7-4-13.6-9.6l-7.8 6.1C6.6 42.6 14.6 48 24 48z"/></svg>';
 
 /* ---------- Estado ---------- */
 const S = {
@@ -665,16 +671,32 @@ SCREENS.login = function () {
       '<div style="position:relative;display:flex;align-items:center;justify-content:center">' + orb(160) +
       '<span class="mono" style="position:absolute;width:56px;height:56px;border-radius:16px;font-size:28px;background:' + c.principal + ';color:#F2F2F0">' + c.mono + '</span></div>' +
       '<span style="font-weight:800;font-size:18px">' + esc(c.name) + '</span>') + '</button>' +
-    '<div class="stack-s" style="text-align:center"><h1 class="title">Entra a tu <b>capacitación</b></h1><p class="muted small">Usa tu número de celular y tu contraseña.</p></div>' +
+    '<div class="stack-s" style="text-align:center"><h1 class="title">Entra a tu <b>capacitación</b></h1><p class="muted small">Usa el correo con el que te invitó tu empresa.</p></div>' +
+    (IN_APP_BROWSER ? '<div class="banner info" role="status">' + icon('info', 20) + '<span>Para entrar con Google, abre esta página en Chrome: toca los tres puntos y elige "Abrir en el navegador".</span></div>' : '') +
+    (f.gErr ? '<p class="err" role="alert">' + icon('info', 20) + '<span>' + esc(f.gErr) + '</span></p>' : '') +
+    '<button class="btn btn-google" data-a="google"' + (S.offline ? ' disabled' : '') + '>' + GOOGLE_G + 'Continuar con Google</button>' +
+    '<div class="divider"><span>o con tu correo</span></div>' +
     '<form class="stack" id="loginForm" novalidate>' +
-      '<div class="field"><label for="phone">Celular</label><input class="input" id="phone" inputmode="numeric" autocomplete="tel" placeholder="987 654 321" value="' + esc(f.phone || '') + '"' + (f.err === 'phone' ? ' aria-invalid="true"' : '') + '></div>' +
+      '<div class="field"><label for="email">Correo</label><input class="input" id="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" placeholder="nombre@empresa.com" value="' + esc(f.email || '') + '"' + (f.err === 'email' ? ' aria-invalid="true"' : '') + '></div>' +
       '<div class="field"><label for="pass">Contraseña</label><div class="inwrap"><input class="input" id="pass" type="' + (f.show ? 'text' : 'password') + '" autocomplete="current-password" value="' + esc(f.pass || '') + '"' + (f.err === 'pass' ? ' aria-invalid="true"' : '') + '><button type="button" class="show" data-a="togglePass">' + (f.show ? 'Ocultar' : 'Mostrar') + '</button></div></div>' +
       (f.msg ? '<p class="err" role="alert">' + icon('info', 20) + '<span>' + esc(f.msg) + '</span></p>' : '') +
       '<button class="btn btn-primary" type="submit"' + (S.offline || f.busy ? ' disabled' : '') + '>' + (f.busy ? 'Ingresando…' : 'Ingresar') + '</button>' +
       (S.offline ? '<p class="reason">Necesitas señal para ingresar.</p>' : '') +
     '</form>' +
-    '<button class="link" style="align-self:center" data-a="forgot">¿Olvidaste tu contraseña?</button></main>';
+    '<div class="row" style="justify-content:space-between;flex-wrap:wrap"><button class="link" data-a="forgot" data-kind="reset">¿Olvidaste tu contraseña?</button>' +
+    '<button class="link" data-a="forgot" data-kind="link">Entrar con un enlace</button></div></main>';
 };
+
+/* Google simulado: en el producto real es la ventana de Google; aquí, la lista de cuentas de este celular. */
+function googleSheet() {
+  const accounts = PERSONA_ORDER.map((k) => ({ k, name: PERSONAS[k].first + ' ' + PERSONAS[k].last, email: emailOf(k) }))
+    .concat([{ k: null, name: 'Cuenta personal', email: 'alguien@gmail.com' }]);
+  return '<div class="row" style="gap:10px">' + GOOGLE_G + '<h2 class="h2" style="font-size:18px">Elige una cuenta</h2></div>' +
+    '<p class="muted small">para continuar a Nivia · ' + esc(C().name) + '</p><div class="stack" style="gap:8px">' +
+    accounts.map((a) => '<button class="lessonbtn" data-a="googlePick" data-k="' + (a.k || '') + '"><span class="mono" style="background:var(--surface2);color:var(--fg)">' + esc(a.name.charAt(0)) + '</span><span class="t">' + esc(a.name) + '<span class="xs muted" style="display:block;font-weight:400">' + esc(a.email) + '</span></span></button>').join('') +
+    '</div><p class="xs muted">Simulación: en el celular real aparece la ventana de Google con las cuentas de la persona.</p>' +
+    '<button class="btn btn-sec" data-a="closeSheet">Cancelar</button>';
+}
 
 function passRulesHtml(val, temp, showMiss) {
   const r = passRules(val, temp);
@@ -688,7 +710,7 @@ function passRules(v, temp) { v = v || ''; return { len: v.length >= 8, num: /\d
 
 SCREENS.newpass = function () {
   const mode = S.params.mode; const f = S.form;
-  const step = mode === 'first' ? '<p class="over">Paso 1 de 2</p>' : mode === 'forgot' ? '<p class="over">Paso 3 de 3</p>' : '';
+  const step = mode === 'first' ? '<p class="over">Paso 1 de 2</p>' : mode === 'forgot' ? '<p class="over">Contraseña nueva</p>' : '';
   const head = mode === 'change' ? topBar('Perfil', null, 'toProfile') : (mode === 'forgot' ? '' : brandBar());
   return head + offlineBar() + '<main class="scr">' + step +
     '<div class="stack-s"><h1 class="title">Crea tu <b>contraseña</b></h1><p class="muted small">' + (mode === 'first' ? 'Es tu primer ingreso. Cambia la contraseña temporal por una tuya.' : 'Escribe una contraseña nueva.') + '</p></div>' +
@@ -706,7 +728,7 @@ SCREENS.ficha = function () {
   const c = C(); const p = P(); const f = S.form;
   return brandBar() + offlineBar() + '<main class="scr"><p class="over">Paso 2 de 2</p>' +
     '<div class="stack-s"><h1 class="title">Completa tus <b>datos</b></h1><p class="muted small">Solo falta un dato.</p></div>' +
-    '<dl class="dl"><div><dt>Nombre</dt><dd>' + esc(p.first + ' ' + p.last) + '</dd></div><div><dt>Empresa</dt><dd>' + esc(c.name) + '</dd></div><div><dt>Celular</dt><dd>' + fPhone(p.phone) + '</dd></div></dl>' +
+    '<dl class="dl"><div><dt>Nombre</dt><dd>' + esc(p.first + ' ' + p.last) + '</dd></div><div><dt>Empresa</dt><dd>' + esc(c.name) + '</dd></div><div><dt>Correo</dt><dd>' + esc(emailOf(S.persona)) + '</dd></div></dl>' +
     '<form class="stack" id="fichaForm" novalidate><div class="field"><label for="area">¿En qué área trabajas?</label>' +
     '<select class="input" id="area"' + (f.err ? ' aria-invalid="true"' : '') + '><option value="">Elige tu área</option>' + c.areas.map((a) => '<option' + (f.area === a ? ' selected' : '') + '>' + esc(a) + '</option>').join('') + '</select></div>' +
     (f.err ? '<p class="err" role="alert">' + icon('info', 20) + '<span>Elige tu área para continuar.</span></p>' : '') +
@@ -714,25 +736,25 @@ SCREENS.ficha = function () {
     (S.offline ? '<p class="reason">Necesitas señal para guardar tus datos.</p>' : '') + '</form></main>';
 };
 
+/* Recuperar contraseña o entrar con un enlace: ambos llegan al correo. Siempre se responde igual, exista o no la cuenta. */
 SCREENS.forgot = function () {
-  const f = S.form; const step = f.step || 1;
-  let body = '';
-  if (step === 1) {
-    body = '<p class="over">Paso 1 de 3</p><div class="stack-s"><h1 class="title">Recupera tu <b>contraseña</b></h1><p class="muted small">Te enviaremos un código a tu celular.</p></div>' +
-      '<form class="stack" id="fg1" novalidate><div class="field"><label for="fphone">Celular</label><input class="input" id="fphone" inputmode="numeric" placeholder="987 654 321" value="' + esc(f.phone || '') + '"></div>' +
+  const f = S.form; const reset = S.params.kind !== 'link';
+  let body;
+  if (!f.sent) {
+    body = '<div class="stack-s"><h1 class="title">' + (reset ? 'Recupera tu <b>contraseña</b>' : 'Entra con un <b>enlace</b>') + '</h1><p class="muted small">' +
+      (reset ? 'Te enviaremos un enlace a tu correo para crear una contraseña nueva.' : 'Te enviaremos un enlace a tu correo. Lo tocas y entras, sin contraseña.') + '</p></div>' +
+      '<form class="stack" id="fg1" novalidate><div class="field"><label for="femail">Correo</label><input class="input" id="femail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" placeholder="nombre@empresa.com" value="' + esc(f.email || '') + '"></div>' +
       (f.msg ? '<p class="err" role="alert">' + icon('info', 20) + '<span>' + esc(f.msg) + '</span></p>' : '') +
-      '<button class="btn btn-primary" type="submit"' + (S.offline ? ' disabled' : '') + '>Enviar código</button>' + (S.offline ? '<p class="reason">Necesitas señal para recibir el código.</p>' : '') + '</form>';
+      '<button class="btn btn-primary" type="submit"' + (S.offline ? ' disabled' : '') + '>Enviar enlace</button>' + (S.offline ? '<p class="reason">Necesitas señal para recibir el correo.</p>' : '') + '</form>';
   } else {
-    const d = String(f.phone || '').replace(/\D/g, '');
-    const left = Math.max(0, Math.ceil(((f.resendAt || 0) - Date.now()) / 1000));
-    body = '<p class="over">Paso 2 de 3</p><div class="stack-s"><h1 class="title">Escribe el <b>código</b></h1><p class="muted small">Te enviamos un código de 6 dígitos al ' + d.slice(0, 3) + ' *** ' + d.slice(6) + '.</p></div>' +
-      '<form class="stack" id="fg2" novalidate><div class="codebox" role="group" aria-label="Código de 6 dígitos">' +
-      [0, 1, 2, 3, 4, 5].map((i) => '<input class="input" id="cd' + i + '" inputmode="numeric" maxlength="1" aria-label="Dígito ' + (i + 1) + '" value="' + esc((f.code || '')[i] || '') + '">').join('') + '</div>' +
-      (f.msg ? '<p class="err" role="alert">' + icon('info', 20) + '<span>' + esc(f.msg) + '</span></p>' : '') +
-      '<button class="btn btn-primary" type="submit"' + (S.offline ? ' disabled' : '') + '>Validar</button>' +
-      '<button type="button" class="link" id="resend" data-a="resend"' + (left > 0 ? ' disabled' : '') + ' style="align-self:center">' + (left > 0 ? 'Reenviar en ' + left + ' s' : 'Reenviar código') + '</button></form>';
+    const [user, dom] = String(f.email).split('@');
+    body = '<span class="muted">' + icon('inbox', 40) + '</span><div class="stack-s"><h1 class="title">Revisa tu <b>correo</b></h1>' +
+      '<p class="muted small">Si ' + esc(user.charAt(0) + '•••@' + (dom || '')) + ' tiene una cuenta, te llegó un enlace. ' + (reset ? 'Vence en 30 minutos.' : 'Vence en 15 minutos.') + ' Sirve una sola vez.</p></div>' +
+      '<div class="banner info">' + icon('info', 20) + '<span>¿No llegó? Revisa la carpeta de spam o pide otro en un minuto.</span></div>' +
+      '<button class="btn btn-sec" data-a="openMailLink">' + icon('play', 20) + 'Abrir el enlace (demostración)</button>' +
+      '<button class="link" style="align-self:center" data-a="toLogin">Volver a ingresar</button>';
   }
-  return topBar('Recuperar contraseña', null, 'toLogin') + offlineBar() + '<main class="scr">' + body + '</main>';
+  return topBar(reset ? 'Recuperar contraseña' : 'Entrar con un enlace', null, 'toLogin') + offlineBar() + '<main class="scr">' + body + '</main>';
 };
 
 SCREENS.home = function () {
@@ -1043,7 +1065,7 @@ SCREENS.profile = function () {
   const c = C(); const p = P(); const pr = prog();
   return brandBar() + offlineBar() + '<main class="scr">' +
     '<button class="logo-hit" data-longpress="1" style="align-items:flex-start;gap:6px" aria-label="Perfil de ' + esc(p.first) + '"><span class="over">Perfil</span><span class="title" style="font-weight:800">' + esc(p.first + ' ' + p.last) + '</span></button>' +
-    '<dl class="dl"><div><dt>Celular</dt><dd>' + fPhone(p.phone) + '</dd></div><div><dt>Empresa</dt><dd>' + esc(c.name) + '</dd></div><div><dt>Área</dt><dd>' + esc(pr.area || 'Sin registrar') + '</dd></div></dl>' +
+    '<dl class="dl"><div><dt>Correo</dt><dd>' + esc(emailOf(S.persona)) + '</dd></div><div><dt>Google</dt><dd>' + (prog().google ? 'Vinculada' : 'No vinculada') + '</dd></div><div><dt>Empresa</dt><dd>' + esc(c.name) + '</dd></div><div><dt>Área</dt><dd>' + esc(pr.area || 'Sin registrar') + '</dd></div></dl>' +
     downloadsRow() +
     '<button class="lessonbtn" data-a="changePass"' + (S.offline ? ' disabled' : '') + '>' + icon('key', 20) + '<span class="t">Cambiar contraseña' + (S.offline ? '<span class="xs muted" style="display:block;font-weight:400">Necesitas señal para cambiar tu contraseña</span>' : '') + '</span>' + icon('chev', 20) + '</button>' +
     '<button class="btn btn-sec" data-a="logout">Cerrar sesión</button>' +
@@ -1074,6 +1096,8 @@ function sheetHtml() {
     body = '<h2 class="h2">¿Salir de la evaluación?</h2><p class="muted">Tus respuestas se guardan. El tiempo sigue corriendo.</p><button class="btn btn-primary" data-a="closeSheet">Seguir en la evaluación</button><button class="btn btn-sec" data-a="confirmExitExam">Salir</button>';
   } else if (sh.type === 'aiInfo') {
     body = '<h2 class="h2">Hecho con IA</h2><p class="muted">Este video se hizo con IA a partir del manual de ' + esc(C().name) + '.</p><button class="btn btn-primary" data-a="closeSheet">Entendido</button>';
+  } else if (sh.type === 'google') {
+    body = googleSheet();
   } else if (sh.type === 'demo') {
     body = demoPanel();
   } else {
@@ -1087,7 +1111,7 @@ function demoPanel() {
   return '<h2 class="h2">Panel de demostración</h2>' +
     '<div class="stack-s"><span class="dlabel">Cliente</span>' + seg('dClient', Object.values(CLIENTS).map((c) => [c.id, c.name]), S.client) + '</div>' +
     '<div class="stack-s"><span class="dlabel">Entrar como</span>' + seg('dPersona', PERSONA_ORDER.map((k) => [k, PERSONAS[k].first]), S.persona) +
-    '<p class="creds">Carlos 987 654 321 · Rosa 987 111 222 · Luis 987 333 444 · Marisol 987 555 666<br>Contraseña ' + DEMO_PASS + ' · Código ' + DEMO_CODE + '</p></div>' +
+    '<p class="creds">' + PERSONA_ORDER.map((k) => emailOf(k)).join(' · ') + '<br>Contraseña ' + DEMO_PASS + '</p></div>' +
     '<div class="stack-s"><span class="dlabel">Conexión y video</span>' + sw('dOffline', 'Sin señal', S.offline) + sw('dVideoFail', 'El video falla', S.videoFail) + '</div>' +
     '<div class="stack-s"><span class="dlabel">Siguiente pantalla (Inicio, Ruta, Certificados)</span>' + seg('dForce', [['', 'Normal'], ['cargando', 'Cargando'], ['vacio', 'Vacío'], ['error', 'Error']], S.forceNext || '') + '</div>' +
     '<div class="stack-s"><span class="dlabel">Resultado de la evaluación</span>' + seg('dResult', [['', 'Según respuestas'], ['pass', 'Aprobar'], ['fail', 'No aprobar'], ['exhaust', 'Agotar intentos']], S.forceResult || '') + '</div>' +
@@ -1405,17 +1429,19 @@ function openLesson(id, pos) {
   go('lesson', { id: id });
 }
 
-function login(phone, pass) {
-  const d = phone.replace(/\D/g, '');
-  const k = PERSONA_ORDER.find((x) => PERSONAS[x].phone === d);
-  if (!d) { S.form = { phone, pass, err: 'phone', msg: 'Escribe tu número de celular.' }; render(); return; }
-  if (!pass) { S.form = { phone, pass, err: 'pass', msg: 'Escribe tu contraseña.' }; render(); return; }
-  S.form = { phone, pass, busy: true }; render();
+function login(email, pass) {
+  const e = email.trim().toLowerCase();
+  const k = personaByEmail(e);
+  if (!e) { S.form = { email, pass, err: 'email', msg: 'Escribe tu correo.' }; render(); return; }
+  if (!pass) { S.form = { email, pass, err: 'pass', msg: 'Escribe tu contraseña.' }; render(); return; }
+  S.form = { email, pass, busy: true }; render();
   setTimeout(() => {
-    if (!k || prog(S.client, k).password !== pass) { S.form = { phone, pass: '', err: 'pass', msg: 'El celular o la contraseña no coinciden. Revisa e intenta de nuevo.' }; render(); return; }
+    if (!k || !prog(S.client, k).password || prog(S.client, k).password !== pass) { S.form = { email, pass: '', err: 'pass', msg: 'El correo o la contraseña no coinciden. Revisa e intenta de nuevo.' }; render(); return; }
     S.persona = k; enterAs();
   }, 500);
 }
+function emailOf(k) { return k + '@' + (C().slug || C().id.toLowerCase()) + '.example'; }
+function personaByEmail(e) { return PERSONA_ORDER.find((x) => emailOf(x) === e) || null; }
 function enterAs() {
   const pr = prog();
   if (pr.firstLogin) { go('newpass', { mode: 'first' }); S.form = { temp: pr.password }; render(); }
@@ -1456,9 +1482,22 @@ document.addEventListener('click', (e) => {
   switch (a) {
     case 'go': go(el.dataset.to); break;
     case 'togglePass': S.form.show = !S.form.show; syncForm(); render(); break;
-    case 'forgot': go('forgot'); S.form = { step: 1, phone: (document.getElementById('phone') || {}).value || '' }; render(); break;
+    case 'forgot': { const em = (document.getElementById('email') || {}).value || ''; go('forgot', { kind: el.dataset.kind }); S.form = { email: em }; render(); break; }
+    case 'openMailLink': {
+      const k = S.form.who;
+      if (!k) { toast('Ese correo no tiene cuenta: en la vida real no llegaría ningún correo.', 3500); render(); break; }
+      if (S.params.kind === 'link') { S.persona = k; enterAs(); toast('Entraste con el enlace de tu correo'); break; }
+      go('newpass', { mode: 'forgot' }); S.form = { who: k, temp: '' }; render(); break;
+    }
+    case 'google': S.sheet = { type: 'google' }; render(); break;
+    case 'googlePick': {
+      const k = el.dataset.k;
+      if (!k) { S.sheet = null; S.form = { gErr: 'Tu empresa aún no te invitó. Pide acceso a tu supervisor.' }; render(); break; }
+      // Con Google la contraseña temporal deja de servir y no se pide cambiarla (igual que el backend).
+      const pr = prog(S.client, k); if (pr.firstLogin) { pr.firstLogin = false; pr.password = null; }
+      pr.google = true; S.sheet = null; S.persona = k; enterAs(); break;
+    }
     case 'toLogin': go('login'); break;
-    case 'resend': S.form.resendAt = Date.now() + 30000; S.form.msg = ''; toast('Te enviamos un nuevo código'); render(); break;
     case 'continue': {
       S.sheet = null; const st = routeStats();
       if (S.offline) {
@@ -1577,7 +1616,7 @@ document.addEventListener('click', (e) => {
 });
 
 function syncForm() {
-  ['phone', 'pass', 'np1', 'np2', 'fphone'].forEach((id) => { const el = document.getElementById(id); if (el) S.form[id === 'fphone' ? 'phone' : id] = el.value; });
+  ['email', 'pass', 'np1', 'np2', 'femail'].forEach((id) => { const el = document.getElementById(id); if (el) S.form[id === 'femail' ? 'email' : id] = el.value; });
 }
 
 document.addEventListener('input', (e) => {
@@ -1585,20 +1624,13 @@ document.addEventListener('input', (e) => {
   if (t.id === 'np1' || t.id === 'np2') {
     S.form[t.id] = t.value;
     const ul = document.getElementById('prules'); if (ul) ul.innerHTML = passRulesHtml(S.form.np1, S.form.temp || DEMO_PASS, S.form.tried);
-  } else if (t.id === 'phone' || t.id === 'pass') { S.form[t.id] = t.value; }
-  else if (t.id === 'fphone') { S.form.phone = t.value; }
+  } else if (t.id === 'email' || t.id === 'pass') { S.form[t.id] = t.value; }
+  else if (t.id === 'femail') { S.form.email = t.value; }
   else if (t.id === 'area') { S.form.area = t.value; }
   else if (t.id === 'rcomment' && S.sheet) { S.sheet.comment = t.value; }
-  else if (/^cd\d$/.test(t.id)) {
-    const i = +t.id.slice(2); const v = t.value.replace(/\D/g, '');
-    if (v.length > 1) { const all = v.slice(0, 6); for (let k = 0; k < 6; k++) { const x = document.getElementById('cd' + k); if (x) x.value = all[k] || ''; } }
-    else { t.value = v; if (v && i < 5) document.getElementById('cd' + (i + 1)).focus(); }
-    S.form.code = [0, 1, 2, 3, 4, 5].map((k) => (document.getElementById('cd' + k) || {}).value || '').join('');
-  }
 });
 document.addEventListener('change', (e) => { if (e.target.id === 'area') S.form.area = e.target.value; });
 document.addEventListener('keydown', (e) => {
-  if (/^cd\d$/.test(e.target.id) && e.key === 'Backspace' && !e.target.value) { const i = +e.target.id.slice(2); if (i > 0) document.getElementById('cd' + (i - 1)).focus(); }
   if (e.key === 'Escape' && S.sheet) { S.sheet = null; render(); }
 });
 document.addEventListener('toggle', (e) => {
@@ -1613,7 +1645,8 @@ document.addEventListener('submit', (e) => {
     if (!(r.len && r.num && r.diff)) { f.tried = true; f.msg = 'Tu contraseña aún no cumple todas las reglas.'; render(); return; }
     if (f.np1 !== f.np2) { f.tried = true; f.msg = 'Las dos contraseñas no coinciden.'; render(); return; }
     const mode = S.params.mode;
-    if (mode === 'forgot') { const k = f.who; prog(S.client, k).password = f.np1; prog(S.client, k).firstLogin = false; const ph = PERSONAS[k].phone; go('login'); S.form = { phone: fPhone(ph) }; toast('Listo, ya puedes ingresar'); render(); return; }
+    // Como en el backend: crear la contraseña desde el enlace deja la sesión abierta.
+    if (mode === 'forgot') { const k = f.who; prog(S.client, k).password = f.np1; prog(S.client, k).firstLogin = false; S.persona = k; enterAs(); toast('Listo, tu contraseña nueva quedó guardada'); render(); return; }
     const pr = prog(); pr.password = f.np1; pr.firstLogin = false;
     if (mode === 'first') { if (!pr.area) { go('ficha'); } else go('home'); toast('Contraseña guardada'); render(); }
     else { go('profile'); toast('Contraseña actualizada'); render(); }
@@ -1622,18 +1655,9 @@ document.addEventListener('submit', (e) => {
     if (!v) { S.form.err = true; render(); return; }
     prog().area = v; go('home');
   } else if (id === 'fg1') {
-    const d = (S.form.phone || '').replace(/\D/g, ''); const k = PERSONA_ORDER.find((x) => PERSONAS[x].phone === d);
-    if (d.length !== 9) { S.form.msg = 'Escribe tu celular de 9 dígitos.'; render(); return; }
-    if (!k) { S.form.msg = 'Ese celular no está registrado. Consulta con tu supervisor.'; render(); return; }
-    S.form = { step: 2, phone: d, who: k, tries: 3, resendAt: Date.now() + 30000 }; toast('Código enviado'); render();
-    setTimeout(() => { const x = document.getElementById('cd0'); if (x) x.focus(); }, 30);
-  } else if (id === 'fg2') {
-    const f = S.form;
-    if ((f.code || '') === DEMO_CODE) { const who = f.who; go('newpass', { mode: 'forgot' }); S.form = { who, temp: '' }; render(); return; }
-    f.tries = (f.tries || 3) - 1; f.code = '';
-    f.msg = f.tries > 0 ? 'El código no coincide. Te ' + (f.tries === 1 ? 'queda 1 intento.' : 'quedan ' + f.tries + ' intentos.') : 'Agotaste los intentos. Pide un código nuevo.';
-    if (f.tries <= 0) { f.tries = 3; f.resendAt = 0; }
-    render();
+    const e = (S.form.email || '').trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) { S.form.msg = 'Escribe un correo válido, por ejemplo nombre@empresa.com.'; render(); return; }
+    S.form = { email: e, who: personaByEmail(e), sent: true }; render();
   }
 });
 
@@ -1671,10 +1695,6 @@ setInterval(() => {
       if (pr.exam.remaining <= 0) { pr.exam.remaining = 0; toast('Se acabó el tiempo. Enviamos lo que respondiste.', 4000); submitExam(); return; }
       const el = document.getElementById('etimer'); if (el) el.textContent = fClock(pr.exam.remaining);
     }
-  }
-  if (S.screen === 'forgot' && S.form.step === 2) {
-    const b = document.getElementById('resend');
-    if (b) { const left = Math.max(0, Math.ceil(((S.form.resendAt || 0) - t) / 1000)); b.disabled = left > 0; b.textContent = left > 0 ? 'Reenviar en ' + left + ' s' : 'Reenviar código'; }
   }
   if (S.gate === 'cargando' && !S.gateSlow && t - S.gateSince > 8000) { S.gateSlow = true; render(); }
   if (S.toast && t > S.toastUntil) { S.toast = null; const el = document.querySelector('.toast'); if (el) el.remove(); }

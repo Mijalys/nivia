@@ -1,5 +1,5 @@
 import { advanceClock } from '../src/modules/assessment';
-import { bearer, boot, correctAnswers, Ctx, eventId, login } from './helpers';
+import { bearer, boot, correctAnswers, Ctx, eventId, googleToken, login, tokenFrom } from './helpers';
 
 let ctx: Ctx;
 beforeAll(async () => { ctx = await boot(); });
@@ -48,13 +48,13 @@ describe('Marca blanca', () => {
 
 describe('Ingreso', () => {
   it('rechaza credenciales incorrectas con el texto del Corte 1', async () => {
-    const r = await ctx.http.post('/auth/login').set('X-Tenant', 'riomar').send({ phone: '987 111 222', password: 'mala1234' });
+    const r = await ctx.http.post('/auth/login').set('X-Tenant', 'riomar').send({ email: 'Rosa@Riomar.example', password: 'mala1234' });
     expect(r.status).toBe(401);
     expect(r.body.error.code).toBe('INVALID_CREDENTIALS');
   });
 
   it('obliga a Carlos a cambiar la contraseña temporal y completar su área', async () => {
-    const s = await login(ctx, 'riomar', '987654321');
+    const s = await login(ctx, 'riomar', 'carlos');
     expect(s.password_change_required).toBe(true);
     expect((await ctx.http.get('/home').set(bearer(s.access_token))).body.error.code).toBe('PASSWORD_CHANGE_REQUIRED');
 
@@ -77,7 +77,7 @@ describe('Ingreso', () => {
   });
 
   it('rota el token de renovación y cierra la sesión si uno usado reaparece', async () => {
-    const s = await login(ctx, 'riomar', '987111222');
+    const s = await login(ctx, 'riomar', 'rosa');
     const r1 = await ctx.http.post('/auth/refresh').send({ refresh_token: s.refresh_token });
     expect(r1.status).toBe(200);
     const reuse = await ctx.http.post('/auth/refresh').send({ refresh_token: s.refresh_token });
@@ -86,35 +86,92 @@ describe('Ingreso', () => {
     expect(after.body.error.code).toBe('SESSION_INVALID');
   });
 
-  it('recupera la contraseña con código por SMS', async () => {
-    const req = await ctx.http.post('/auth/otp').set('X-Tenant', 'altavista').send({ phone: '987333444' });
+  it('recupera la contraseña con un enlace al correo, de un solo uso, y cierra las otras sesiones', async () => {
+    const before = await login(ctx, 'altavista', 'luis');
+    const req = await ctx.http.post('/auth/password/forgot').set('X-Tenant', 'altavista').send({ email: 'luis@altavista.example' });
     expect(req.status).toBe(202);
-    expect(req.body.masked_phone).toBe('987 *** 444');
-    const unknown = await ctx.http.post('/auth/otp').set('X-Tenant', 'altavista').send({ phone: '999999999' });
+    const unknown = await ctx.http.post('/auth/password/forgot').set('X-Tenant', 'altavista').send({ email: 'nadie@altavista.example' });
     expect(unknown.status).toBe(202);
+    expect(ctx.mail.sent.filter((m) => m.to === 'nadie@altavista.example')).toHaveLength(0);
 
-    const bad = await ctx.http.post('/auth/otp/verify').set('X-Tenant', 'altavista').send({ phone: '987333444', code: '000000' });
-    expect(bad.body.error).toMatchObject({ code: 'OTP_INVALID', attempts_left: 2 });
-    const code = ctx.sms.lastCode('+51987333444')!;
-    const ok = await ctx.http.post('/auth/otp/verify').set('X-Tenant', 'altavista').send({ phone: '987333444', code });
+    const mail = ctx.mail.sent[ctx.mail.sent.length - 1];
+    expect(mail.subject).toBe('Restablece tu contraseña');
+    expect(mail.html).toContain('Grupo Altavista');
+    const url = ctx.mail.lastLink('luis@altavista.example')!;
+    expect(url).toContain('accion=restablecer');
+    const token = tokenFrom(url);
+
+    const info = await ctx.http.get('/auth/link-info').query({ token });
+    expect(info.body).toMatchObject({ purpose: 'reset', first_name: 'Luis', company: 'Grupo Altavista' });
+    const weak = await ctx.http.post('/auth/password/set').send({ token, new_password: 'corta' });
+    expect(weak.body.error.code).toBe('WEAK_PASSWORD');
+    const ok = await ctx.http.post('/auth/password/set').send({ token, new_password: 'Luis2026x' });
     expect(ok.status).toBe(200);
-    const reset = await ctx.http.post('/auth/password/reset').send({ reset_token: ok.body.reset_token, new_password: 'Luis2026x' });
-    expect(reset.status).toBe(200);
-    await expect(login(ctx, 'altavista', '987333444')).rejects.toThrow();
-    expect((await login(ctx, 'altavista', '987333444', 'Luis2026x')).access_token).toBeTruthy();
+    expect(ok.body.access_token).toBeTruthy();
+    expect((await ctx.http.post('/auth/password/set').send({ token, new_password: 'Otra2026x' })).body.error.code).toBe('LINK_INVALID');
+    expect((await ctx.http.post('/auth/refresh').send({ refresh_token: before.refresh_token })).body.error.code).toBe('SESSION_INVALID');
+    await expect(login(ctx, 'altavista', 'luis')).rejects.toThrow();
+    expect((await login(ctx, 'altavista', 'luis', 'Luis2026x')).access_token).toBeTruthy();
+  });
+
+  it('el enlace de restablecer vence a los 30 minutos', async () => {
+    await ctx.http.post('/auth/password/forgot').set('X-Tenant', 'riomar').send({ email: 'luis@riomar.example' });
+    const token = tokenFrom(ctx.mail.lastLink('luis@riomar.example')!);
+    ctx.clock.advance(31 * MIN);
+    expect((await ctx.http.post('/auth/password/set').send({ token, new_password: 'Luis2026x' })).body.error.code).toBe('LINK_EXPIRED');
+  });
+
+  it('entra con un enlace al correo, sin contraseña', async () => {
+    await ctx.http.post('/auth/email-link').set('X-Tenant', 'riomar').send({ email: 'marisol@riomar.example' });
+    const url = ctx.mail.lastLink('marisol@riomar.example')!;
+    expect(url).toContain('accion=entrar');
+    const r = await ctx.http.post('/auth/email-link/verify').send({ token: tokenFrom(url) });
+    expect(r.status).toBe(200);
+    expect(r.body.user.first_name).toBe('Marisol');
+    expect((await homeOf(r.body.access_token)).assignments[0].kind).toBe('renewal');
+  });
+
+  it('entra con Google si la empresa lo invitó con ese correo, y vincula la cuenta', async () => {
+    const r = await ctx.http.post('/auth/google').set('X-Tenant', 'altavista').send({ id_token: googleToken('g-rosa-123', 'Rosa@Altavista.example') });
+    expect(r.status).toBe(200);
+    expect(r.body.password_change_required).toBe(false);
+    const me = await ctx.http.get('/me').set(bearer(r.body.access_token));
+    expect(me.body.sign_in).toEqual({ password: true, google: 'rosa@altavista.example' });
+    // La segunda vez se reconoce por la cuenta de Google, aunque el correo de Google cambie.
+    const again = await ctx.http.post('/auth/google').set('X-Tenant', 'altavista').send({ id_token: googleToken('g-rosa-123', 'rosa.nueva@gmail.com') });
+    expect(again.status).toBe(200);
+  });
+
+  it('rechaza Google si la persona no fue invitada, o si es de otra empresa', async () => {
+    const stranger = await ctx.http.post('/auth/google').set('X-Tenant', 'riomar').send({ id_token: googleToken('g-x', 'alguien@gmail.com') });
+    expect(stranger.status).toBe(403);
+    expect(stranger.body.error).toMatchObject({ code: 'NOT_INVITED', message: 'Tu empresa aún no te invitó. Pide acceso a tu supervisor.' });
+    const otherTenant = await ctx.http.post('/auth/google').set('X-Tenant', 'riomar').send({ id_token: googleToken('g-y', 'rosa@altavista.example') });
+    expect(otherTenant.body.error.code).toBe('NOT_INVITED');
+  });
+
+  it('con Google, la contraseña temporal de Carlos deja de servir y no le pide cambiarla', async () => {
+    const r = await ctx.http.post('/auth/google').set('X-Tenant', 'altavista').send({ id_token: googleToken('g-carlos', 'carlos@altavista.example') });
+    expect(r.body.password_change_required).toBe(false);
+    await expect(login(ctx, 'altavista', 'carlos')).rejects.toThrow();
+  });
+
+  it('anuncia en la configuración si Google está activo', async () => {
+    const r = await ctx.http.get('/tenant/config').set('X-Tenant', 'riomar');
+    expect(r.body.sign_in).toEqual({ email_password: true, email_link: true, google_client_id: 'test-client' });
   });
 });
 
 describe('Inicio y rutas', () => {
   it('marca la ruta vencida de Luis y no la oculta', async () => {
-    const s = await login(ctx, 'riomar', '987333444');
+    const s = await login(ctx, 'riomar', 'luis');
     const home = await homeOf(s.access_token);
     expect(home.assignments[0]).toMatchObject({ late: true, pct: 60 });
     expect(home.assignments[0].days_left).toBeLessThan(0);
   });
 
   it('muestra a Marisol su renovación y el certificado que vence pronto', async () => {
-    const s = await login(ctx, 'riomar', '987555666');
+    const s = await login(ctx, 'riomar', 'marisol');
     const home = await homeOf(s.access_token);
     expect(home.assignments[0]).toMatchObject({ kind: 'renewal', pct: 40 });
     expect(home.certificates_expiring[0].days_left).toBe(20);
@@ -123,7 +180,7 @@ describe('Inicio y rutas', () => {
   });
 
   it('bloquea niveles en orden y explica qué falta', async () => {
-    const s = await login(ctx, 'riomar', '987555666');
+    const s = await login(ctx, 'riomar', 'marisol');
     const home = await homeOf(s.access_token);
     const ids = await lessonIds(s.access_token, home.assignments[0].id);
     const locked = await ctx.http.get(`/lessons/${ids[3]}`).set(bearer(s.access_token));
@@ -132,9 +189,9 @@ describe('Inicio y rutas', () => {
   });
 
   it('no deja ver contenido de otra empresa', async () => {
-    const rio = await login(ctx, 'riomar', '987555666');
+    const rio = await login(ctx, 'riomar', 'marisol');
     const ids = await lessonIds(rio.access_token, (await homeOf(rio.access_token)).assignments[0].id);
-    const alta = await login(ctx, 'altavista', '987555666');
+    const alta = await login(ctx, 'altavista', 'marisol');
     const r = await ctx.http.get(`/lessons/${ids[0]}`).set(bearer(alta.access_token));
     expect(r.status).toBe(404);
   });
@@ -142,7 +199,7 @@ describe('Inicio y rutas', () => {
 
 describe('Lecciones, video y descargas', () => {
   it('sirve el video con URL firmada y por rangos', async () => {
-    const s = await login(ctx, 'riomar', '987111222');
+    const s = await login(ctx, 'riomar', 'rosa');
     const ids = await lessonIds(s.access_token, (await homeOf(s.access_token)).assignments[0].id);
     const lesson = (await ctx.http.get(`/lessons/${ids[0]}`).set(bearer(s.access_token))).body;
     expect(lesson.quiz).toHaveLength(3);
@@ -156,7 +213,7 @@ describe('Lecciones, video y descargas', () => {
   });
 
   it('informa el tamaño del paquete antes de descargar', async () => {
-    const s = await login(ctx, 'riomar', '987111222');
+    const s = await login(ctx, 'riomar', 'rosa');
     const ids = await lessonIds(s.access_token, (await homeOf(s.access_token)).assignments[0].id);
     const pkg = await ctx.http.get(`/lessons/${ids[2]}/offline-package`).set(bearer(s.access_token));
     expect(pkg.status).toBe(200);
@@ -166,7 +223,7 @@ describe('Lecciones, video y descargas', () => {
   });
 
   it('registra el reporte de un problema', async () => {
-    const s = await login(ctx, 'riomar', '987111222');
+    const s = await login(ctx, 'riomar', 'rosa');
     const ids = await lessonIds(s.access_token, (await homeOf(s.access_token)).assignments[0].id);
     const r = await ctx.http.post('/content-reports').set(bearer(s.access_token)).send({ lesson_id: ids[0], reason: 'video_unclear' });
     expect(r.status).toBe(201);
@@ -176,7 +233,7 @@ describe('Lecciones, video y descargas', () => {
 
 describe('Avance sin señal', () => {
   it('acepta un lote fuera de orden, es idempotente y rechaza lo bloqueado sin perderlo', async () => {
-    const s = await login(ctx, 'altavista', '987111222');
+    const s = await login(ctx, 'altavista', 'rosa');
     const a = (await homeOf(s.access_token)).assignments[0];
     const ids = await lessonIds(s.access_token, a.id);
     const t0 = ctx.clock.now().getTime();
@@ -205,7 +262,7 @@ describe('Avance sin señal', () => {
 
 describe('Evaluación y certificado', () => {
   it('Rosa no puede empezar sin completar la ruta; al terminarla aprueba y recibe su certificado', async () => {
-    const s = await login(ctx, 'riomar', '987111222');
+    const s = await login(ctx, 'riomar', 'rosa');
     const a = (await homeOf(s.access_token)).assignments[0];
     const blocked = await ctx.http.get(`/assignments/${a.id}/exam`).set(bearer(s.access_token));
     expect(blocked.body).toMatchObject({ can_start: false, blocked_reason: 'LESSONS_INCOMPLETE' });
@@ -242,7 +299,7 @@ describe('Evaluación y certificado', () => {
   });
 
   it('Luis desaprueba, ve qué repasar y espera 1 hora para reintentar', async () => {
-    const s = await login(ctx, 'riomar', '987333444');
+    const s = await login(ctx, 'riomar', 'luis');
     const a = (await homeOf(s.access_token)).assignments[0];
     const ids = await lessonIds(s.access_token, a.id);
     await completeLessons(s.access_token, ids.slice(3));
@@ -259,14 +316,14 @@ describe('Evaluación y certificado', () => {
     const early = await ctx.http.post(`/assignments/${a.id}/attempts`).set(bearer(s.access_token));
     expect(early.body.error.code).toBe('RETRY_AFTER');
     ctx.clock.advance(61 * MIN);
-    const fresh = await login(ctx, 'riomar', '987333444'); // el token de acceso dura 15 minutos
+    const fresh = await login(ctx, 'riomar', 'luis'); // el token de acceso dura 15 minutos
     const later = await ctx.http.post(`/assignments/${a.id}/attempts`).set(bearer(fresh.access_token));
     expect(later.status).toBe(201);
     expect(later.body.number).toBe(2);
   });
 
   it('pausa el tiempo si se corta la señal, hasta el máximo permitido, y cierra por tiempo', async () => {
-    const s = await login(ctx, 'altavista', '987555666');
+    const s = await login(ctx, 'altavista', 'marisol');
     const a = (await homeOf(s.access_token)).assignments[0];
     const ids = await lessonIds(s.access_token, a.id);
     await completeLessons(s.access_token, ids.slice(2));
@@ -280,7 +337,7 @@ describe('Evaluación y certificado', () => {
     expect(beat.pause_left_s).toBe(600 - 280);
 
     ctx.clock.advance(30 * MIN);
-    const fresh = await login(ctx, 'altavista', '987555666');
+    const fresh = await login(ctx, 'altavista', 'marisol');
     const closed = (await ctx.http.get(`/attempts/${att.id}`).set(bearer(fresh.access_token))).body;
     expect(closed.status).toBe('expired');
     expect(closed.result).toMatchObject({ closed_by_time: true, passed: false });

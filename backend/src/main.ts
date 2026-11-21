@@ -6,7 +6,8 @@ import { Config, loadConfig, systemClock } from './config';
 import { Db } from './db/db';
 import { copyDemoMedia, seed } from './db/seed';
 import { AssessmentService } from './modules/assessment';
-import { ConsoleSmsSender } from './modules/notifications';
+import { BrevoEmailSender, ConsoleEmailSender } from './modules/email';
+import { DisabledGoogleVerifier, GoogleIdTokenVerifier } from './modules/google';
 
 export async function createApp(deps: AppDeps, opts: { quiet?: boolean } = {}): Promise<INestApplication> {
   const app = await NestFactory.create(AppModule.with(deps), { logger: opts.quiet ? ['error'] : ['error', 'warn', 'log'] });
@@ -23,9 +24,14 @@ async function main() {
   const applied = await db.migrate();
   if (applied.length) log.log(`Migraciones aplicadas: ${applied.join(', ')}`);
   if (process.env.SEED_ON_EMPTY !== 'false' && await seed(db, systemClock)) log.log('Datos de demostración cargados');
-  copyDemoMedia(config.storageDir, process.env.DEMO_MEDIA_DIR || '../prototipo-corte2/media');
+  copyDemoMedia(config.storageDir, process.env.DEMO_MEDIA_DIR || '../prototipo/media');
 
-  const app = await createApp({ config, db, clock: systemClock, sms: new ConsoleSmsSender() });
+  const email = config.brevoApiKey ? new BrevoEmailSender(config.brevoApiKey, config.emailFrom) : new ConsoleEmailSender();
+  if (!config.brevoApiKey) log.warn('BREVO_API_KEY no está definido: los correos se escriben en el log.');
+  const google = config.googleClientId ? new GoogleIdTokenVerifier(config.googleClientId) : new DisabledGoogleVerifier();
+  if (!config.googleClientId) log.warn('GOOGLE_CLIENT_ID no está definido: el ingreso con Google está apagado.');
+
+  const app = await createApp({ config, db, clock: systemClock, email, google });
   await app.listen(config.port);
   log.log(`API escuchando en ${config.publicUrl}`);
 

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Opción C · Inmersivo tipo Short</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Opción C: el video manda, como un Short. Fondo teñido con el color principal del cliente, segmentos de avance tipo historias, botones grandes. */
+:root { --bg:#0A1B20; --surface:#12292F; --line:#21424A; --ink:#F2F2F0; --muted:#A9BCC0; --accent:#F26B1D; --ok:#7FD69B; --rep:#F4A27A; }
+* { box-sizing:border-box; margin:0; }
+body { background:#061114; font-family:'Plus Jakarta Sans',system-ui,sans-serif; color:var(--ink); padding:48px 56px; width:1378px; }
+.head { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:32px; }
+.head h1 { font-size:34px; font-weight:800; letter-spacing:-.02em; } .head p { font-size:16px; color:#C9D5D8; max-width:560px; line-height:1.45; }
+.row { display:flex; gap:48px; }
+.cap { font-size:13px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#8FA6AB; margin-bottom:12px; }
+.phone { width:390px; height:844px; background:var(--bg); border-radius:44px; overflow:hidden; position:relative; box-shadow:0 0 0 10px #000, 0 0 0 11px #21424A; display:flex; flex-direction:column; }
+.status { height:44px; flex-shrink:0; }
+.top { display:flex; align-items:center; justify-content:space-between; padding:6px 20px 12px; }
+.brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px; }
+.mono { width:32px; height:32px; border-radius:9px; background:#F2F2F0; color:#0E4D5C; display:flex; align-items:center; justify-content:center; font-weight:800; }
+.dot { width:9px; height:9px; border-radius:99px; background:var(--ok); display:inline-block; }
+.scr { padding:0 20px; display:flex; flex-direction:column; gap:16px; flex:1; overflow:hidden; }
+.m { font-size:14px; color:var(--muted); }
+.segs { display:flex; gap:4px; } .segs i { flex:1; height:4px; border-radius:99px; background:rgba(242,242,240,.28); } .segs i.on { background:#F2F2F0; } .segs i.cur { background:linear-gradient(90deg,#F2F2F0 35%, rgba(242,242,240,.28) 35%); }
+.hero { position:relative; height:470px; border-radius:28px; overflow:hidden; background:url('../../prototipo/media/portada.jpg') center 30%/cover; }
+.hero::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(10,27,32,0) 30%, rgba(10,27,32,.92) 78%); }
+.hero .in { position:absolute; inset:auto 0 0 0; padding:20px; z-index:1; display:flex; flex-direction:column; gap:10px; }
+.hero .segs { position:absolute; top:14px; left:16px; right:16px; z-index:1; }
+.pill { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; padding:6px 10px; border-radius:99px; background:rgba(10,27,32,.75); color:#F2F2F0; }
+.big { font-size:26px; font-weight:800; line-height:1.15; letter-spacing:-.01em; }
+.btn { height:58px; border-radius:99px; background:var(--accent); color:#0A1B20; font-weight:800; font-size:17px; display:flex; align-items:center; justify-content:center; gap:10px; }
+.play { width:30px; height:30px; border-radius:99px; background:#0A1B20; color:var(--accent); display:flex; align-items:center; justify-content:center; }
+.mini { display:flex; align-items:center; gap:12px; background:var(--surface); border-radius:18px; padding:12px 14px; }
+.ring { width:44px; height:44px; border-radius:99px; background:conic-gradient(var(--accent) 0 40%, var(--line) 40% 100%); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.ring span { width:34px; height:34px; border-radius:99px; background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; }
+.nav { display:flex; height:84px; padding-bottom:20px; background:linear-gradient(180deg, transparent, var(--bg) 30%); }
+.nav div { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:12px; font-weight:600; color:var(--muted); }
+.nav .on { color:#F2F2F0; }
+/* Ruta: niveles como fichas */
+.tile { border-radius:22px; background:var(--surface); padding:16px; display:flex; gap:14px; align-items:center; }
+.tile .n { width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px; flex-shrink:0; }
+.tile.d .n { background:rgba(127,214,155,.14); color:var(--ok); }
+.tile.l { background:transparent; border:1.5px dashed var(--line); } .tile.l .n { background:var(--surface); color:var(--muted); }
+.tile.c { background:#F2F2F0; color:#0A1B20; flex-direction:column; align-items:stretch; padding:0; overflow:hidden; }
+.tile.c .poster { height:150px; background:url('../../prototipo/media/portada.jpg') center 25%/cover; position:relative; }
+.tile.c .poster .pill { position:absolute; left:12px; top:12px; }
+.tile.c .body { padding:14px 16px 16px; display:flex; flex-direction:column; gap:10px; }
+.tt { font-weight:800; font-size:17px; line-height:1.25; } .ts { font-size:13px; font-weight:600; margin-top:2px; }
+/* Reto */
+.q { font-size:27px; font-weight:800; line-height:1.2; letter-spacing:-.01em; }
+.opt { border-radius:20px; padding:16px 18px; font-size:17px; line-height:1.35; background:var(--surface); border:2px solid transparent; }
+.opt.r { border-color:var(--ok); } .opt.w { border-color:var(--rep); background:#2B1A12; }
+.tag { font-size:13px; font-weight:700; margin-top:6px; }
+.sheet { position:absolute; left:10px; right:10px; bottom:10px; background:#F2F2F0; color:#0A1B20; border-radius:30px; padding:20px 20px 22px; display:flex; flex-direction:column; gap:12px; }
+.x { display:flex; align-items:center; gap:6px; font-weight:700; }
+</style></head>
+<body>
+<div class="head"><div><div class="cap" style="margin:0 0 8px">Opción C</div><h1>Inmersivo tipo Short</h1></div>
+<p>El video es el protagonista, como un Short. Fondo oscuro teñido con el color del cliente, avance en segmentos tipo historias, fichas grandes por nivel y botones de cápsula. El "por qué" aparece en una tarjeta clara flotante.</p></div>
+<div class="row">
+
+<div><div class="cap">Inicio</div><div class="phone"><div class="status"></div>
+<div class="top"><div class="brand"><span class="mono">R</span>Hola, Rosa</div><span class="m" style="display:flex;align-items:center;gap:6px"><span class="dot"></span>Guardado</span></div>
+<div class="scr">
+<div class="hero"><div class="segs"><i class="on"></i><i class="on"></i><i class="cur"></i><i></i><i></i></div>
+<div class="in"><span class="pill" style="align-self:flex-start">Nivel 3 de 4 · Con presentador</span>
+<p class="big">Candado y tarjeta</p><p class="m" style="color:#D5E0E2">4:40 · Te quedan 27 min de la ruta · vence vie 20 nov</p>
+<div class="btn"><span class="play"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>Continuar</div></div></div>
+<p style="font-weight:800;font-size:17px;margin-top:4px">Tus capacitaciones</p>
+<div class="mini"><div class="ring"><span>40%</span></div><div style="flex:1"><p class="tt">Bloqueo y etiquetado</p><p class="m">Vence vie 20 nov · faltan 10 días</p></div></div>
+<div class="mini" style="opacity:.85"><div class="ring" style="background:var(--line)"><span>0%</span></div><div style="flex:1"><p class="tt">Orden y limpieza</p><p class="m">Se abre el lun 16 nov</p></div></div>
+</div>
+<div class="nav"><div class="on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>Inicio</div><div><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="9" r="6"/><path d="M8.5 14l-1.5 7 5-3 5 3-1.5-7"/></svg>Certificados</div><div><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Perfil</div></div>
+</div></div>
+
+<div><div class="cap">Ruta</div><div class="phone"><div class="status"></div>
+<div class="top"><span class="x"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>Inicio</span><span class="m" style="display:flex;align-items:center;gap:6px"><span class="dot"></span>Guardado</span></div>
+<div class="scr" style="gap:12px">
+<p class="big" style="font-size:24px">Bloqueo y etiquetado de equipos</p>
+<div class="segs"><i class="on"></i><i class="on"></i><i class="cur"></i><i></i><i></i></div>
+<p class="m"><b style="color:#F2F2F0">40 %</b> · vence vie 20 nov · 27 min</p>
+<div class="tile d"><div class="n"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12l5 5 9-10"/></svg></div><div><p class="tt">Por qué bloqueamos</p><p class="ts" style="color:var(--ok)">Nivel 1 · Completado</p></div></div>
+<div class="tile d"><div class="n"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12l5 5 9-10"/></svg></div><div><p class="tt">Aislar la energía</p><p class="ts" style="color:var(--ok)">Nivel 2 · Completado</p></div></div>
+<div class="tile c"><div class="poster"><span class="pill">Nivel 3 · En curso</span></div><div class="body"><p class="tt" style="font-size:19px">Candado y tarjeta</p><div class="btn" style="height:50px;font-size:16px"><span class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>Ver lección · 4:40</div></div></div>
+<div class="tile l"><div class="n"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div><div><p class="tt" style="color:var(--muted)">Verificar y devolver el equipo</p><p class="ts" style="color:var(--muted)">Nivel 4 · Bloqueado</p></div></div>
+</div></div></div>
+
+<div><div class="cap">Reto: "Repasemos"</div><div class="phone"><div class="status"></div>
+<div class="top"><span class="x"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18"/></svg>Salir</span><span class="m">1 de 3</span></div>
+<div class="scr">
+<div class="segs"><i class="cur"></i><i></i><i></i></div>
+<p class="q" style="margin-top:6px">Ya apagaste la máquina. ¿Qué haces ahora?</p>
+<div class="opt r">Aislar la fuente de energía: cortar el suministro o cerrar la válvula<p class="tag" style="color:var(--ok)">✓ Respuesta correcta</p></div>
+<div class="opt w">Empezar el trabajo, ya está apagada<p class="tag" style="color:var(--rep)">↺ Tu respuesta</p></div>
+</div>
+<div class="sheet"><p style="font-size:20px;font-weight:800;color:#9A3F12">↺ Repasemos</p>
+<p style="font-size:17px;line-height:1.45">Apagar no basta. El equipo puede volver a energizarse si alguien lo prende o si queda energía en la línea.</p>
+<div class="mini" style="background:#E3E6E2;color:#0A1B20"><div style="width:44px;height:60px;border-radius:10px;background:url('../../prototipo/media/portada.jpg') center/cover;flex-shrink:0"></div><div><p style="font-weight:800">Ver ese momento del video</p><p style="font-size:13px;color:#3D4A4E">Desde 1:40</p></div></div>
+<div class="btn">Siguiente pregunta</div></div>
+</div></div>
+
+</div></body></html>

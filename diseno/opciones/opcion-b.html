@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Opción B · Oscuro refinado</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Opción B: la identidad oscura de Nivia, ordenada. Títulos más gruesos, sin tarjetas dentro de tarjetas, naranja solo en la acción y lo que está en curso. */
+:root { --bg:#0E0F11; --surface:#17191C; --line:#2A2D33; --ink:#F2F2F0; --muted:#A3A6AD; --principal:#F26B1D; --accent:#F26B1D; --accent-ink:#F7955C; --ok:#7FD69B; --okbg:#16261C; --rep:#F4A27A; --repbg:#2B1A12; }
+* { box-sizing:border-box; margin:0; }
+body { background:#1F2226; font-family:'Plus Jakarta Sans',system-ui,sans-serif; color:var(--ink); padding:48px 56px; width:1378px; }
+.head { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:32px; }
+.head h1 { color:#F2F2F0; font-size:34px; font-weight:800; letter-spacing:-.02em; } .head p { font-size:16px; color:#C9CBD0; max-width:560px; line-height:1.45; }
+.row { display:flex; gap:48px; }
+.cap { font-size:13px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#A3A6AD; margin-bottom:12px; }
+.phone { width:390px; height:844px; background:var(--bg); border-radius:44px; overflow:hidden; position:relative; box-shadow:0 0 0 10px #000, 0 0 0 11px #3A3D44; display:flex; flex-direction:column; }
+.status { height:44px; flex-shrink:0; }
+.top { display:flex; align-items:center; justify-content:space-between; padding:6px 22px 14px; }
+.brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px; }
+.mono { width:32px; height:32px; border-radius:9px; background:#0E4D5C; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; }
+.chip { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; padding:6px 10px; border-radius:99px; background:var(--okbg); color:var(--ok); }
+.scr { padding:4px 22px 0; display:flex; flex-direction:column; gap:18px; flex:1; overflow:hidden; }
+.hello { font-size:30px; font-weight:800; letter-spacing:-.02em; line-height:1.1; } .date { color:var(--muted); font-size:15px; }
+.card { background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:18px; display:flex; flex-direction:column; gap:14px; }
+.over { font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-ink); }
+.next { display:flex; gap:14px; align-items:center; }
+.thumb { width:62px; height:110px; border-radius:12px; background:url('../../prototipo/media/portada.jpg') center/cover; flex-shrink:0; }
+.t { font-size:20px; font-weight:800; line-height:1.2; } .m { font-size:14px; color:var(--muted); }
+.btn { height:56px; border-radius:16px; background:var(--accent); color:#0E0F11; font-weight:800; font-size:17px; display:flex; align-items:center; justify-content:center; gap:8px; }
+.bar { height:8px; border-radius:99px; background:#2A2D33; overflow:hidden; } .bar i { display:block; height:100%; background:var(--accent); border-radius:99px; }
+.item { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-top:1px solid var(--line); }
+.item:first-of-type { border-top:0; }
+.pct { font-size:22px; font-weight:800; }
+.h2 { font-size:18px; font-weight:800; }
+.nav { display:flex; border-top:1px solid var(--line); background:var(--surface); height:84px; padding-bottom:20px; }
+.nav div { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:12px; font-weight:600; color:var(--muted); }
+.nav .on { color:var(--accent); }
+/* Ruta */
+.lv { display:flex; gap:16px; }
+.rail { width:44px; display:flex; flex-direction:column; align-items:center; }
+.node { width:44px; height:44px; border-radius:99px; display:flex; align-items:center; justify-content:center; font-weight:800; flex-shrink:0; }
+.done { background:transparent; border:2px solid var(--accent); color:var(--accent); } .cur { background:var(--accent); color:#0E0F11; box-shadow:0 0 0 6px rgba(242,107,29,.25); } .lock { background:#22252A; color:var(--muted); }
+.line { flex:1; width:2px; background:var(--accent); margin:4px 0; min-height:26px; } .line.d { background:repeating-linear-gradient(var(--line) 0 6px, transparent 6px 12px); }
+.lvb { padding:4px 0 22px; flex:1; }
+.lvb .k { font-size:13px; color:var(--muted); font-weight:600; } .lvb .n { font-size:18px; font-weight:800; line-height:1.25; margin-top:2px; }
+.lvb .s { font-size:14px; margin-top:6px; display:flex; align-items:center; gap:6px; font-weight:600; }
+.curcard { margin-top:10px; background:var(--surface); border:2px solid var(--accent); border-radius:16px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; font-weight:700; }
+/* Reto */
+.opt { border:2px solid var(--line); background:var(--surface); border-radius:16px; padding:14px 16px; font-size:17px; line-height:1.35; display:flex; gap:12px; }
+.rad { width:22px; height:22px; border-radius:99px; border:2px solid #5A5E66; flex-shrink:0; margin-top:1px; }
+.opt.w { border-color:var(--rep); } .opt.w .rad { border-color:var(--rep); background:radial-gradient(var(--rep) 0 5px, transparent 6px); }
+.opt.r { border-color:var(--ok); }
+.tag { font-size:13px; font-weight:700; margin-top:6px; display:flex; gap:4px; align-items:center; }
+.sheet { position:absolute; left:0; right:0; bottom:0; background:var(--surface); border-radius:26px 26px 0 0; padding:20px 22px 34px; box-shadow:0 -16px 40px rgba(0,0,0,.5); display:flex; flex-direction:column; gap:12px; border-top:6px solid var(--rep); }
+.q { font-size:24px; font-weight:800; line-height:1.25; letter-spacing:-.01em; }
+.prog { display:flex; gap:6px; } .prog i { flex:1; height:6px; border-radius:99px; background:#2A2D33; } .prog i.on { background:var(--accent); }
+.x { display:flex; align-items:center; gap:6px; font-weight:700; }
+</style></head>
+<body>
+<div class="head"><div><div class="cap" style="margin:0 0 8px">Opción B</div><h1>Oscuro refinado</h1></div>
+<p>La identidad oscura de Nivia, ordenada: títulos en peso firme (no delgado), una sola capa de tarjetas, estado de la señal como etiqueta pequeña. El naranja del cliente solo en la acción y en lo que está en curso.</p></div>
+<div class="row">
+
+<div><div class="cap">Inicio</div><div class="phone"><div class="status"></div>
+<div class="top"><div class="brand"><span class="mono">R</span>Corporación Ríomar</div><span class="chip">✓ Guardado</span></div>
+<div class="scr">
+<div><p class="date">Martes 10 de noviembre</p><h2 class="hello">Hola, Rosa</h2></div>
+<div class="card"><p class="over">Sigue donde te quedaste</p>
+<div class="next"><div class="thumb"></div><div><p class="m">Nivel 3 de 4 · 4:40</p><p class="t">Candado y tarjeta</p><p class="m">Video y reto de 3 preguntas</p></div></div>
+<div class="btn">Continuar <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></div></div>
+<p class="h2">Tus capacitaciones</p>
+<div class="card" style="gap:0;padding:6px 18px">
+<div class="item"><div style="flex:1"><p style="font-weight:800;font-size:17px">Bloqueo y etiquetado</p><p class="m" style="margin:4px 0 8px">Vence vie 20 nov · faltan 10 días</p><div class="bar"><i style="width:40%"></i></div></div><span class="pct" style="margin-left:16px">40%</span></div>
+<div class="item"><div style="flex:1"><p style="font-weight:800;font-size:17px">Orden y limpieza</p><p class="m" style="margin-top:4px">Se abre el lun 16 nov</p></div><span class="m">0%</span></div>
+</div></div>
+<div class="nav"><div class="on"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>Inicio</div><div><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="9" r="6"/><path d="M8.5 14l-1.5 7 5-3 5 3-1.5-7"/></svg>Certificados</div><div><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Perfil</div></div>
+</div></div>
+
+<div><div class="cap">Ruta</div><div class="phone"><div class="status"></div>
+<div class="top"><span class="x"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>Inicio</span><span class="chip">✓ Guardado</span></div>
+<div class="scr" style="gap:14px">
+<div><p class="over">Ruta</p><h2 class="hello" style="font-size:26px;margin-top:4px">Bloqueo y etiquetado de equipos</h2></div>
+<div><div class="bar"><i style="width:40%"></i></div><p class="m" style="margin-top:8px"><b style="color:var(--ink)">40 %</b> · Vence vie 20 nov · 27 min</p></div>
+<div style="margin-top:6px">
+<div class="lv"><div class="rail"><div class="node done">✓</div><div class="line"></div></div><div class="lvb"><p class="k">Nivel 1</p><p class="n">Por qué bloqueamos</p><p class="s" style="color:var(--ok)">✓ Completado</p></div></div>
+<div class="lv"><div class="rail"><div class="node done">✓</div><div class="line"></div></div><div class="lvb"><p class="k">Nivel 2</p><p class="n">Aislar la energía</p><p class="s" style="color:var(--ok)">✓ Completado</p></div></div>
+<div class="lv"><div class="rail"><div class="node cur">3</div><div class="line d"></div></div><div class="lvb"><p class="k">Nivel 3 · En curso</p><p class="n">Candado y tarjeta</p><div class="curcard">Ver lección · 4:40 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></div></div></div>
+<div class="lv"><div class="rail"><div class="node lock"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div><div class="line d"></div></div><div class="lvb"><p class="k">Nivel 4 · Bloqueado</p><p class="n" style="color:var(--muted)">Verificar y devolver el equipo</p></div></div>
+<div class="lv"><div class="rail"><div class="node lock"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="9" r="6"/><path d="M8.5 14l-1.5 7 5-3 5 3-1.5-7"/></svg></div></div><div class="lvb"><p class="k">Final · Bloqueada</p><p class="n" style="color:var(--muted)">Evaluación final</p></div></div>
+</div></div></div></div>
+
+<div><div class="cap">Reto: "Repasemos"</div><div class="phone"><div class="status"></div>
+<div class="top"><span class="x"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18"/></svg>Salir</span><span class="m">Pregunta 1 de 3</span></div>
+<div class="scr">
+<div class="prog"><i class="on"></i><i></i><i></i></div>
+<p class="q">Ya apagaste la máquina. ¿Qué haces ahora?</p>
+<div class="opt r"><span class="rad"></span><div>Aislar la fuente de energía: cortar el suministro o cerrar la válvula<p class="tag" style="color:var(--ok)">✓ Respuesta correcta</p></div></div>
+<div class="opt w"><span class="rad"></span><div>Empezar el trabajo, ya está apagada<p class="tag" style="color:var(--rep)">↺ Tu respuesta</p></div></div>
+</div>
+<div class="sheet"><p style="font-size:20px;font-weight:800;color:var(--rep)">↺ Repasemos</p>
+<p style="font-size:17px;line-height:1.45">Apagar no basta. El equipo puede volver a energizarse si alguien lo prende o si queda energía en la línea.</p>
+<p style="font-weight:700;color:#7CC3D0">▶ Ver ese momento del video (1:40)</p>
+<div class="btn" style="margin-top:4px">Siguiente pregunta</div></div>
+</div></div>
+
+</div></body></html>

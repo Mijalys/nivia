@@ -1639,7 +1639,7 @@ document.addEventListener('toggle', (e) => {
 
 document.addEventListener('submit', (e) => {
   e.preventDefault(); const id = e.target.id;
-  if (id === 'loginForm') { syncForm(); login(S.form.phone || '', S.form.pass || ''); }
+  if (id === 'loginForm') { syncForm(); login(S.form.email || '', S.form.pass || ''); }
   else if (id === 'npForm') {
     syncForm(); const f = S.form; const r = passRules(f.np1, f.temp || DEMO_PASS);
     if (!(r.len && r.num && r.diff)) { f.tried = true; f.msg = 'Tu contraseña aún no cumple todas las reglas.'; render(); return; }

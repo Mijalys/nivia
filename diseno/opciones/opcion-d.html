@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Opción D · Vidrio y lima</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Opción D: vidrio esmerilado sobre video y foto, lima de Nivia sobre verde oliva casi negro.
+   Números grandes y livianos, pestañas en cápsula, botones circulares, la ruta como un mapa con línea brillante.
+   Con la marca del cliente, el lima se cambia por su acento (fila inferior). */
+:root {
+  --bg:#0B0D09; --olive:#2B3514; --ink:#F4F6EE; --muted:#A9AF9C; --lime:#D4FF3A; --on-lime:#11140C;
+  --glass:rgba(30,36,24,.58); --glass-hi:rgba(255,255,255,.10); --rep:#F4A27A; --ok:#B8F26B;
+}
+* { box-sizing:border-box; margin:0; }
+body { background:#0B0D09; font-family:'Inter Tight','Helvetica Neue',Helvetica,Arial,sans-serif; color:var(--ink); padding:56px 64px; width:1856px; }
+.head { display:grid; grid-template-columns: 1fr 520px 440px; gap:48px; align-items:end; margin-bottom:40px; }
+.head h1 { font-size:64px; font-weight:300; letter-spacing:-.035em; line-height:1; } .head h1 b { font-weight:600; color:var(--lime); }
+.head p { font-size:16px; color:var(--muted); line-height:1.5; }
+.sw { display:flex; gap:10px; } .sw div { flex:1; height:84px; border-radius:16px; padding:10px; font-size:11px; display:flex; align-items:flex-end; font-weight:600; letter-spacing:.02em; }
+.cap { font-size:12px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+.row { display:flex; gap:40px; }
+.phone { width:390px; height:844px; border-radius:48px; overflow:hidden; position:relative; box-shadow:0 0 0 10px #000, 0 0 0 11px #2A2F22, 0 40px 80px rgba(0,0,0,.5);
+  background: radial-gradient(120% 60% at 50% 0%, #3A4A12 0%, #1A2010 45%, #0B0D09 80%); display:flex; flex-direction:column; }
+.status { height:48px; display:flex; justify-content:space-between; align-items:center; padding:0 30px; font-size:15px; font-weight:600; flex-shrink:0; position:relative; z-index:3; }
+.glass { background:var(--glass); backdrop-filter:blur(22px) saturate(140%); -webkit-backdrop-filter:blur(22px) saturate(140%); border:1px solid var(--glass-hi); }
+.circ { width:44px; height:44px; border-radius:99px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.pad { padding:0 20px; }
+.muted { color:var(--muted); }
+.k { font-size:13px; color:var(--muted); }
+.tabs { display:flex; gap:6px; padding:5px; border-radius:99px; }
+.tabs span { flex:1; text-align:center; padding:10px 0; border-radius:99px; font-size:14px; font-weight:500; color:var(--muted); }
+.tabs span.on { background:var(--ink); color:var(--bg); font-weight:600; }
+.chip { display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:99px; font-size:13px; font-weight:500; }
+.stat { flex:1; border-radius:20px; padding:12px; display:flex; flex-direction:column; gap:2px; align-items:center; }
+.stat b { font-size:17px; font-weight:600; } .stat small { font-size:11px; color:var(--muted); }
+.cta { height:60px; border-radius:99px; display:flex; align-items:center; padding:6px; gap:12px; font-weight:600; font-size:16px; }
+.cta .knob { width:48px; height:48px; border-radius:99px; background:var(--lime); color:var(--on-lime); display:flex; align-items:center; justify-content:center; }
+.cta.solid { background:var(--lime); color:var(--on-lime); justify-content:center; padding:0; font-size:17px; }
+.nav { position:absolute; left:50%; transform:translateX(-50%); bottom:26px; display:flex; gap:8px; padding:6px; border-radius:99px; }
+.nav .circ { width:52px; height:52px; color:var(--ink); }
+.nav .circ.on { background:var(--lime); color:var(--on-lime); }
+.poster { background:url('../../prototipo/media/portada.jpg') center 25%/cover; }
+.big { font-weight:300; letter-spacing:-.04em; line-height:.95; }
+.ring { width:58px; height:58px; border-radius:99px; background:conic-gradient(var(--lime) 0 40%, rgba(255,255,255,.12) 40% 100%); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.ring span { width:48px; height:48px; border-radius:99px; background:#161A12; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; }
+</style></head>
+<body>
+<div class="head">
+  <h1>Vidrio y <b>lima</b></h1>
+  <p>Vidrio esmerilado sobre el video y la foto, verde oliva casi negro y el lima de Nivia como único acento. Números grandes y livianos, pestañas en cápsula, botones circulares. La ruta se lee como un mapa con su línea brillante. El vidrio va oscuro (58 %) para que el texto mantenga contraste AA sobre el video; se revisa con cada video real.</p>
+  <div><div class="cap">Paleta</div><div class="sw">
+    <div style="background:#0B0D09;border:1px solid #2A2F22;color:#A9AF9C">#0B0D09</div>
+    <div style="background:linear-gradient(160deg,#3A4A12,#1A2010);color:#F4F6EE">Oliva</div>
+    <div style="background:#D4FF3A;color:#11140C">#D4FF3A</div>
+    <div style="background:#F4F6EE;color:#11140C">#F4F6EE</div></div></div>
+</div>
+
+<div class="row">
+
+<!-- INICIO -->
+<div><div class="cap">Inicio</div><div class="phone">
+<div class="status"><span>9:41</span><span>● ● ▮</span></div>
+<div class="pad" style="display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="circ" style="background:#F4F6EE;color:#0E4D5C;font-weight:700">R</div>
+    <div style="flex:1"><p class="k">Corporación Ríomar</p><p style="font-size:17px;font-weight:600">Hola, Rosa</p></div>
+    <div class="circ glass"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B8F26B" stroke-width="2.2"><path d="M7 18h10a4 4 0 00.5-7.97A6 6 0 006.2 9.5 4.25 4.25 0 007 18z"/><path d="M9.5 13.5l2 2 3.5-4"/></svg></div>
+  </div>
+  <h2 style="font-size:38px;line-height:1;letter-spacing:-.03em"><span class="muted" style="font-weight:300">SIGUE TU</span><br><span style="font-weight:600">RUTA DE HOY</span></h2>
+  <div class="tabs glass"><span class="on">En curso</span><span>Por empezar</span><span>Completadas</span></div>
+  <div class="glass" style="border-radius:30px;padding:8px">
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 8px 12px">
+      <div class="circ" style="background:rgba(255,255,255,.08)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3 3 0 000-6H9a3 3 0 010-6h7"/></svg></div>
+      <div style="flex:1"><p style="font-weight:600;font-size:16px">Bloqueo y etiquetado</p><p class="k">Vence vie 20 nov · faltan 10 días</p></div>
+      <div class="ring" style="width:46px;height:46px"><span style="width:38px;height:38px;font-size:11px">40%</span></div>
+    </div>
+    <div class="poster" style="height:300px;border-radius:24px;position:relative;overflow:hidden">
+      <span class="chip glass" style="position:absolute;left:12px;top:12px">Nivel 3 de 4 · En curso</span>
+      <div style="position:absolute;left:12px;right:12px;bottom:12px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:8px"><div class="stat glass"><b>4:40</b><small>Video</small></div><div class="stat glass"><b>3</b><small>Preguntas</small></div><div class="stat glass"><b>27 min</b><small>Para terminar</small></div></div>
+        <div class="cta glass"><span class="knob"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>Continuar: Candado y tarjeta</div>
+      </div>
+    </div>
+  </div>
+<div class="glass" style="border-radius:24px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-top:-4px">
+    <div class="ring" style="width:46px;height:46px;background:rgba(255,255,255,.12)"><span style="width:38px;height:38px;font-size:11px">0%</span></div>
+    <div style="flex:1"><p style="font-weight:600;font-size:16px">Orden y limpieza</p><p class="k">Se abre el lun 16 nov</p></div></div>
+</div>
+<div class="nav glass"><div class="circ on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg></div><div class="circ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="9" r="6"/><path d="M8.5 14l-1.5 7 5-3 5 3-1.5-7"/></svg></div><div class="circ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></div></div>
+</div></div>
+
+<!-- LECCIÓN -->
+<div><div class="cap">Lección (video tipo Short)</div><div class="phone poster" style="background-position:center top;background-size:auto 112%">
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,13,9,.35) 0%,rgba(11,13,9,0) 25%,rgba(11,13,9,0) 45%,rgba(11,13,9,.85) 100%)"></div>
+<div class="status"><span>9:41</span><span>● ● ▮</span></div>
+<div class="pad" style="position:relative;display:flex;justify-content:space-between;align-items:center">
+  <div class="circ glass"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+  <span class="chip glass">Candado y tarjeta</span>
+  <div class="circ glass" style="font-size:12px;font-weight:600">1×</div>
+</div>
+<div class="pad" style="position:relative;margin-top:12px"><div style="display:flex;gap:4px"><i style="flex:1;height:4px;border-radius:9px;background:var(--lime)"></i><i style="flex:1;height:4px;border-radius:9px;background:var(--lime)"></i><i style="flex:1;height:4px;border-radius:9px;background:linear-gradient(90deg,var(--ink) 45%,rgba(255,255,255,.25) 45%)"></i><i style="flex:1;height:4px;border-radius:9px;background:rgba(255,255,255,.25)"></i><i style="flex:1;height:4px;border-radius:9px;background:rgba(255,255,255,.25)"></i></div></div>
+<div style="position:absolute;right:20px;top:330px;display:flex;flex-direction:column;gap:12px">
+  <div class="circ glass" style="font-size:12px;font-weight:700">CC</div>
+  <div class="circ glass"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></div>
+  <div class="circ glass"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></div>
+</div>
+<div class="glass" style="position:absolute;left:14px;right:14px;bottom:18px;border-radius:32px;padding:18px;display:flex;flex-direction:column;gap:14px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end">
+    <div><p class="k">Nivel 3 · Hecho con IA</p><p style="font-size:22px;font-weight:600;margin-top:2px">Candado y tarjeta</p></div>
+    <p class="big" style="font-size:44px">2:06<span style="font-size:16px;color:var(--muted);letter-spacing:0"> /4:40</span></p>
+  </div>
+  <div style="height:4px;border-radius:9px;background:rgba(255,255,255,.18)"><i style="display:block;width:45%;height:100%;border-radius:9px;background:var(--lime)"></i></div>
+  <div class="cta" style="background:rgba(255,255,255,.08)"><span class="knob"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M9 6l6 6-6 6"/></svg></span>Hacer el reto · 3 preguntas <span class="muted" style="margin-left:auto;margin-right:14px">›››</span></div>
+</div>
+</div></div>
+
+<!-- RUTA -->
+<div><div class="cap">Ruta como mapa</div><div class="phone">
+<div class="status"><span>9:41</span><span>● ● ▮</span></div>
+<svg width="390" height="560" viewBox="0 0 390 560" style="position:absolute;top:40px;left:0" aria-hidden="true">
+  <g fill="none" stroke="rgba(212,255,58,.10)" stroke-width="1.2">
+    <ellipse cx="200" cy="300" rx="260" ry="190" transform="rotate(-18 200 300)"/><ellipse cx="200" cy="300" rx="210" ry="150" transform="rotate(-14 200 300)"/>
+    <ellipse cx="190" cy="295" rx="160" ry="112" transform="rotate(-10 190 295)"/><ellipse cx="185" cy="290" rx="112" ry="76" transform="rotate(-6 185 290)"/>
+    <ellipse cx="180" cy="288" rx="66" ry="44"/><ellipse cx="300" cy="120" rx="120" ry="70" transform="rotate(20 300 120)"/><ellipse cx="300" cy="120" rx="70" ry="38" transform="rotate(20 300 120)"/>
+  </g>
+  <path d="M70 470 C120 450 160 440 170 400 C182 352 80 340 110 290" fill="none" stroke="#D4FF3A" stroke-width="4" stroke-linecap="round" style="filter:drop-shadow(0 0 6px rgba(212,255,58,.7))"/>
+  <path d="M110 290 C135 240 240 250 255 205 C268 168 290 150 305 120" fill="none" stroke="rgba(244,246,238,.35)" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
+  <g font-family="Inter Tight, sans-serif" font-size="12" fill="#F4F6EE">
+    <circle cx="70" cy="470" r="9" fill="#D4FF3A"/><text x="88" y="474">1 · Por qué bloqueamos</text>
+    <circle cx="170" cy="400" r="9" fill="#D4FF3A"/><text x="188" y="404">2 · Aislar la energía</text>
+    <circle cx="110" cy="290" r="20" fill="rgba(212,255,58,.18)"/><circle cx="110" cy="290" r="11" fill="#D4FF3A"/><text x="138" y="286" font-weight="600" fill="#D4FF3A">3 · Candado y tarjeta</text><text x="138" y="302" fill="#A9AF9C">En curso</text>
+    <circle cx="255" cy="205" r="8" fill="#0B0D09" stroke="rgba(244,246,238,.5)" stroke-width="2"/><text x="190" y="190" fill="#A9AF9C">4 · Bloqueado</text>
+    <circle cx="305" cy="120" r="8" fill="#0B0D09" stroke="rgba(244,246,238,.5)" stroke-width="2"/><text x="250" y="102" fill="#A9AF9C">Evaluación final</text>
+  </g>
+</svg>
+<div class="pad" style="position:relative;display:flex;justify-content:space-between;align-items:center">
+  <div class="circ glass"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg></div>
+  <span style="font-weight:600">Bloqueo y etiquetado</span>
+  <div class="circ glass"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></div>
+</div>
+<div class="glass" style="position:absolute;left:14px;right:14px;bottom:18px;border-radius:32px;padding:18px;display:flex;flex-direction:column;gap:14px">
+  <div class="tabs" style="background:rgba(255,255,255,.06)"><span class="on">Mapa</span><span>Lista</span><span>Descargas</span></div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-end">
+    <div><p class="k">Nivel 3 de 4 · En curso</p><p style="font-size:22px;font-weight:600;margin-top:2px">Candado y tarjeta</p></div>
+    <p class="big" style="font-size:60px">40<span style="font-size:20px;color:var(--muted);letter-spacing:0">%</span></p>
+  </div>
+  <div style="display:flex;gap:8px"><div class="stat" style="background:rgba(255,255,255,.06)"><b>2/5</b><small>Completado</small></div><div class="stat" style="background:rgba(255,255,255,.06)"><b>27 min</b><small>Restante</small></div><div class="stat" style="background:rgba(255,255,255,.06)"><b>20 nov</b><small>Vence</small></div></div>
+  <div class="cta solid">Continuar nivel 3</div>
+</div>
+</div></div>
+
+<!-- RETO -->
+<div><div class="cap">Reto: "Repasemos"</div><div class="phone">
+<div class="status"><span>9:41</span><span>● ● ▮</span></div>
+<div class="pad" style="display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div class="circ glass"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+    <span class="chip glass">Pregunta 1 de 3</span><div style="width:44px"></div>
+  </div>
+  <h2 style="font-size:30px;line-height:1.1;letter-spacing:-.02em"><span class="muted" style="font-weight:300">Ya apagaste la máquina.</span><br><span style="font-weight:600">¿Qué haces ahora?</span></h2>
+  <div class="glass" style="border-radius:24px;padding:16px 18px;border:1.5px solid #B8F26B"><p style="font-size:16px;line-height:1.4">Aislar la fuente de energía: cortar el suministro o cerrar la válvula</p><p style="font-size:13px;color:#B8F26B;margin-top:8px;font-weight:600">✓ Respuesta correcta</p></div>
+  <div class="glass" style="border-radius:24px;padding:16px 18px;border:1.5px solid var(--rep)"><p style="font-size:16px;line-height:1.4">Empezar el trabajo, ya está apagada</p><p style="font-size:13px;color:var(--rep);margin-top:8px;font-weight:600">↺ Tu respuesta</p></div>
+</div>
+<div class="glass" style="position:absolute;left:14px;right:14px;bottom:18px;border-radius:32px;padding:20px;display:flex;flex-direction:column;gap:14px;background:rgba(43,26,18,.78)">
+  <p style="font-size:20px;font-weight:600;color:var(--rep)">↺ Repasemos</p>
+  <p style="font-size:16px;line-height:1.5">Apagar no basta. El equipo puede volver a energizarse si alguien lo prende o si queda energía en la línea.</p>
+  <div style="display:flex;align-items:center;gap:12px;padding:8px;border-radius:20px;background:rgba(255,255,255,.07)"><div class="poster" style="width:44px;height:58px;border-radius:12px;flex-shrink:0"></div><div><p style="font-weight:600">Ver ese momento del video</p><p class="k">Desde 1:40</p></div></div>
+  <div class="cta solid">Siguiente pregunta</div>
+</div>
+</div></div>
+
+</div>
+
+<div style="display:flex;align-items:center;gap:28px;margin-top:44px">
+  <div class="cap" style="margin:0">Marca blanca</div>
+  <p class="muted" style="font-size:15px;max-width:900px">Con la marca del cliente, el lima cambia por su acento y el oliva toma su tono principal. Ejemplo Corporación Ríomar:</p>
+  <div class="sw" style="width:360px"><div style="background:linear-gradient(160deg,#0E4D5C,#0B1A1E);color:#F4F6EE;height:56px">Principal</div><div style="background:#F26B1D;color:#0B0D09;height:56px">Acento</div><div style="background:#0B0D09;border:1px solid #2A2F22;color:#A9AF9C;height:56px">Fondo</div></div>
+</div>
+</body></html>

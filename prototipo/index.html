@@ -3,7 +3,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&display=swap">
 <style>
 /* Layout: una columna de app móvil (máx. 480 px), barra inferior fija; lección, reto y evaluación a pantalla completa. */
 :root {
@@ -273,6 +273,118 @@ body.demo-on { --demo-h: calc(56px + env(safe-area-inset-bottom, 0px)); }
 .demobar .lbl { font-size: 11px; font-weight: 800; letter-spacing: .12em; flex-shrink: 0; }
 .demobar button { flex-shrink: 0; min-height: 44px; border-radius: 10px; border: 1px solid #C9CBD0; background: #FFFFFF; color: #0E0F11; font-size: 13px; font-weight: 600; padding: 0 10px; white-space: nowrap; }
 .demobar button.on { background: #0E0F11; color: #F2F2F0; border-color: #0E0F11; }
+/* ===== Tema D · Vidrio y lima =====
+   Vidrio esmerilado sobre fondo oliva casi negro; el acento del cliente (lima en Nivia) solo en la acción y el avance.
+   Números grandes y livianos, cápsulas y botones circulares. */
+:root {
+  --font: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --bg: #0B0D09; --surface: rgba(30, 36, 24, .58); --surface2: rgba(255, 255, 255, .07);
+  --line: rgba(255, 255, 255, .10); --line2: rgba(255, 255, 255, .18);
+  --fg: #F4F6EE; --muted: #A9AF9C; --ok: #B8F26B; --okbg: rgba(184, 242, 107, .12);
+  --rep: #F4A27A; --repbg: rgba(244, 162, 122, .13); --on-accent: #11140C; --blur: blur(22px) saturate(140%);
+  --sheet: rgba(20, 24, 16, .94);
+}
+body { background: var(--bg); }
+body::before { background: transparent; }
+#app { background: radial-gradient(130% 55% at 50% 0%, color-mix(in srgb, var(--principal) 60%, #0B0D09) 0%, #12160D 42%, #0B0D09 75%); }
+@media (min-width: 520px) { #app { border-color: rgba(255, 255, 255, .06); } }
+.glass, .block, .routeitem, .lessonbtn, .dlcard, .certitem, .next, .rule, .qitem, .opt, details.sum, .banner.info, .chkrow, .dl, .prules, .conn, .offline {
+  background: var(--surface); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border: 1px solid var(--line);
+}
+.block, .routeitem, .dlcard, .certitem, .next, .rule, details.sum, .dl, .prules { border-radius: 26px; }
+.lessonbtn, .qitem, .chkrow { border-radius: 20px; }
+.title { font-weight: 300; letter-spacing: -.03em; } .title b { font-weight: 600; }
+.h2 { font-weight: 600; } .q { font-weight: 600; letter-spacing: -.02em; }
+.over { color: var(--muted); letter-spacing: .18em; }
+.btn { border-radius: 99px; font-weight: 600; }
+.btn-sec { background: var(--surface2); border: 1px solid var(--line2); }
+.btn-google { border-radius: 99px; }
+.input { background: rgba(255, 255, 255, .06); border: 1px solid var(--line2); border-radius: 18px; }
+.bar { height: 6px; background: rgba(255, 255, 255, .12); }
+.brand { background: transparent; padding-block: 12px 4px; }
+.brand .mono { width: 40px; height: 40px; border-radius: 99px; }
+.brand.logo { background: transparent; border-bottom: 0; }
+.brand.logo img { background: #FFFFFF; padding: 6px 12px; border-radius: 99px; box-sizing: content-box; }
+.conn { width: auto; margin: 8px var(--gr) 0 var(--gl); border-radius: 99px; min-height: 44px; padding: 6px 14px; font-size: 13px; top: calc(env(safe-area-inset-top, 0px) + 8px); }
+.offline { border-radius: 99px; margin: 8px var(--gr) 0 var(--gl); padding: 8px 14px; font-size: 13px; }
+.top { background: transparent; border-bottom: 0; padding-block: 10px 8px; }
+.exit { background: var(--surface); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border: 1px solid var(--line); border-radius: 99px; padding: 0 14px 0 10px; }
+.dock { background: linear-gradient(180deg, rgba(11, 13, 9, 0), rgba(11, 13, 9, .94) 28%); border-top: 0; }
+.pill { border-radius: 99px; }
+.dot.done { background: var(--accent); color: var(--on-accent); border: 0; }
+.dot.cur { border: 0; box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 22%, transparent); border-radius: 99px; }
+.trail { border-left-style: dotted; }
+.trail.done { border-left: 3px solid var(--accent); filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 70%, transparent)); }
+.seal { box-shadow: 0 0 40px -6px var(--accent); }
+.sheet { background: var(--sheet); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border: 1px solid var(--line); border-bottom: 0; border-radius: 30px 30px 0 0; }
+.radio { background: rgba(255, 255, 255, .05); border-radius: 18px; }
+.chip { background: var(--surface); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border-radius: 99px; }
+.video { border-radius: 28px; }
+.toast { border-radius: 99px; }
+.empty .ic { color: var(--accent); }
+/* Barra inferior flotante */
+.tabs { position: sticky; bottom: calc(var(--demo-h) + 14px); align-self: center; width: auto; margin: 0 auto 14px; gap: 6px; padding: 6px; border-radius: 99px; border: 1px solid var(--line);
+  background: rgba(20, 24, 16, .78); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); padding-bottom: 6px; }
+.tabs button { flex: none; min-width: 84px; min-height: 58px; border-radius: 99px; font-size: 11px; gap: 2px; padding: 6px 12px; }
+.tabs button[aria-current="page"] { background: var(--accent); color: var(--on-accent); }
+/* Piezas del tema */
+.circ { width: 48px; height: 48px; border-radius: 99px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--fg);
+  background: var(--surface); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border: 1px solid var(--line); }
+.circ[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: transparent; }
+.circ.ok { color: var(--ok); }
+.hero-t { font-size: 40px; line-height: .98; letter-spacing: -.035em; text-transform: uppercase; }
+.hero-t span { display: block; font-weight: 300; color: var(--muted); } .hero-t b { display: block; font-weight: 600; }
+.seg2 { display: flex; gap: 4px; padding: 5px; border-radius: 99px; background: var(--surface); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border: 1px solid var(--line); }
+.seg2 button { flex: 1; min-height: 44px; border-radius: 99px; border: 0; background: none; color: var(--muted); font-size: 14px; font-weight: 500; }
+.seg2 button[aria-pressed="true"] { background: var(--fg); color: var(--bg); font-weight: 600; }
+.ring2 { --p: 0; width: 50px; height: 50px; border-radius: 99px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  background: conic-gradient(var(--accent) calc(var(--p) * 1%), rgba(255, 255, 255, .12) 0); }
+.ring2 span { width: 41px; height: 41px; border-radius: 99px; background: #151910; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+.heroc { border-radius: 32px; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+.heroc-h { display: flex; align-items: center; gap: 12px; padding: 8px 8px 10px; }
+.heroc-m { position: relative; height: 330px; border-radius: 26px; overflow: hidden; background: #000 center 22% / cover no-repeat; }
+.heroc-m::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11, 13, 9, .25) 0%, rgba(11, 13, 9, 0) 30%, rgba(11, 13, 9, .55) 100%); }
+.heroc-m > * { position: relative; z-index: 1; }
+.heroc-in { position: absolute; left: 10px; right: 10px; bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+.stats { display: flex; gap: 8px; }
+.stat { flex: 1; border-radius: 20px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 1px;
+  background: rgba(20, 24, 16, .62); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border: 1px solid var(--line); }
+.stat b { font-size: 17px; font-weight: 600; } .stat small { font-size: 11px; color: var(--muted); }
+.cta { width: 100%; min-height: 60px; border-radius: 99px; display: flex; align-items: center; gap: 12px; padding: 6px 16px 6px 6px; font-weight: 600; font-size: 16px; text-align: left; color: var(--fg);
+  background: rgba(20, 24, 16, .66); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border: 1px solid var(--line); }
+.cta .knob { width: 48px; height: 48px; border-radius: 99px; background: var(--accent); color: var(--on-accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.cta:disabled { color: var(--muted); cursor: not-allowed; } .cta:disabled .knob { background: rgba(255, 255, 255, .12); color: var(--muted); }
+.num { font-weight: 300; letter-spacing: -.045em; line-height: .95; font-variant-numeric: tabular-nums; }
+/* Ruta como mapa */
+.map { position: relative; }
+.map svg { width: 100%; height: auto; display: block; overflow: visible; }
+.map .lbl { font-size: 12.5px; fill: var(--fg); font-family: var(--font); }
+.map .lbl.m { fill: var(--muted); } .map .lbl.a { fill: var(--accent); font-weight: 600; }
+.map .hit { cursor: pointer; }
+.panel { border-radius: 30px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+/* Lección inmersiva */
+.lx { position: relative; flex: 1; min-height: 100dvh; overflow: hidden; background: #000; }
+.lx .vslot { position: absolute; inset: 0; }
+.lx-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(11, 13, 9, .45) 0%, rgba(11, 13, 9, 0) 22%, rgba(11, 13, 9, 0) 48%, rgba(11, 13, 9, .8) 100%); }
+.lx-top { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 12px); left: var(--gl); right: var(--gr); display: flex; align-items: center; justify-content: space-between; gap: 8px; z-index: 3; }
+.lx-segs { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 72px); left: var(--gl); right: var(--gr); display: flex; gap: 4px; z-index: 3; }
+.lx-segs i { flex: 1; height: 4px; border-radius: 9px; background: rgba(255, 255, 255, .25); }
+.lx-segs i.on { background: var(--accent); }
+.lx-side { position: absolute; right: var(--gr); top: calc(env(safe-area-inset-top, 0px) + 104px); display: flex; flex-direction: column; gap: 10px; z-index: 3; }
+.lx-panel { position: absolute; left: 12px; right: 12px; bottom: calc(14px + var(--demo-h)); border-radius: 32px; padding: 16px; display: flex; flex-direction: column; gap: 12px; z-index: 3;
+  background: rgba(20, 24, 16, .66); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border: 1px solid var(--line); }
+.lx .vplay { z-index: 2; width: 76px; height: 76px; box-shadow: 0 0 50px -6px var(--accent); }
+.lx .vmsg { z-index: 2; }
+.lx .vcap { top: calc(env(safe-area-inset-top, 0px) + 96px); z-index: 2; }
+.lx .vtouch { z-index: 1; }
+#vtime { color: var(--fg); }
+/* Reto: el "por qué" queda fijo abajo, siempre visible */
+.dock.fbdock { background: var(--sheet); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); border-top: 1px solid var(--line); border-radius: 30px 30px 0 0; padding-top: 18px; }
+.dock .fb { background: transparent; padding: 0; }
+/* Barra de demostración en vidrio oscuro */
+.demobar { background: rgba(11, 13, 9, .86); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); color: var(--muted); border-top: 1px solid var(--line); }
+.demobar button { background: rgba(255, 255, 255, .06); border: 1px solid var(--line2); color: var(--fg); border-radius: 99px; }
+.demobar button.on { background: var(--accent); color: var(--on-accent); border-color: transparent; }
 @media (prefers-reduced-motion: reduce) { .sk { animation: none; } }
 </style>
 
@@ -377,6 +489,12 @@ const VDUR = 27.1;
 })));
 
 const CLIENTS = {
+  N: {
+    id: 'N', slug: 'nivia', name: 'Nivia', mono: 'N', accent: '#D4FF3A', principal: '#2B3514', ptext: '#D4FF3A', orb: [0.83, 1, 0.23],
+    route: R1, prefix: 'NIV', areas: ['Mantenimiento', 'Producción', 'Almacén', 'Calidad'],
+    rules: { min: 80, attempts: 3, wait: 60, n: 10, minutes: 15, exhausted: 'Habla con tu supervisor para habilitar un nuevo intento.' },
+    second: { title: 'Orden y limpieza en el área', levels: 2, starts: new Date(2026, 10, 16), due: new Date(2026, 11, 15) }
+  },
   A: {
     id: 'A', slug: 'riomar', name: 'Corporación Ríomar', mono: 'R', accent: '#F26B1D', principal: '#0E4D5C', ptext: '#7CC3D0', orb: [0.949, 0.42, 0.114],
     route: R1, prefix: 'RIO', areas: ['Mantenimiento', 'Producción', 'Almacén', 'Calidad'],
@@ -408,7 +526,7 @@ const GOOGLE_G = '<svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="t
 
 /* ---------- Estado ---------- */
 const S = {
-  client: 'A', persona: null, screen: 'login', params: {},
+  client: 'N', persona: null, homeTab: 'curso', routeView: 'mapa', screen: 'login', params: {},
   offline: false, videoFail: false, forceNext: null, forceResult: null,
   gate: null, gateSince: 0, gateSlow: false,
   demo: true, sheet: null, toast: null, toastUntil: 0,
@@ -527,7 +645,8 @@ const PATHS = {
   sync: '<path d="M20 11a8 8 0 00-14.3-4.9L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0014.3 4.9L20 16"/><path d="M20 20v-4h-4"/>',
   trash: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',
   phoneok: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M9 12l2 2 4-4"/>',
-  dl: 'M12 4v11M7 10l5 5 5-5M5 20h14'
+  dl: 'M12 4v11M7 10l5 5 5-5M5 20h14',
+  route: '<circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3 3 0 000-6H9a3 3 0 010-6h7"/>'
 };
 function icon(n, s) {
   s = s || 24; const d = PATHS[n];
@@ -770,6 +889,12 @@ function homeEmpty(p, pr) {
     '<button class="btn btn-primary" data-a="go" data-to="certs">' + icon('award', 20) + 'Ver mis certificados</button>';
 }
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+function ring(p) { return '<div class="ring2" style="--p:' + p + '" aria-hidden="true"><span>' + p + '%</span></div>'; }
+function dueText(it) {
+  const d = daysTo(it.due);
+  if (it.late) return '<span style="color:var(--rep)">Venció el ' + fDM(it.due) + '</span>';
+  return 'Vence el ' + fShort(it.due) + ' · ' + (d === 0 ? 'hoy' : d === 1 ? 'mañana' : 'faltan ' + d + ' días');
+}
 function homeBody(p, pr) {
   const c = C(); const st = routeStats();
   if (pr.passed && !p.second) return homeEmpty(p, pr);
@@ -778,34 +903,44 @@ function homeBody(p, pr) {
   if (p.second) items.push({ kind: 'second', title: c.second.title, due: c.second.due, late: false, pct: 0, starts: c.second.starts, remaining: c.second.levels * 6 + 10 });
   items.sort((a, b) => (b.late - a.late) || (a.due - b.due));
   const soon = certSoon(pr);
-  let next = '';
-  if (!pr.passed) {
+  const notYet = (it) => it.starts && it.starts > now();
+  const tab = S.homeTab || 'curso';
+  const main = items.find((i) => i.kind === 'main');
+
+  // Tarjeta principal: portada del video con datos encima y "Continuar" en cápsula.
+  let hero = '';
+  if (tab === 'curso' && main) {
     const L = st.next;
-    const lvl = L ? L.level + 1 : null;
-    next = '<section class="next" aria-labelledby="nextT"><p class="over">' + (L ? 'Sigue donde te quedaste' : 'Te falta la evaluación') + '</p>' +
-      (L ? '<div class="thumb"><div class="tiny-video"><img src="' + VPOSTER + '" alt="" width="54" height="96"></div><div class="stack-s" style="gap:2px;min-width:0"><span class="xs muted">Nivel ' + lvl + ' de ' + c.route.levels.length + ' · ' + fmtLabel(L.format) + '</span><h2 id="nextT" style="font-size:18px;font-weight:800;line-height:1.25">' + esc(L.title) + '</h2><span class="xs muted">' + fClock(L.dur) + ' de video · reto de 3 preguntas</span></div></div>'
-        : '<h2 id="nextT" style="font-size:18px;font-weight:800">Evaluación final · ' + c.rules.n + ' preguntas</h2>') +
-      (L ? '<div class="dlrow">' + (dlOf(L.id).state === 'none' ? (S.offline ? '<span class="dlb">' + icon('nosignal', 16) + 'Necesita señal</span>' : '<span class="dlb">' + icon('dl', 16) + 'Descargar para ver sin señal · ' + L.mb + ' MB</span>') : dlBadge(L)) + '</div>' : '') +
-      '<button class="btn btn-primary" data-a="continue">Continuar ' + icon('chev', 20) + '</button>' +
-      (L && !S.offline && nextToDownload().length ? '<button class="btn btn-sec" data-a="dlNext">' + icon('dl', 20) + 'Descargar lo que sigue</button>' : '') + '</section>';
+    const media = L
+      ? '<div class="heroc-m" style="background-image:url(' + VPOSTER + ')"><span class="chip" style="position:absolute;left:12px;top:12px">Nivel ' + (L.level + 1) + ' de ' + c.route.levels.length + ' · ' + fmtLabel(L.format) + '</span>' +
+        '<div class="heroc-in"><div class="stats"><div class="stat"><b>' + fClock(L.dur) + '</b><small>Video</small></div><div class="stat"><b>' + L.qs.length + '</b><small>Preguntas</small></div><div class="stat"><b>' + main.remaining + ' min</b><small>Para terminar</small></div></div>' +
+        '<button class="cta" data-a="continue"><span class="knob">' + icon('play', 18) + '</span><span id="nextT">Continuar: ' + esc(L.title) + '</span></button></div></div>'
+      : '<div class="panel"><p class="h2" id="nextT">Evaluación final · ' + c.rules.n + ' preguntas</p><button class="cta" data-a="continue"><span class="knob">' + icon('chev', 20) + '</span>Ir a la evaluación</button></div>';
+    const dl = L ? '<div class="dlrow" style="padding:8px 12px 4px">' + (dlOf(L.id).state === 'none'
+      ? (S.offline ? '<span class="dlb">' + icon('nosignal', 16) + 'Necesita señal</span>' : '<button class="link" data-a="dlNext" style="min-height:40px">' + icon('dl', 16) + 'Descargar lo que sigue para ver sin señal</button>')
+      : dlBadge(L)) + (main.pend ? pill('pend', main.pend + (main.pend === 1 ? ' lección pendiente' : ' lecciones pendientes') + ' de enviar', 'clock') : '') + '</div>' : '';
+    hero = '<section class="heroc glass" aria-labelledby="nextT">' +
+      '<button class="heroc-h" data-a="openRoute" data-kind="main" style="background:none;border:0;width:100%;text-align:left;color:inherit">' +
+      '<span class="circ" style="width:44px;height:44px">' + icon('route', 20) + '</span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">' +
+      '<span style="font-weight:600;font-size:16px;line-height:1.25">' + esc(main.title) + '</span><span class="xs muted">' + dueText(main) + '</span>' +
+      (main.renewal ? '<span>' + pill('av', 'Renovación de tu certificado') + '</span>' : '') + '</span>' + ring(main.pct) + '</button>' + media + dl + '</section>';
   }
-  const list = items.map((it) => {
-    const d = daysTo(it.due);
-    const dueTxt = it.late ? 'Venció el ' + fDM(it.due) : 'Vence el ' + fShort(it.due) + ' · ' + (d === 0 ? 'hoy' : d === 1 ? 'mañana' : 'faltan ' + d + ' días');
-    const notYet = it.starts && it.starts > now();
-    return '<button class="routeitem' + (it.late ? ' late' : '') + '" data-a="openRoute" data-kind="' + it.kind + '">' +
-      (it.late ? '<span class="pill rep">' + icon('late', 14) + 'Vencida</span>' : notYet ? pill('lock', 'Disponible desde el ' + fShort(it.starts), 'clock') : it.renewal ? pill('av', 'Renovación de tu certificado') : '') +
-      '<span style="font-size:18px;font-weight:800;line-height:1.25">' + esc(it.title) + '</span>' +
-      '<div class="bar" aria-hidden="true"><i style="width:' + it.pct + '%"></i></div>' +
-      '<span class="meta"><b>' + it.pct + ' %</b><span>' + dueTxt + '</span><span>Te quedan ' + it.remaining + ' min aprox.</span></span>' +
-      (it.pend ? '<span>' + pill('pend', it.pend + (it.pend === 1 ? ' lección pendiente' : ' lecciones pendientes') + ' de enviar', 'clock') + '</span>' : '') + '</button>';
-  }).join('');
+  const row = (it) => '<button class="routeitem" data-a="openRoute" data-kind="' + it.kind + '" style="flex-direction:row;align-items:center;gap:12px;padding:12px 14px">' + ring(it.pct) +
+    '<span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-weight:600;font-size:16px;line-height:1.25">' + esc(it.title) + '</span>' +
+    '<span class="xs muted">' + (notYet(it) ? 'Se abre el ' + fShort(it.starts) : dueText(it)) + '</span></span>' + icon('chev', 20) + '</button>';
+  let list;
+  if (tab === 'curso') list = items.filter((it) => it.kind !== 'main' && !notYet(it)).map(row).join('');
+  else if (tab === 'empezar') list = items.filter((it) => notYet(it)).map(row).join('') || '<p class="muted small" style="text-align:center;padding:16px 0">No tienes capacitaciones por empezar.</p>';
+  else list = pr.certs.map((ct, i) => '<button class="certitem" data-a="viewCert" data-i="' + i + '"><span class="circ" style="width:44px;height:44px">' + icon('award', 22) + '</span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-weight:600">' + esc(ct.route) + '</span><span class="xs muted">Vigente hasta ' + fNum(ct.expires) + '</span></span>' + icon('chev', 20) + '</button>').join('')
+    || '<p class="muted small" style="text-align:center;padding:16px 0">Aún no completas ninguna capacitación.</p>';
+  const tabBtn = (v, label) => '<button data-a="homeTab" data-v="' + v + '" aria-pressed="' + (tab === v) + '">' + label + '</button>';
   const lateBanner = items.some((i) => i.late) ? '<div class="banner rep" role="status">' + icon('late', 20) + '<span>La capacitación <b>' + esc(c.route.title) + '</b> venció el ' + fDM(p.due) + '. Aún puedes terminarla.</span></div>' : '';
-  return '<div class="stack-s"><p class="muted small">' + esc(cap(fLong(now()))) + '</p><h1 class="title">Hola, <b>' + esc(p.first) + '</b></h1></div>' +
+  return '<div class="stack-s"><p class="muted small">Hola, <b style="color:var(--fg)">' + esc(p.first) + '</b> · ' + esc(fLong(now())) + (S.offline ? ' · actualizado 08:15' : '') + '</p>' +
+    '<h1 class="hero-t"><span>Sigue tu</span><b>ruta de hoy</b></h1></div>' +
     lateBanner +
     (soon ? '<div class="banner info">' + icon('clock', 20) + '<span>Tu certificado <b>' + esc(soon.route) + '</b> vence en ' + daysTo(soon.expires) + ' días.</span></div>' : '') +
-    (S.offline ? '<p class="small muted" style="margin-top:-12px">Sin señal · Actualizado hoy 08:15</p>' : '') +
-    next + '<section class="stack" aria-labelledby="capT"><h2 class="h2" id="capT">Tus capacitaciones</h2>' + list + '</section>' + downloadsRow();
+    '<div class="seg2" role="group" aria-label="Filtrar capacitaciones">' + tabBtn('curso', 'En curso') + tabBtn('empezar', 'Por empezar') + tabBtn('hechas', 'Completadas') + '</div>' +
+    hero + (list ? '<section class="stack" aria-label="Tus capacitaciones">' + list + '</section>' : '') + downloadsRow();
 }
 function downloadsRow() {
   const n = allLessons(C().route).filter((l) => isReady(l.id)).length;
@@ -830,13 +965,68 @@ function nodeRow(st, tag, title, trail, extra, idx) {
   return '<div class="node"><div class="rail">' + dot + (trail ? '<div class="trail' + (st === 'done' ? ' done' : '') + '"></div>' : '') + '</div>' +
     '<div class="ncontent"><span class="xs muted">' + esc(tag) + '</span><span style="font-size:17px;font-weight:800;line-height:1.25">' + esc(title) + '</span>' + extra + '</div></div>';
 }
+function routeCta(st, pr) {
+  return pr.passed ? '<button class="btn btn-sec" data-a="go" data-to="certs">' + icon('award', 20) + 'Ver mi certificado</button>' :
+    st.next ? '<button class="btn btn-primary" data-a="continue">Continuar nivel ' + (st.next.level + 1) + '</button>' : '<button class="btn btn-primary" data-a="go" data-to="rules">Ir a la evaluación final</button>';
+}
 function routeBody() {
   const c = C(); const st = routeStats(); const pr = prog(); const per = P();
+  const view = S.routeView || 'mapa';
+  const head = '<div class="row" style="justify-content:space-between"><button class="circ" data-a="go" data-to="home" aria-label="Volver a Inicio">' + icon('back', 22) + '</button>' +
+    '<p style="font-weight:600;text-align:center;flex:1;min-width:0">' + esc(c.route.title) + '</p>' +
+    (S.offline ? '<span class="circ" aria-hidden="true" style="opacity:.35">' + icon('dl', 20) + '</span>' : '<button class="circ" data-a="go" data-to="select" aria-label="Descargar para ver sin señal">' + icon('dl', 20) + '</button>') + '</div>';
+  const seg = '<div class="seg2" role="group" aria-label="Vista de la ruta"><button data-a="routeView" data-v="mapa" aria-pressed="' + (view === 'mapa') + '">Mapa</button><button data-a="routeView" data-v="lista" aria-pressed="' + (view === 'lista') + '">Lista</button></div>';
+  return head + seg + (view === 'mapa' ? routeMap(st, pr, per) : routeList(st, pr, per));
+}
+/* La ruta como un mapa: curvas de nivel y una línea brillante que une los niveles. */
+function routeMap(st, pr, per) {
+  const c = C(); const lv = c.route.levels; const n = lv.length + 1;
+  const all = lv.map((_, i) => levelState(i)).concat([pr.passed ? 'done' : st.allLessonsDone ? 'av' : 'lock']);
+  const W = 360, H = 56 + n * 74, xs = [74, 236, 110, 272, 150, 290];
+  const pts = all.map((_, i) => ({ x: xs[i % xs.length], y: H - 30 - i * ((H - 64) / (n - 1)) }));
+  let cur = all.findIndex((x) => x !== 'done'); if (cur < 0) cur = n - 1;
+  const seg = (a, b) => 'M' + a.x + ' ' + a.y + ' C' + a.x + ' ' + (a.y - 40) + ' ' + b.x + ' ' + (b.y + 40) + ' ' + b.x + ' ' + b.y;
+  let solid = '', dashed = '';
+  for (let i = 0; i < n - 1; i++) { if (i < cur) solid += seg(pts[i], pts[i + 1]) + ' '; else dashed += seg(pts[i], pts[i + 1]) + ' '; }
+  const contours = [[0.62, 0.5, 250, 200, -16], [0.6, 0.5, 190, 150, -12], [0.58, 0.48, 130, 102, -8], [0.56, 0.47, 74, 56, -4], [0.8, 0.18, 120, 64, 18], [0.8, 0.18, 66, 34, 18]]
+    .map(([cx, cy, rx, ry, rot]) => '<ellipse cx="' + (cx * W) + '" cy="' + (cy * H) + '" rx="' + rx + '" ry="' + ry + '" transform="rotate(' + rot + ' ' + (cx * W) + ' ' + (cy * H) + ')"/>').join('');
+  const nodes = all.map((stt, i) => {
+    const P0 = pts[i]; const isExam = i === lv.length;
+    const title = isExam ? 'Evaluación final' : (i + 1) + ' · ' + lv[i].title;
+    const right = P0.x < 200; const tx = right ? P0.x + 22 : P0.x - 22; const anchor = right ? 'start' : 'end';
+    const current = i === cur && stt !== 'done';
+    const pending = !isExam && lv[i].lessons.find((l) => !pr.completed.includes(l.id));
+    const act = stt === 'lock' ? 'data-a="locked" data-lv="' + (isExam ? 'exam' : i) + '"'
+      : isExam ? 'data-a="go" data-to="rules"' : 'data-a="openLesson" data-id="' + (pending || lv[i].lessons[0]).id + '"';
+    const dot = stt === 'done' ? '<circle cx="' + P0.x + '" cy="' + P0.y + '" r="9" fill="var(--accent)"/>'
+      : current ? '<circle cx="' + P0.x + '" cy="' + P0.y + '" r="21" fill="var(--accent)" opacity=".2"/><circle cx="' + P0.x + '" cy="' + P0.y + '" r="11" fill="var(--accent)"/>'
+      : '<circle cx="' + P0.x + '" cy="' + P0.y + '" r="8" fill="#0B0D09" stroke="' + (stt === 'lock' ? 'rgba(244,246,238,.5)' : 'var(--accent)') + '" stroke-width="2"/>';
+    const sub = current ? (stt === 'av' ? 'Disponible' : 'En curso') : stt === 'lock' ? 'Bloqueado' : '';
+    return dot + '<text class="lbl' + (current ? ' a' : stt === 'lock' ? ' m' : '') + '" x="' + tx + '" y="' + (P0.y + (sub ? -2 : 4)) + '" text-anchor="' + anchor + '">' + esc(title) + '</text>' +
+      (sub ? '<text class="lbl m" x="' + tx + '" y="' + (P0.y + 14) + '" text-anchor="' + anchor + '">' + sub + '</text>' : '') +
+      '<circle class="hit" cx="' + P0.x + '" cy="' + P0.y + '" r="24" fill="transparent" ' + act + ' role="button" aria-label="' + esc(title + (sub ? ', ' + sub : '')) + '"/>';
+  }).join('');
+  const svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" aria-label="Mapa de la ruta">' +
+    '<g fill="none" stroke="color-mix(in srgb, var(--accent) 12%, transparent)" stroke-width="1.2">' + contours + '</g>' +
+    (solid ? '<path d="' + solid + '" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" style="filter:drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 70%, transparent))"/>' : '') +
+    (dashed ? '<path d="' + dashed + '" fill="none" stroke="rgba(244,246,238,.35)" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>' : '') + nodes + '</svg>';
+  const curLv = cur < lv.length ? lv[cur] : null;
+  const units = allLessons(c.route).filter((l) => pr.completed.includes(l.id)).length + (pr.passed ? 1 : 0);
+  const label = pr.passed ? 'Ruta completada' : curLv ? 'Nivel ' + (cur + 1) + ' de ' + lv.length + ' · ' + (all[cur] === 'av' ? 'Disponible' : 'En curso') : 'Evaluación final';
+  const panel = '<div class="panel glass"><div class="row" style="justify-content:space-between;align-items:flex-end"><div style="min-width:0"><p class="xs muted">' + label + '</p>' +
+    '<p style="font-size:21px;font-weight:600;line-height:1.2">' + esc(pr.passed ? 'Aprobaste la ruta' : curLv ? curLv.title : 'Evaluación final') + '</p></div>' +
+    '<p class="num" style="font-size:58px">' + st.pct + '<span style="font-size:20px;color:var(--muted);letter-spacing:0">%</span></p></div>' +
+    '<div class="stats"><div class="stat"><b>' + units + '/' + (allLessons(c.route).length + 1) + '</b><small>Completado</small></div><div class="stat"><b>' + st.remaining + ' min</b><small>Restante</small></div>' +
+    '<div class="stat"><b' + (st.late ? ' style="color:var(--rep)"' : '') + '>' + fDM(per.due) + '</b><small>' + (st.late ? 'Venció' : 'Vence') + '</small></div></div>' + routeCta(st, pr) + '</div>';
+  return '<div class="map">' + svg + '</div>' + panel;
+}
+function routeList(st, pr, per) {
+  const c = C(); const d = daysTo(per.due);
   const levels = c.route.levels.map((lv, i) => {
     const s = levelState(i);
     let extra = '<div>' + levelPill(s) + '</div>';
     if (s === 'lock') {
-      extra ='<button class="lockbtn" data-a="locked" data-lv="' + i + '" aria-label="Nivel ' + (i + 1) + ' bloqueado. Ver qué falta">' + pill('lock', 'Bloqueado · Completa el Nivel ' + i, 'lock') + '<span class="xs muted">' + lv.lessons.length + ' ' + (lv.lessons.length > 1 ? 'lecciones' : 'lección') + ' · ' + (lv.lessons.length * 6) + ' min</span></button>';
+      extra = '<button class="lockbtn" data-a="locked" data-lv="' + i + '" aria-label="Nivel ' + (i + 1) + ' bloqueado. Ver qué falta">' + pill('lock', 'Bloqueado · Completa el Nivel ' + i, 'lock') + '<span class="xs muted">' + lv.lessons.length + ' ' + (lv.lessons.length > 1 ? 'lecciones' : 'lección') + ' · ' + (lv.lessons.length * 6) + ' min</span></button>';
     } else {
       extra += lv.lessons.map((l) => {
         const done = pr.completed.includes(l.id);
@@ -850,27 +1040,20 @@ function routeBody() {
   const examExtra = pr.passed ? '<div>' + pill('ok', 'Aprobada · ' + pr.score + ' %', 'check') + '</div>' :
     st.allLessonsDone ? '<div>' + pill('av', 'Disponible') + '</div><button class="lessonbtn" data-a="go" data-to="rules">' + icon('doc', 20) + '<span class="t">Ver reglas y empezar<span class="xs muted" style="display:block;font-weight:400">' + c.rules.n + ' preguntas · ' + c.rules.minutes + ' min</span></span>' + icon('chev', 20) + '</button>' :
     '<button class="lockbtn" data-a="locked" data-lv="exam">' + pill('lock', 'Bloqueado · Completa los niveles', 'lock') + '<span class="xs muted">' + c.rules.n + ' preguntas · ' + c.rules.minutes + ' min</span></button>';
-  const d = daysTo(per.due);
-  const cta = pr.passed ? '<button class="btn btn-sec" data-a="go" data-to="certs">' + icon('award', 20) + 'Ver mi certificado</button>' :
-    st.next ? '<button class="btn btn-primary" data-a="continue">Continuar Nivel ' + (st.next.level + 1) + '</button>' : '<button class="btn btn-primary" data-a="go" data-to="rules">Ir a la evaluación final</button>';
-  return '<button class="link" data-a="go" data-to="home">' + icon('back', 20) + 'Atrás</button>' +
-    '<div class="stack-s"><p class="over">Ruta · ' + esc(c.route.overline) + '</p><h1 class="title">' + esc(c.route.tA) + ' <b>' + esc(c.route.tB) + '</b></h1></div>' +
-    '<div class="stack-s"><div class="bar" role="progressbar" aria-label="Avance de la ruta" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + st.pct + '"><i style="width:' + st.pct + '%"></i></div>' +
+  return '<div class="stack-s"><div class="bar" role="progressbar" aria-label="Avance de la ruta" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + st.pct + '"><i style="width:' + st.pct + '%"></i></div>' +
     '<p class="small muted"><b style="color:var(--fg)">' + st.pct + ' %</b> · ' + (st.late ? '<span style="color:var(--rep)">Venció el ' + fDM(per.due) + '</span>' : 'Vence el ' + fShort(per.due) + ' · faltan ' + d + ' días') + ' · ' + st.remaining + ' min aprox.</p></div>' +
-    (S.offline ? '' : '<button class="btn btn-sec" data-a="go" data-to="select">' + icon('dl', 20) + 'Descargar para ver sin señal</button>') +
-    '<div class="path">' + levels + nodeRow(examSt, 'Final', 'Evaluación final', false, examExtra, '') + '</div>' + cta;
+    '<div class="path">' + levels + nodeRow(examSt, 'Final', 'Evaluación final', false, examExtra, '') + '</div>' + routeCta(st, pr);
 }
 
 SCREENS.lesson = function () {
   const c = C(); const L = lessonById(S.params.id); const pr = prog();
   const v = S.video; const pos = pr.videoPos[L.id] || 0;
   const can = !!(pr.watched[L.id] || pr.completed.includes(L.id));
-  const levelN = L.level + 1;
   const pct = (pos / L.dur) * 100;
   const capIdx = Math.min(L.sum.length - 1, Math.floor(pos / L.dur * L.sum.length));
   let overlay = '';
   if (v.phase === 'idle' || v.phase === 'paused' || v.phase === 'ended') {
-    overlay = '<button class="vplay" data-a="play" aria-label="' + (v.phase === 'ended' ? 'Ver de nuevo' : pos > 0 ? 'Retomar video' : 'Reproducir video') + '">' + icon(v.phase === 'ended' ? 'redo' : 'play', 30) + '</button>';
+    overlay = '<button class="vplay" data-a="play" aria-label="' + (v.phase === 'ended' ? 'Ver de nuevo' : pos > 0 ? 'Retomar video' : 'Reproducir video') + '">' + icon(v.phase === 'ended' ? 'redo' : 'play', 32) + '</button>';
   } else if (v.phase === 'loading') {
     overlay = '<div class="vmsg" role="status">' + orb(72) + '<span>Preparando el video…</span></div>';
   } else if (v.phase === 'error') {
@@ -881,23 +1064,29 @@ SCREENS.lesson = function () {
     overlay = '<button class="vtouch" data-a="pause" aria-label="Pausar video"></button>';
   }
   const caption = (v.phase === 'playing' || v.phase === 'paused') && v.cc ? '<div class="vcap" id="vcap" aria-hidden="true"><span>' + esc(L.sum[capIdx]) + '</span></div>' : '';
-  return topBar('Nivel ' + levelN + ' de ' + c.route.levels.length + ' · ' + L.title, (allLessons(c.route).findIndex((x) => x.id === L.id) + (can ? 1 : 0.5)) / (allLessons(c.route).length + 1) * 100) + offlineBar() +
-    '<main class="scr">' +
-    '<div class="stack-s"><p class="over">Nivel ' + levelN + ' · ' + esc(c.route.levels[L.level].title) + '</p><h1 class="title">' + titleSplit(L.title) + '</h1></div>' +
-    '<div class="stack" style="gap:10px"><div class="video" id="vbox"><div class="vslot" id="vslot"></div><span class="vchip">' + fmtLabel(L.format) + '</span><span class="vdur">' + fClock(L.dur) + '</span>' + caption + overlay + '</div>' +
-    '<div class="vctrl"><div class="row"><div class="bar" style="flex:1"><i id="vbar" style="width:' + pct + '%"></i></div><span class="time" id="vtime">' + fClock(pos) + ' / ' + fClock(L.dur) + '</span></div>' +
-    '<div class="row">' +
-      (v.phase === 'playing' ? '<button class="chip" data-a="pause">' + icon('pause', 18) + 'Pausar</button>' : '') +
-      '<button class="chip" data-a="cc" aria-pressed="' + v.cc + '">' + icon('cc', 18) + 'Subtítulos</button>' +
-      '<button class="chip" data-a="speed" aria-label="Velocidad ' + String(v.speed).replace('.', ',') + ' por">' + String(v.speed).replace('.', ',') + '×</button>' +
-      '<button class="chip" data-a="fullscreen" aria-label="Pantalla completa">' + icon('expand', 18) + '</button></div>' +
-    '<div class="row" style="justify-content:space-between;flex-wrap:wrap"><button class="ailabel" data-a="aiInfo">' + icon('info', 16) + 'Hecho con IA</button>' +
-      (pos > 0 && v.phase !== 'playing' && v.phase !== 'ended' ? '<span class="time">Retoma desde ' + fClock(pos) + '</span>' : '') + '</div></div></div>' +
-    dlRow(L) +
-    '<details class="sum" id="sumd"' + (v.sumOpen ? ' open' : '') + '><summary>' + icon('doc', 20) + 'Resumen de la lección</summary><ul>' + L.sum.map((s) => '<li>' + esc(s) + '</li>').join('') + '</ul></details>' +
-    '<button class="link" data-a="report">' + icon('flag', 18) + 'Reportar un problema con este contenido</button>' +
-    '</main><div class="dock"><button class="btn btn-primary" data-a="startQuiz"' + (can ? '' : ' disabled') + '>Hacer el reto (3 preguntas)</button>' +
-    (can ? '' : '<button class="link" data-a="seen" style="align-self:center">Ya lo vi</button>') + '</div>';
+  const segs = allLessons(c.route).map((x) => '<i class="' + (pr.completed.includes(x.id) ? 'on' : '') + '"' +
+    (x.id === L.id && !pr.completed.includes(x.id) ? ' style="background:linear-gradient(90deg,var(--fg) ' + pct + '%,rgba(255,255,255,.25) ' + pct + '%)"' : '') + '></i>').join('');
+  const d = dlOf(L.id).state;
+  const dlBtn = d === 'ready' ? '<button class="circ ok" data-a="go" data-to="downloads" aria-label="Lista para ver sin señal">' + icon('phoneok', 20) + '</button>'
+    : (d === 'dl' || d === 'queue') ? '<button class="circ" data-a="go" data-to="downloads" aria-label="Descargando">' + icon('clock', 20) + '</button>'
+    : S.offline ? '' : '<button class="circ" data-a="dlOne" data-id="' + L.id + '" aria-label="Descargar para ver sin señal">' + icon('dl', 20) + '</button>';
+  const speed = String(v.speed).replace('.', ',');
+  return '<div class="lx" id="vbox"><div class="vslot" id="vslot"></div><div class="lx-shade"></div>' + caption + overlay +
+    '<div class="lx-top"><button class="circ" data-a="exit" aria-label="Salir de la lección">' + icon('x', 22) + '</button>' +
+    '<span class="chip" style="max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-height:40px">Nivel ' + (L.level + 1) + ' de ' + c.route.levels.length + '</span>' +
+    '<button class="circ" data-a="speed" aria-label="Velocidad ' + speed + ' por" style="font-size:13px;font-weight:600">' + speed + '×</button></div>' +
+    '<div class="lx-segs" aria-hidden="true">' + segs + '</div>' +
+    '<div class="lx-side"><button class="circ" data-a="cc" aria-pressed="' + v.cc + '" aria-label="Subtítulos">' + icon('cc', 20) + '</button>' +
+    '<button class="circ" data-a="fullscreen" aria-label="Pantalla completa">' + icon('expand', 20) + '</button>' +
+    '<button class="circ" data-a="readSummary" aria-label="Resumen de la lección">' + icon('doc', 20) + '</button>' + dlBtn +
+    '<button class="circ" data-a="report" aria-label="Reportar un problema con este contenido">' + icon('flag', 20) + '</button></div>' +
+    '<div class="lx-panel"><div style="min-width:0"><button class="ailabel" data-a="aiInfo" style="min-height:30px;white-space:nowrap">' + icon('info', 14) + 'Hecho con IA</button>' +
+    '<h1 style="font-size:22px;font-weight:600;line-height:1.2">' + esc(L.title) + '</h1></div>' +
+    '<div class="row" style="gap:12px"><div class="bar" style="flex:1"><i id="vbar" style="width:' + pct + '%"></i></div><p class="num" style="white-space:nowrap;font-size:22px"><span id="vtime" style="font-size:inherit">' + fClock(pos) + ' / ' + fClock(L.dur) + '</span></p></div>' +
+    (S.offline ? '<p class="xs muted row" style="gap:6px">' + icon('nosignal', 14) + 'Sin señal · tu avance se guarda en este celular</p>' : '') +
+    (can ? '<button class="cta" data-a="startQuiz"><span class="knob">' + icon('chev', 20) + '</span>Hacer el reto · 3 preguntas</button>'
+      : '<button class="cta" disabled><span class="knob">' + icon('lock', 18) + '</span>Mira el video para hacer el reto</button><button class="link" data-a="seen" style="align-self:center;min-height:40px">Ya lo vi</button>') +
+    '</div></div>';
 };
 function titleSplit(t) { const w = t.split(' '); const last = w.pop(); return esc(w.join(' ')) + ' <b>' + esc(last) + '</b>'; }
 
@@ -920,9 +1109,9 @@ SCREENS.quiz = function () {
   const last = qz.idx === L.qs.length - 1;
   return topBar('Reto · ' + L.title, ((qz.idx + (qz.checked ? 1 : 0)) / L.qs.length) * 100) + offlineBar() +
     '<main class="scr"><p class="over">Pregunta ' + (qz.idx + 1) + ' de ' + L.qs.length + '</p><h1 class="q">' + esc(q.q) + '</h1>' +
-    '<div class="opts" role="radiogroup" aria-label="Opciones">' + opts + '</div>' + fb +
+    '<div class="opts" role="radiogroup" aria-label="Opciones">' + opts + '</div>' +
     '<button class="link" data-a="report">' + icon('flag', 18) + 'Reportar un problema con este contenido</button></main>' +
-    '<div class="dock">' + (qz.checked ? '<button class="btn btn-primary" data-a="nextQ">' + (last ? 'Terminar el reto' : 'Siguiente') + '</button>' : '<button class="btn btn-primary" data-a="checkQ"' + (qz.sel == null ? ' disabled' : '') + '>Comprobar</button>') + '</div>';
+    '<div class="dock' + (qz.checked ? ' fbdock' : '') + '">' + fb + (qz.checked ? '<button class="btn btn-primary" data-a="nextQ">' + (last ? 'Terminar el reto' : 'Siguiente') + '</button>' : '<button class="btn btn-primary" data-a="checkQ"' + (qz.sel == null ? ' disabled' : '') + '>Comprobar</button>') + '</div>';
 };
 
 SCREENS.lessonDone = function () {
@@ -1096,6 +1285,10 @@ function sheetHtml() {
     body = '<h2 class="h2">¿Salir de la evaluación?</h2><p class="muted">Tus respuestas se guardan. El tiempo sigue corriendo.</p><button class="btn btn-primary" data-a="closeSheet">Seguir en la evaluación</button><button class="btn btn-sec" data-a="confirmExitExam">Salir</button>';
   } else if (sh.type === 'aiInfo') {
     body = '<h2 class="h2">Hecho con IA</h2><p class="muted">Este video se hizo con IA a partir del manual de ' + esc(C().name) + '.</p><button class="btn btn-primary" data-a="closeSheet">Entendido</button>';
+  } else if (sh.type === 'summary') {
+    const L = lessonById(S.params.id);
+    body = '<h2 class="h2">Resumen de la lección</h2><p class="xs muted">' + esc(L.title) + '</p><ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px;font-size:16px">' +
+      L.sum.map((x) => '<li>' + esc(x) + '</li>').join('') + '</ul><button class="btn btn-primary" data-a="closeSheet">Entendido</button>';
   } else if (sh.type === 'google') {
     body = googleSheet();
   } else if (sh.type === 'demo') {
@@ -1526,7 +1719,7 @@ document.addEventListener('click', (e) => {
     case 'cc': S.video.cc = !S.video.cc; render(); break;
     case 'speed': { const sp = [0.75, 1, 1.25, 1.5]; S.video.speed = sp[(sp.indexOf(S.video.speed) + 1) % sp.length]; render(); break; }
     case 'fullscreen': { const b = document.getElementById('vbox'); try { const p = b.requestFullscreen ? b.requestFullscreen() : b.webkitRequestFullscreen ? b.webkitRequestFullscreen() : (VID.webkitEnterFullscreen && VID.webkitEnterFullscreen()); if (p && p.catch) p.catch(() => { toast('Pantalla completa no disponible aquí'); render(); }); } catch (err) { toast('Pantalla completa no disponible aquí'); render(); } break; }
-    case 'readSummary': S.video.sumOpen = true; pr.watched[S.params.id] = true; if (S.video.phase !== 'playing') S.video.phase = 'idle'; render(); setTimeout(() => { const d = document.getElementById('sumd'); if (d) d.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30); break;
+    case 'readSummary': pr.watched[S.params.id] = true; if (S.video && S.video.phase !== 'playing') S.video.phase = 'idle'; S.sheet = { type: 'summary' }; render(); break;
     case 'seen': pr.watched[S.params.id] = true; render(); break;
     case 'aiInfo': S.sheet = { type: 'aiInfo' }; render(); break;
     case 'report': S.sheet = { type: 'report', reason: null }; render(); break;
@@ -1570,6 +1763,8 @@ document.addEventListener('click', (e) => {
     case 'openDemo': S.sheet = { type: 'demo' }; render(); break;
     case 'dClient': S.client = el.dataset.v; if (S.persona) go('home'); else render(); break;
     case 'dPersona': S.persona = el.dataset.v; S.sheet = null; enterAs(); break;
+    case 'homeTab': S.homeTab = el.dataset.v; render(); break;
+    case 'routeView': S.routeView = el.dataset.v; render(); break;
     case 'dOffline': setOffline(!S.offline); break;
     case 'dSignal': setOffline(!S.offline); break;
     case 'dDl': { const m = ['normal', 'lenta', 'falla']; S.dlMode = m[(m.indexOf(S.dlMode) + 1) % 3]; render(); break; }

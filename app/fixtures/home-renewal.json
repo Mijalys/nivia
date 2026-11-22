@@ -1,0 +1,45 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "GET /home · renovación con certificado por vencer"
+  },
+  "body": {
+    "user": {
+      "first_name": "Marisol"
+    },
+    "today": "2026-11-10T20:44:00.000Z",
+    "next": {
+      "type": "lesson",
+      "assignment_id": "26a614e1-c5f8-449f-bfb5-7282e23865db",
+      "route_title": "Bloqueo y etiquetado de equipos",
+      "lesson": {
+        "id": "b425b756-9d16-4081-a40a-84011b83e873",
+        "title": "Candado y tarjeta",
+        "level_position": 3,
+        "level_count": 4,
+        "format": "presenter",
+        "duration_s": 280
+      }
+    },
+    "assignments": [
+      {
+        "id": "26a614e1-c5f8-449f-bfb5-7282e23865db",
+        "kind": "renewal",
+        "route_title": "Bloqueo y etiquetado de equipos",
+        "pct": 40,
+        "due_at": "2026-11-30T20:40:00.000Z",
+        "late": false,
+        "days_left": 20,
+        "remaining_minutes": 27
+      }
+    ],
+    "certificates_expiring": [
+      {
+        "id": "a98f671b-9ced-47f7-9cbf-d6212c1b9e74",
+        "route_title": "Bloqueo y etiquetado de equipos",
+        "expires_at": "2026-11-30T20:40:00.000Z",
+        "days_left": 20
+      }
+    ]
+  }
+}

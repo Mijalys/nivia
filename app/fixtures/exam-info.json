@@ -1,0 +1,24 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "GET /assignments/:id/exam · reglas e intentos"
+  },
+  "body": {
+    "assignment_id": "82e2d945-22b9-4f2b-ad54-8bfa11d38eb8",
+    "rules": {
+      "min_score": 80,
+      "attempts": 3,
+      "wait_minutes": 60,
+      "question_count": 10,
+      "minutes": 15,
+      "requires_connection": true,
+      "exhausted_message": "Escríbele al equipo del programa para habilitar un nuevo intento."
+    },
+    "attempts_used": 0,
+    "attempts_left": 3,
+    "retry_at": null,
+    "in_progress_attempt_id": null,
+    "can_start": true,
+    "blocked_reason": null
+  }
+}

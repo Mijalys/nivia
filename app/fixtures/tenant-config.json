@@ -1,0 +1,40 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "GET /tenant/config · marca, reglas y formas de ingreso"
+  },
+  "body": {
+    "slug": "programa-claude",
+    "name": "Programa Claude",
+    "branding": {
+      "mono": "C",
+      "areas": [
+        "Comercio",
+        "Servicios",
+        "Industria",
+        "Salud",
+        "Educación",
+        "Otro"
+      ],
+      "accent": "#D4FF3A",
+      "logo_url": null,
+      "on_accent": "#11140C",
+      "principal": "#2B3514",
+      "principal_text": "#D4FF3A"
+    },
+    "exam_policy": {
+      "minutes": 15,
+      "attempts": 3,
+      "min_score": 80,
+      "wait_minutes": 60,
+      "question_count": 10,
+      "exhausted_message": "Escríbele al equipo del programa para habilitar un nuevo intento.",
+      "max_pause_minutes": 10
+    },
+    "sign_in": {
+      "email_password": true,
+      "email_link": true,
+      "google_client_id": "test-client"
+    }
+  }
+}

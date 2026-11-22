@@ -1,0 +1,21 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "GET /certificates"
+  },
+  "body": {
+    "certificates": [
+      {
+        "id": "b4438eb5-8d08-4453-acf2-184b408447e5",
+        "route_title": "Programa Claude: tu negocio con IA",
+        "score": 100,
+        "code": "PCL-2026-3KKX-06",
+        "holder": "Ana Torres Vega",
+        "issued_at": "2026-11-10T20:44:00.000Z",
+        "expires_at": "2027-11-10T20:44:00.000Z",
+        "days_left": 365,
+        "state": "valid"
+      }
+    ]
+  }
+}

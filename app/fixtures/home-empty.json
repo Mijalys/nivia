@@ -1,0 +1,15 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "GET /home · sin capacitaciones pendientes"
+  },
+  "body": {
+    "user": {
+      "first_name": "Ana"
+    },
+    "today": "2026-11-10T20:44:00.000Z",
+    "next": null,
+    "assignments": [],
+    "certificates_expiring": []
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "GET /lessons/:id · video, resumen, reto sin respuestas y material de apoyo"
+  },
+  "body": {
+    "id": "5f2b97d6-86d0-498e-9487-b05b783fb230",
+    "assignment_id": "82e2d945-22b9-4f2b-ad54-8bfa11d38eb8",
+    "title": "Diagnóstico de tu agenda y tus 4 aplicaciones",
+    "format": "presenter",
+    "duration_s": 180,
+    "level": {
+      "position": 1,
+      "title": "Mide: tu agenda",
+      "count": 1
+    },
+    "ai_generated": false,
+    "summary": [
+      "Tu calendario muestra solo parte de tu semana: suma lo que pasa por WhatsApp y correo.",
+      "Conecta Google Calendar o Microsoft 365 y actívalo en la tarea de Cowork.",
+      "Trabaja en modo Manual y en una sola carpeta: Claude pide permiso y no sale de ahí.",
+      "Puntúa cada tarea de 1 a 5 en frecuencia, tiempo, dolor, impacto en ventas y facilidad.",
+      "Elige 4 aplicaciones, al menos 2 de «Empieza aquí», cada una con su métrica."
+    ],
+    "media": {
+      "hls": {
+        "url": "../prototipo/media/leccion-demo.mp4",
+        "size_bytes": 2634000
+      },
+      "mp4_offline": {
+        "url": "../prototipo/media/leccion-demo.mp4",
+        "size_bytes": 2634000
+      },
+      "poster": {
+        "url": "../prototipo/media/portada.jpg",
+        "size_bytes": 24000
+      }
+    },
+    "quiz": [
+      {
+        "id": "a935bd89-5be8-46e7-9a55-f9fc1c11cbf7",
+        "prompt": "¿Qué necesitas para que Claude Cowork lea tu calendario?",
+        "options": [
+          "Exportar el calendario a PDF y subirlo",
+          "Conectar Google Calendar o Microsoft 365 y activarlo en la tarea",
+          "Darle a Claude tu contraseña de Google"
+        ],
+        "video_t": 0
+      },
+      {
+        "id": "6b36ee61-7e7d-4064-beda-04bc8c816cc1",
+        "prompt": "¿Qué hace el modo Manual en Cowork?",
+        "options": [
+          "Claude trabaja sin preguntar",
+          "Apaga los conectores",
+          "Claude te pide permiso antes de cada acción"
+        ],
+        "video_t": 0
+      },
+      {
+        "id": "c230fa16-5b52-4e2e-b63c-96d5f032733d",
+        "prompt": "¿Cómo se calcula el Impacto de una tarea en la plantilla?",
+        "options": [
+          "Sumando frecuencia, tiempo, dolor e impacto en ventas",
+          "Multiplicando las horas por la facilidad",
+          "Lo decide Claude según tu calendario"
+        ],
+        "video_t": 0
+      }
+    ],
+    "resources": [
+      {
+        "id": "32890ccd-f144-47ef-a1c1-1a982b0aa8cc",
+        "title": "Guía paso a paso de la clase 1",
+        "kind": "file",
+        "url": "../contenido/programa-claude/clase-01/guia-clase-1.pdf",
+        "size_bytes": 217816,
+        "filename": "guia-clase-1.pdf"
+      },
+      {
+        "id": "649ec408-be13-4b73-a42f-d6db661cad63",
+        "title": "Plantilla: diagnóstico de agenda",
+        "kind": "file",
+        "url": "../contenido/programa-claude/clase-01/diagnostico-agenda.xlsx",
+        "size_bytes": 11984,
+        "filename": "diagnostico-agenda.xlsx"
+      }
+    ],
+    "progress": {
+      "completed": false,
+      "watched": false,
+      "video_position_s": 0
+    }
+  }
+}

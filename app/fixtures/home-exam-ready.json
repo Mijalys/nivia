@@ -1,0 +1,31 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "GET /home · todas las lecciones hechas: toca la evaluación"
+  },
+  "body": {
+    "user": {
+      "first_name": "Ana"
+    },
+    "today": "2026-11-10T20:40:00.000Z",
+    "next": {
+      "type": "exam",
+      "assignment_id": "82e2d945-22b9-4f2b-ad54-8bfa11d38eb8",
+      "route_title": "Programa Claude: tu negocio con IA",
+      "question_count": 10
+    },
+    "assignments": [
+      {
+        "id": "82e2d945-22b9-4f2b-ad54-8bfa11d38eb8",
+        "kind": "initial",
+        "route_title": "Programa Claude: tu negocio con IA",
+        "pct": 50,
+        "due_at": "2026-12-17T04:59:00.000Z",
+        "late": false,
+        "days_left": 37,
+        "remaining_minutes": 15
+      }
+    ],
+    "certificates_expiring": []
+  }
+}

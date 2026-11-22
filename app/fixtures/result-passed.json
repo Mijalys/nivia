@@ -1,0 +1,22 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "POST /attempts/:id/submit · aprobado, con certificado"
+  },
+  "body": {
+    "attempt_id": "0e1550b1-6c27-452b-8dac-f10d6bb53ac4",
+    "status": "submitted",
+    "score": 100,
+    "min_score": 80,
+    "passed": true,
+    "closed_by_time": false,
+    "topics_to_review": [],
+    "attempts_left": 2,
+    "retry_at": null,
+    "exhausted_message": null,
+    "certificate": {
+      "id": "b4438eb5-8d08-4453-acf2-184b408447e5",
+      "code": "PCL-2026-3KKX-06"
+    }
+  }
+}

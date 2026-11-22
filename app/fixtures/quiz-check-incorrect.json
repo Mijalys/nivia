@@ -1,0 +1,12 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "POST /lessons/:id/quiz/check · respuesta incorrecta: trae la correcta y el porqué"
+  },
+  "body": {
+    "correct": false,
+    "correct_index": 1,
+    "why": "Claude entra al calendario solo por el conector y con tu permiso. Nunca necesita tu contraseña.",
+    "video_t": 0
+  }
+}

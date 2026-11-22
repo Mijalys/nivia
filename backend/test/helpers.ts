@@ -29,7 +29,7 @@ export class FakeGoogle implements GoogleVerifier {
 }
 export const googleToken = (sub: string, email: string) => `google:${sub}:${email}`;
 
-export interface Ctx { app: INestApplication; db: Db; clock: TestClock; mail: MemoryEmailSender; http: ReturnType<typeof request> }
+export interface Ctx { app: INestApplication; db: Db; clock: TestClock; mail: MemoryEmailSender; http: ReturnType<typeof request>; storageDir: string }
 
 export async function boot(): Promise<Ctx> {
   const clock = new TestClock();
@@ -46,7 +46,7 @@ export async function boot(): Promise<Ctx> {
   await seed(db, clock);
   const app = await createApp({ config, db, clock, email: mail, google: new FakeGoogle() }, { quiet: true });
   await app.init();
-  return { app, db, clock, mail, http: request(app.getHttpServer()) };
+  return { app, db, clock, mail, http: request(app.getHttpServer()), storageDir };
 }
 
 /** Correo de demostración de cada aprendiz: carlos, rosa, luis, marisol @<empresa>.example */

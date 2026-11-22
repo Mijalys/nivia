@@ -1,0 +1,11 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "POST /attempts/:id/heartbeat · tiempo restante del servidor"
+  },
+  "body": {
+    "status": "in_progress",
+    "remaining_s": 880,
+    "pause_left_s": 380
+  }
+}

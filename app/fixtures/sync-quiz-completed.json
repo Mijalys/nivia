@@ -1,0 +1,38 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "POST /sync/events · reto terminado (2 de 3 correctas)"
+  },
+  "body": {
+    "results": [
+      {
+        "event_id": "00000000-0000-4000-8000-000000000001",
+        "status": "accepted",
+        "correct": 2,
+        "total": 3,
+        "review": [
+          {
+            "question_id": "a935bd89-5be8-46e7-9a55-f9fc1c11cbf7",
+            "correct": false
+          },
+          {
+            "question_id": "6b36ee61-7e7d-4064-beda-04bc8c816cc1",
+            "correct": true
+          },
+          {
+            "question_id": "c230fa16-5b52-4e2e-b63c-96d5f032733d",
+            "correct": true
+          }
+        ]
+      }
+    ],
+    "assignments": [
+      {
+        "id": "82e2d945-22b9-4f2b-ad54-8bfa11d38eb8",
+        "pct": 50,
+        "next_lesson": null,
+        "exam_available": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "_captura": {
+    "status": 202,
+    "nota": "POST /auth/password/forgot y /auth/email-link · siempre la misma respuesta"
+  },
+  "body": {
+    "sent": true,
+    "resend_after_s": 60
+  }
+}

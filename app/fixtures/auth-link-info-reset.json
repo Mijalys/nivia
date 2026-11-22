@@ -1,0 +1,13 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "GET /auth/link-info · enlace para restablecer"
+  },
+  "body": {
+    "purpose": "reset",
+    "first_name": "Ana",
+    "email": "ana@programa-claude.example",
+    "company": "Programa Claude",
+    "tenant": "programa-claude"
+  }
+}

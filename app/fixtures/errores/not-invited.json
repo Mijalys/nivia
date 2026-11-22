@@ -1,0 +1,13 @@
+{
+  "_captura": {
+    "status": 403,
+    "nota": "POST /auth/google · cuenta de Google que la empresa no invitó"
+  },
+  "body": {
+    "error": {
+      "code": "NOT_INVITED",
+      "message": "Tu empresa aún no te invitó. Pide acceso a tu supervisor.",
+      "email": "alguien@gmail.com"
+    }
+  }
+}

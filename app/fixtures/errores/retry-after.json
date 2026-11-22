@@ -1,0 +1,13 @@
+{
+  "_captura": {
+    "status": 409,
+    "nota": "POST /assignments/:id/attempts · antes de la hora de reintento"
+  },
+  "body": {
+    "error": {
+      "code": "RETRY_AFTER",
+      "message": "Aún no puedes reintentar.",
+      "retry_at": "2026-11-10T21:44:00.000Z"
+    }
+  }
+}

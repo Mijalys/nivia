@@ -1,0 +1,13 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "GET /auth/link-info · enlace de invitación"
+  },
+  "body": {
+    "purpose": "invite",
+    "first_name": "Lucía",
+    "email": "lucia@programa-claude.example",
+    "company": "Programa Claude",
+    "tenant": "programa-claude"
+  }
+}

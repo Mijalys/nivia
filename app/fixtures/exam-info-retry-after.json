@@ -1,0 +1,24 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "GET /assignments/:id/exam · bloqueado hasta poder reintentar"
+  },
+  "body": {
+    "assignment_id": "3e5277a8-6731-4d04-b2f2-cf455d7401d0",
+    "rules": {
+      "min_score": 80,
+      "attempts": 3,
+      "wait_minutes": 60,
+      "question_count": 10,
+      "minutes": 15,
+      "requires_connection": true,
+      "exhausted_message": "Escríbele al equipo del programa para habilitar un nuevo intento."
+    },
+    "attempts_used": 1,
+    "attempts_left": 2,
+    "retry_at": "2026-11-10T21:44:00.000Z",
+    "in_progress_attempt_id": null,
+    "can_start": false,
+    "blocked_reason": "RETRY_AFTER"
+  }
+}

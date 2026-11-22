@@ -1,0 +1,16 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "POST /auth/login · contraseña temporal: password_change_required = true"
+  },
+  "body": {
+    "access_token": "<access_token>",
+    "refresh_token": "<refresh_token>",
+    "expires_in": 900,
+    "password_change_required": true,
+    "user": {
+      "id": "6e5292f5-7960-4e4a-b929-709ffc304ecb",
+      "first_name": "Ana"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "GET /me · perfil"
+  },
+  "body": {
+    "id": "6e5292f5-7960-4e4a-b929-709ffc304ecb",
+    "first_name": "Ana",
+    "last_name": "Torres Vega",
+    "email": "ana@programa-claude.example",
+    "phone": null,
+    "area": "Servicios",
+    "company": "Programa Claude",
+    "missing_fields": [],
+    "area_options": [
+      "Comercio",
+      "Servicios",
+      "Industria",
+      "Salud",
+      "Educación",
+      "Otro"
+    ],
+    "sign_in": {
+      "password": true,
+      "google": null
+    },
+    "password_change_required": false
+  }
+}

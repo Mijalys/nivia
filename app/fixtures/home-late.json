@@ -1,0 +1,38 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "GET /home · capacitación vencida"
+  },
+  "body": {
+    "user": {
+      "first_name": "Luis"
+    },
+    "today": "2026-11-10T20:44:00.000Z",
+    "next": {
+      "type": "lesson",
+      "assignment_id": "7148be62-c043-4345-ae72-1c63d6f140f5",
+      "route_title": "Bloqueo y etiquetado de equipos",
+      "lesson": {
+        "id": "454c987f-65a1-4a6b-8ac9-0d5ff2516b0e",
+        "title": "Verificar y devolver el equipo",
+        "level_position": 4,
+        "level_count": 4,
+        "format": "animated",
+        "duration_s": 245
+      }
+    },
+    "assignments": [
+      {
+        "id": "7148be62-c043-4345-ae72-1c63d6f140f5",
+        "kind": "initial",
+        "route_title": "Bloqueo y etiquetado de equipos",
+        "pct": 60,
+        "due_at": "2026-10-31T20:40:00.000Z",
+        "late": true,
+        "days_left": -10,
+        "remaining_minutes": 21
+      }
+    ],
+    "certificates_expiring": []
+  }
+}

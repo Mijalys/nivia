@@ -1,0 +1,13 @@
+{
+  "_captura": {
+    "status": 429,
+    "nota": "POST /auth/login · 5 intentos fallidos en 15 minutos"
+  },
+  "body": {
+    "error": {
+      "code": "TOO_MANY_ATTEMPTS",
+      "message": "Demasiados intentos. Espera unos minutos y vuelve a intentar.",
+      "retry_at": "2026-11-10T20:59:00.000Z"
+    }
+  }
+}

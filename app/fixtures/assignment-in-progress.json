@@ -1,0 +1,99 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "GET /assignments/:id · ruta a medio camino, con niveles bloqueados"
+  },
+  "body": {
+    "id": "4f1b7329-ad72-41cc-9be7-49ebe6295392",
+    "kind": "initial",
+    "status": "active",
+    "route": {
+      "title": "Bloqueo y etiquetado de equipos",
+      "overline": "Bloqueo y etiquetado"
+    },
+    "pct": 40,
+    "due_at": "2026-11-20T20:40:00.000Z",
+    "late": false,
+    "days_left": 10,
+    "remaining_minutes": 27,
+    "levels": [
+      {
+        "position": 1,
+        "title": "Por qué bloqueamos",
+        "state": "done",
+        "lessons": [
+          {
+            "id": "d3d5c665-2522-4537-87dc-f928a380a731",
+            "title": "Por qué bloqueamos",
+            "format": "presenter",
+            "duration_s": 230,
+            "completed": true,
+            "watched": true,
+            "video_position_s": 0
+          }
+        ]
+      },
+      {
+        "position": 2,
+        "title": "Aislar la energía",
+        "state": "done",
+        "lessons": [
+          {
+            "id": "5257c06e-3b5d-4d29-a6cd-ac020ca25bf7",
+            "title": "Aislar la energía",
+            "format": "animated",
+            "duration_s": 252,
+            "completed": true,
+            "watched": true,
+            "video_position_s": 0
+          }
+        ]
+      },
+      {
+        "position": 3,
+        "title": "Candado y tarjeta",
+        "state": "available",
+        "lessons": [
+          {
+            "id": "b425b756-9d16-4081-a40a-84011b83e873",
+            "title": "Candado y tarjeta",
+            "format": "presenter",
+            "duration_s": 280,
+            "completed": false,
+            "watched": false,
+            "video_position_s": 0
+          }
+        ]
+      },
+      {
+        "position": 4,
+        "title": "Verificar y devolver el equipo",
+        "state": "locked",
+        "lessons": [
+          {
+            "id": "454c987f-65a1-4a6b-8ac9-0d5ff2516b0e",
+            "title": "Verificar y devolver el equipo",
+            "format": "animated",
+            "duration_s": 245,
+            "completed": false,
+            "watched": false,
+            "video_position_s": 0
+          }
+        ]
+      }
+    ],
+    "exam": {
+      "state": "locked",
+      "question_count": 10,
+      "minutes": 15
+    },
+    "next_lesson": {
+      "id": "b425b756-9d16-4081-a40a-84011b83e873",
+      "title": "Candado y tarjeta",
+      "level_position": 3,
+      "level_count": 4,
+      "format": "presenter",
+      "duration_s": 280
+    }
+  }
+}

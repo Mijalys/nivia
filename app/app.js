@@ -55,24 +55,22 @@ function fClock(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) +
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 function fmtLabel(f) { return f === 'presenter' ? 'Con presentador' : 'Animado'; }
 function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
-function uuid() {
-  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
-  const b = new Uint8Array(16); crypto.getRandomValues(b); b[6] = (b[6] & 15) | 64; b[8] = (b[8] & 63) | 128;
-  const h = Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
-  return h.slice(0, 8) + '-' + h.slice(8, 12) + '-' + h.slice(12, 16) + '-' + h.slice(16, 20) + '-' + h.slice(20);
-}
-function deviceLabel() {
-  const ua = navigator.userAgent || '';
-  const os = /Android/i.test(ua) ? 'Android' : /iPhone|iPad/i.test(ua) ? 'iPhone' : /Windows/i.test(ua) ? 'Windows' : /Mac/i.test(ua) ? 'Mac' : 'Navegador';
-  const br = /Edg\//.test(ua) ? 'Edge' : /Chrome\//.test(ua) ? 'Chrome' : /Firefox\//.test(ua) ? 'Firefox' : /Safari\//.test(ua) ? 'Safari' : '';
-  return (os + (br ? ' · ' + br : '')).slice(0, 80);
-}
-const store = {
-  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* almacenamiento bloqueado */ } },
-  del(k) { try { localStorage.removeItem(k); } catch (e) { /* almacenamiento bloqueado */ } }
-};
 const IN_APP_BROWSER = /FBAN|FBAV|Instagram|WhatsApp|Line\//i.test(navigator.userAgent || '');
+
+/* ---------- Capa de datos (api.js) ----------
+ * Toda llamada al backend pasa por window.NiviaAPI: aquí no se usa fetch ni se arman rutas. */
+const API = window.NiviaAPI;
+const { store, tenant, session, saveSession, updateAccess, clearSession, queue, flush } = API;
+function setNet(down) {
+  if (S.netDown === down) return;
+  S.netDown = down;
+  const el = document.getElementById('netbar');
+  if (el) el.hidden = !down;
+}
+API.on('network', setNet);
+API.on('sessionCleared', () => { S.me = null; });
+API.on('sessionExpired', (msg) => toLogin(msg));
+API.on('passwordChangeRequired', () => nav('contrasena', { mode: 'first' }));
 
 /* ---------- Estado ---------- */
 const S = {
@@ -83,98 +81,6 @@ const S = {
   video: null, quiz: null, done: null, ex: null, result: null, routeTitle: store.get('nivia.routeTitle'),
   homeTab: 'curso', routeView: 'mapa'
 };
-
-/* ---------- Sesión y API ---------- */
-const tenant = () => store.get('nivia.tenant');
-const session = () => store.get('nivia.session');
-function saveSession(r) {
-  store.set('nivia.session', { access: r.access_token, refresh: r.refresh_token, exp: Date.now() + (r.expires_in || 900) * 1000 });
-}
-function clearSession() { store.del('nivia.session'); S.me = null; }
-
-let refreshing = null;
-async function refresh() {
-  const s = session(); if (!s) return false;
-  if (!refreshing) {
-    refreshing = (async () => {
-      try {
-        const r = await api('/auth/refresh', { method: 'POST', body: { refresh_token: s.refresh }, auth: false });
-        saveSession(r); return true;
-      } catch (e) {
-        if (e.code !== 'NETWORK') clearSession();
-        return false;
-      } finally { setTimeout(() => { refreshing = null; }, 0); }
-    })();
-  }
-  return refreshing;
-}
-
-class ApiErr extends Error {
-  constructor(message, code, status, details) { super(message); this.code = code; this.status = status; this.details = details || {}; }
-}
-async function api(path, o) {
-  o = o || {};
-  const h = { Accept: 'application/json' };
-  if (o.body !== undefined) h['Content-Type'] = 'application/json';
-  if (tenant()) h['X-Tenant'] = tenant();
-  if (o.auth !== false) {
-    let s = session();
-    if (s && s.exp - Date.now() < 60_000) { await refresh(); s = session(); }
-    if (!s) throw new ApiErr('Inicia sesión para continuar.', 'UNAUTHENTICATED', 401);
-    h.Authorization = 'Bearer ' + s.access;
-  }
-  let res;
-  try {
-    res = await fetch(path, { method: o.method || 'GET', headers: h, body: o.body !== undefined ? JSON.stringify(o.body) : undefined, cache: 'no-store' });
-  } catch (e) {
-    setNet(true);
-    throw new ApiErr('No hay conexión. Revisa tu señal e inténtalo de nuevo.', 'NETWORK', 0);
-  }
-  setNet(false);
-  if (res.status === 401 && o.auth !== false && !o.retried) {
-    if (await refresh()) return api(path, Object.assign({}, o, { retried: true }));
-    clearSession(); toLogin('Tu sesión venció. Vuelve a ingresar.');
-    throw new ApiErr('Tu sesión venció. Vuelve a ingresar.', 'SESSION_EXPIRED', 401);
-  }
-  if (o.raw) {
-    if (!res.ok) { const d = await res.json().catch(() => null); throw new ApiErr((d && d.error && d.error.message) || 'Algo salió mal.', d && d.error && d.error.code, res.status, d && d.error); }
-    return res;
-  }
-  if (res.status === 204) return null;
-  const data = await res.json().catch(() => null);
-  if (!res.ok) {
-    const err = (data && data.error) || {};
-    if (err.code === 'PASSWORD_CHANGE_REQUIRED') { nav('contrasena', { mode: 'first' }); }
-    throw new ApiErr(err.message || 'Algo salió mal. Inténtalo de nuevo.', err.code || 'HTTP_' + res.status, res.status, err);
-  }
-  return data;
-}
-function setNet(down) {
-  if (S.netDown === down) return;
-  S.netDown = down;
-  const el = document.getElementById('netbar');
-  if (el) el.hidden = !down;
-}
-
-/* Avance (video y reto): se envía en lotes; si falla la red, se reintenta en el siguiente envío. */
-let outbox = store.get('nivia.outbox') || [];
-let flushing = false;
-function queue(type, lessonId, payload) {
-  outbox.push({ event_id: uuid(), type, lesson_id: lessonId, occurred_at: new Date().toISOString(), payload: payload || {} });
-  store.set('nivia.outbox', outbox);
-  flush();
-}
-async function flush() {
-  if (flushing || !outbox.length || !session()) return null;
-  flushing = true;
-  const batch = outbox.slice(0, 50);
-  try {
-    const r = await api('/sync/events', { method: 'POST', body: { events: batch } });
-    const sent = new Set(batch.map((e) => e.event_id));
-    outbox = outbox.filter((e) => !sent.has(e.event_id)); store.set('nivia.outbox', outbox);
-    return r;
-  } catch (e) { return null; } finally { flushing = false; }
-}
 
 /* ---------- Marca del cliente ---------- */
 function hexRgb(h) { const m = /^#?([0-9a-f]{6})$/i.exec(h || ''); if (!m) return [0.83, 1, 0.23]; const n = parseInt(m[1], 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; }
@@ -370,7 +276,7 @@ function passwordForm(f, needCurrent) {
     errLine(f.msg) + '<button class="btn btn-primary" type="submit"' + (f.busy ? ' disabled' : '') + '>' + (f.busy ? 'Guardando…' : 'Guardar contraseña') + '</button></form>';
 }
 SCREENS.contrasena = {
-  async load() { return { me: await api('/me') }; },
+  async load() { return { me: await API.me() }; },
   view() {
     const first = S.params.mode === 'first' || (S.data.me && S.data.me.password_change_required);
     const needCurrent = !first && S.data.me.sign_in.password;
@@ -383,7 +289,7 @@ SCREENS.contrasena = {
 
 /* Ficha: el único dato que falta es el área */
 SCREENS.datos = {
-  async load() { return { me: await api('/me') }; },
+  async load() { return { me: await API.me() }; },
   view() {
     const me = S.data.me; const f = S.form;
     return brandBar() + '<main class="scr"><p class="over">Paso 2 de 2</p>' +
@@ -399,9 +305,9 @@ SCREENS.datos = {
 /* Inicio */
 SCREENS.inicio = {
   async load() {
-    const home = await api('/home');
+    const home = await API.home();
     let lesson = null;
-    if (home.next && home.next.type === 'lesson') { try { lesson = await api('/lessons/' + home.next.lesson.id); } catch (e) { lesson = null; } }
+    if (home.next && home.next.type === 'lesson') { try { lesson = await API.lesson(home.next.lesson.id); } catch (e) { lesson = null; } }
     return { home, lesson };
   },
   view() {
@@ -453,7 +359,7 @@ SCREENS.inicio = {
 /* Ruta: mapa o lista de niveles */
 const LV_STATE = { done: 'done', in_progress: 'cur', available: 'av', locked: 'lock' };
 SCREENS.ruta = {
-  async load(p) { const a = await api('/assignments/' + p.id); setRouteTitle(a.route.title); return { a }; },
+  async load(p) { const a = await API.assignment(p.id); setRouteTitle(a.route.title); return { a }; },
   view() {
     const a = S.data.a; const view = S.routeView;
     const head = '<div class="row" style="justify-content:space-between"><button class="circ" data-a="go" data-to="inicio" aria-label="Volver a Inicio">' + icon('back', 22) + '</button>' +
@@ -545,7 +451,7 @@ function routeList(a) {
 /* Lección inmersiva */
 SCREENS.leccion = {
   full: true,
-  async load(p) { return { l: await api('/lessons/' + p.id) }; },
+  async load(p) { return { l: await API.lesson(p.id) }; },
   init() {
     const l = S.data.l;
     S.video = { phase: 'idle', speed: 1, seekTo: S.params.t != null ? +S.params.t : (l.progress.video_position_s || 0), watched: l.progress.watched || l.progress.completed, lastSent: l.progress.video_position_s || 0 };
@@ -595,7 +501,7 @@ SCREENS.leccion = {
 SCREENS.reto = {
   async load(p) {
     if (S.quiz && S.quiz.lesson.id === p.id) return { l: S.quiz.lesson };
-    const l = await api('/lessons/' + p.id);
+    const l = await API.lesson(p.id);
     S.quiz = { lesson: l, idx: 0, sel: null, checked: null, answers: [], checks: [] };
     return { l };
   },
@@ -649,7 +555,7 @@ SCREENS.hecho = {
 /* Evaluación: reglas */
 SCREENS.evaluacion = {
   async load(p) {
-    const [info, a] = await Promise.all([api('/assignments/' + p.id + '/exam'), api('/assignments/' + p.id)]);
+    const [info, a] = await Promise.all([API.examInfo(p.id), API.assignment(p.id)]);
     setRouteTitle(a.route.title);
     return { info, a };
   },
@@ -687,8 +593,8 @@ function loadAttempt(at) {
 }
 async function ensureAttempt(id) {
   if (!S.ex || S.ex.attempt.id !== id) {
-    const at = await api('/attempts/' + id);
-    if (at.status !== 'in_progress') throw new ApiErr('Esta evaluación ya terminó.', 'ATTEMPT_CLOSED', 409);
+    const at = await API.attempt(id);
+    if (at.status !== 'in_progress') throw new API.ApiErr('Esta evaluación ya terminó.', 'ATTEMPT_CLOSED', 409);
     loadAttempt(at);
   }
   return {};
@@ -766,7 +672,7 @@ function certState(ct) {
   return ct.state === 'expired' ? pill('lock', 'Vencido', 'late') : ct.days_left <= 30 ? pill('rep', 'Vence en ' + plural(ct.days_left, 'día', 'días'), 'clock') : pill('ok', 'Vigente', 'check');
 }
 SCREENS.certificados = {
-  async load() { return { list: (await api('/certificates')).certificates }; },
+  async load() { return { list: (await API.certificates()).certificates }; },
   view() {
     const list = S.data.list;
     const empty = '<div class="empty">' + icon('award', 44) + '<p class="h2">Aún no tienes certificados</p><p class="muted small">Aparecerán aquí cuando apruebes una evaluación.</p><button class="btn btn-primary" data-a="go" data-to="inicio">Ir a Inicio</button></div>';
@@ -776,7 +682,7 @@ SCREENS.certificados = {
   }
 };
 SCREENS.certificado = {
-  async load(p) { return { ct: await api('/certificates/' + p.id) }; },
+  async load(p) { return { ct: await API.certificate(p.id) }; },
   view() {
     const ct = S.data.ct; const b = S.cfg.branding;
     const logo = b.logo_url ? '<img src="' + esc(b.logo_url) + '" alt="' + esc(ct.company) + '" style="display:block;height:32px;width:auto">' : '<div class="row"><span class="mono">' + esc(b.mono) + '</span><span class="co">' + esc(ct.company) + '</span></div>';
@@ -794,7 +700,7 @@ SCREENS.certificado = {
 
 /* Perfil */
 SCREENS.perfil = {
-  async load() { const me = await api('/me'); S.me = me; return { me }; },
+  async load() { const me = await API.me(); S.me = me; return { me }; },
   view() {
     const me = S.data.me;
     return brandBar() + '<main class="scr">' +
@@ -998,7 +904,7 @@ function renderGoogle() {
 async function onGoogle(resp) {
   S.form = { gErr: null }; render();
   try {
-    const r = await api('/auth/google', { method: 'POST', body: { id_token: resp.credential, device_label: deviceLabel() }, auth: false });
+    const r = await API.loginWithGoogle(resp.credential);
     await enter(r);
   } catch (e) { S.form = { gErr: e.message }; render(); }
 }
@@ -1008,7 +914,7 @@ async function enter(r) {
   saveSession(r);
   if (r.password_change_required) { nav('contrasena', { mode: 'first' }); return; }
   try {
-    const me = await api('/me'); S.me = me;
+    const me = await API.me(); S.me = me;
     if (me.missing_fields && me.missing_fields.includes('area')) { nav('datos'); return; }
   } catch (e) { /* sin perfil: igual entra a Inicio */ }
   nav('inicio');
@@ -1019,12 +925,12 @@ async function login(email, pass) {
   if (!pass) { S.form = { email, pass, err: 'pass', msg: 'Escribe tu contraseña.' }; render(); return; }
   S.form = { email, pass, busy: true }; render();
   try {
-    const r = await api('/auth/login', { method: 'POST', body: { email: e, password: pass, device_label: deviceLabel() }, auth: false });
+    const r = await API.login(e, pass);
     await enter(r);
   } catch (err) { S.form = { email, pass: '', err: 'pass', msg: err.message }; render(); }
 }
 async function logout() {
-  try { await flush(); await api('/auth/logout', { method: 'POST' }); } catch (e) { /* igual se cierra en este celular */ }
+  try { await flush(); await API.logout(); } catch (e) { /* igual se cierra en este celular */ }
   clearSession(); S.ex = null; S.quiz = null; S.done = null; S.result = null;
   if (window.google && google.accounts && google.accounts.id) { try { google.accounts.id.disableAutoSelect(); } catch (e) { /* nada */ } }
   toLogin();
@@ -1035,14 +941,14 @@ async function startExam() {
   const id = S.params.id;
   S.form = { busy: true }; render();
   try {
-    const at = await api('/assignments/' + id + '/attempts', { method: 'POST' });
+    const at = await API.startAttempt(id);
     S.ex = null; loadAttempt(at); nav('intento/' + at.id);
   } catch (e) { S.form = { msg: e.message }; render(); }
 }
 async function saveAnswer(qid, choice) {
   const ex = S.ex; ex.pending[qid] = choice;
   try {
-    const r = await api('/attempts/' + ex.attempt.id + '/answers/' + qid, { method: 'PUT', body: { choice } });
+    const r = await API.saveAnswer(ex.attempt.id, qid, choice);
     if (ex.pending[qid] === choice) delete ex.pending[qid];
     ex.remaining = r.remaining_s; ex.syncedAt = Date.now(); if (ex.lost) { ex.lost = false; render(); }
     if (S.screen === 'revisar') render();
@@ -1057,7 +963,7 @@ async function heartbeat() {
   ex.lastBeat = Date.now();
   try {
     for (const [qid, choice] of Object.entries(ex.pending)) await saveAnswer(qid, choice);
-    const r = await api('/attempts/' + ex.attempt.id + '/heartbeat', { method: 'POST' });
+    const r = await API.heartbeat(ex.attempt.id);
     if (r.status !== 'in_progress') { await submitExam(true); return; }
     const wasLost = ex.lost;
     ex.remaining = r.remaining_s; ex.syncedAt = Date.now(); ex.lost = false;
@@ -1072,7 +978,7 @@ async function submitExam(silent) {
   ex.submitting = true; S.form = {}; if (!silent) render();
   try {
     for (const [qid, choice] of Object.entries(ex.pending)) await saveAnswer(qid, choice);
-    const r = await api('/attempts/' + ex.attempt.id + '/submit', { method: 'POST' });
+    const r = await API.submitAttempt(ex.attempt.id);
     showResult(r);
   } catch (e) {
     ex.submitting = false;
@@ -1092,7 +998,7 @@ async function checkQuestion() {
   const qz = S.quiz; const q = qz.lesson.quiz[qz.idx];
   qz.busy = true; qz.msg = null; render();
   try {
-    const r = await api('/lessons/' + qz.lesson.id + '/quiz/check', { method: 'POST', body: { question_id: q.id, choice: qz.sel } });
+    const r = await API.checkQuizAnswer(qz.lesson.id, q.id, qz.sel);
     qz.checked = r; qz.answers[qz.idx] = qz.sel; qz.checks[qz.idx] = r;
   } catch (e) { qz.msg = e.message; }
   qz.busy = false; render();
@@ -1102,8 +1008,8 @@ async function finishQuiz() {
   qz.busy = true; qz.msg = null; render();
   try {
     await flush();
-    const ev = { event_id: uuid(), type: 'quiz.completed', lesson_id: L.id, occurred_at: new Date().toISOString(), payload: { answers: qz.answers } };
-    const r = await api('/sync/events', { method: 'POST', body: { events: [ev] } });
+    const ev = { event_id: API.uuid(), type: 'quiz.completed', lesson_id: L.id, occurred_at: new Date().toISOString(), payload: { answers: qz.answers } };
+    const r = await API.sendProgress([ev]);
     const res = r.results[0];
     if (res.status !== 'accepted') { qz.busy = false; qz.msg = res.reason === 'LESSON_LOCKED' ? 'Esta lección aún está bloqueada.' : 'No pudimos guardar tu reto. Inténtalo de nuevo.'; render(); return; }
     S.done = { lesson: L, correct: res.correct, total: res.total, checks: qz.checks.slice(), assignment: r.assignments[0] };
@@ -1129,7 +1035,7 @@ document.addEventListener('click', (e) => {
     case 'logout': logout(); break;
     case 'homeTab':
       S.homeTab = el.dataset.v; render();
-      if (S.homeTab === 'hechas' && S.data && !S.data.certs) api('/certificates').then((r) => { if (S.screen === 'inicio' && S.data) { S.data.certs = r.certificates; render(); } }).catch((err) => toast(err.message));
+      if (S.homeTab === 'hechas' && S.data && !S.data.certs) API.certificates().then((r) => { if (S.screen === 'inicio' && S.data) { S.data.certs = r.certificates; render(); } }).catch((err) => toast(err.message));
       break;
     case 'routeView': S.routeView = el.dataset.v; render(); break;
     case 'locked': S.sheet = { type: 'locked', lv: el.dataset.lv }; render(); break;
@@ -1157,7 +1063,7 @@ document.addEventListener('click', (e) => {
     case 'sendReport': {
       const sh = S.sheet; sh.comment = (document.getElementById('rcomment') || {}).value || ''; sh.busy = true; render();
       const body = { lesson_id: sh.lessonId, reason: sh.reason }; if (sh.questionId) body.question_id = sh.questionId; if (sh.comment.trim()) body.comment = sh.comment.trim();
-      api('/content-reports', { method: 'POST', body }).then(() => { sh.sent = true; render(); setTimeout(() => { if (S.sheet === sh) { S.sheet = null; render(); } }, 2500); })
+      API.reportContent(body).then(() => { sh.sent = true; render(); setTimeout(() => { if (S.sheet === sh) { S.sheet = null; render(); } }, 2500); })
         .catch((err) => { sh.busy = false; sh.msg = err.message; render(); });
       break;
     }
@@ -1222,16 +1128,15 @@ document.addEventListener('submit', async (e) => {
     f.busy = true; f.msg = null; render();
     try {
       if (S.screen === 'crear-contrasena') {
-        const r = await api('/auth/password/set', { method: 'POST', body: { token: S.link.token, new_password: v, device_label: deviceLabel() }, auth: false });
+        const r = await API.setPasswordWithToken(S.link.token, v);
         S.link = null; toast('Listo, tu contraseña quedó guardada'); await enter(r);
       } else {
-        const body = { new_password: v }; if (f.cur) body.current_password = f.cur;
-        const r = await api('/auth/password', { method: 'POST', body });
+        const r = await API.changePassword(v, f.cur);
         // El servidor entrega un token de acceso nuevo que ya no marca "cambio pendiente".
-        const s = session(); if (s && r && r.access_token) saveSession({ access_token: r.access_token, refresh_token: s.refresh, expires_in: r.expires_in });
+        updateAccess(r);
         const first = S.params.mode === 'first' || (S.data && S.data.me && S.data.me.password_change_required);
         if (first) {
-          const me = await api('/me');
+          const me = await API.me();
           toast('Contraseña guardada');
           nav(me.missing_fields && me.missing_fields.includes('area') ? 'datos' : 'inicio');
         } else { toast('Contraseña actualizada'); nav('perfil'); }
@@ -1246,7 +1151,7 @@ document.addEventListener('submit', async (e) => {
     const v = (document.getElementById('area') || {}).value;
     if (!v) { f.err = true; render(); return; }
     f.busy = true; render();
-    try { await api('/me', { method: 'PATCH', body: { area: v } }); nav('inicio'); }
+    try { await API.updateArea(v); nav('inicio'); }
     catch (err) { S.form = { area: v, msg: err.message }; render(); }
     return;
   }
@@ -1260,7 +1165,7 @@ document.addEventListener('submit', async (e) => {
 async function requestMail(email) {
   const reset = S.screen === 'recuperar';
   try {
-    const r = await api(reset ? '/auth/password/forgot' : '/auth/email-link', { method: 'POST', body: { email }, auth: false });
+    const r = await (reset ? API.forgotPassword(email) : API.requestEmailLink(email));
     S.form = { email, sent: true, resendAt: Date.now() + (r.resend_after_s || 60) * 1000 }; render();
   } catch (err) { S.form = { email, msg: err.message }; render(); }
 }
@@ -1269,7 +1174,7 @@ function resend() { if (S.form.email) requestMail(S.form.email); }
 async function downloadPdf() {
   const ct = S.data.ct; S.form = { busy: true }; render();
   try {
-    const res = await api('/certificates/' + ct.id + '/pdf', { raw: true });
+    const res = await API.certificatePdf(ct.id);
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = 'Certificado-' + ct.code + '.pdf';
@@ -1312,7 +1217,7 @@ async function boot() {
   // El token no debe quedar en el historial ni en la barra de direcciones.
   if (q.toString()) history.replaceState(null, '', location.pathname + location.hash);
 
-  try { S.cfg = await api('/tenant/config', { auth: false }); }
+  try { S.cfg = await API.tenantConfig(); }
   catch (e) {
     document.getElementById('app').innerHTML = '<main class="scr"><div class="empty">' + icon(e.code === 'NETWORK' ? 'wifioff' : 'info', 40) + '<p class="h2">' + (e.code === 'TENANT_NOT_FOUND' || e.code === 'TENANT_REQUIRED' ? 'Usa el enlace que te envió tu empresa' : 'No pudimos cargar la capacitación') + '</p><p class="muted small">' + esc(e.message) + '</p><button class="btn btn-primary" onclick="location.reload()">Volver a intentar</button></div></main>';
     return;
@@ -1321,7 +1226,7 @@ async function boot() {
   applyTheme();
 
   if (token && (accion === 'invitacion' || accion === 'restablecer')) {
-    try { S.link = { token, info: await api('/auth/link-info?token=' + encodeURIComponent(token), { auth: false }) }; }
+    try { S.link = { token, info: await API.linkInfo(token) }; }
     catch (e) { S.link = { token, error: e.message }; }
     clearSession();
     location.hash = '#/crear-contrasena';
@@ -1329,7 +1234,7 @@ async function boot() {
     return;
   }
   if (token && accion === 'entrar') {
-    try { const r = await api('/auth/email-link/verify', { method: 'POST', body: { token, device_label: deviceLabel() }, auth: false }); await enter(r); return; }
+    try { const r = await API.verifyEmailLink(token); await enter(r); return; }
     catch (e) { clearSession(); toLogin(e.message + ' Pide otro enlace o entra con tu contraseña.'); return; }
   }
   route();

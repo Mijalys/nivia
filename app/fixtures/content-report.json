@@ -1,0 +1,10 @@
+{
+  "_captura": {
+    "status": 201,
+    "nota": "POST /content-reports"
+  },
+  "body": {
+    "id": "a168e012-fdda-4b72-a40e-715ff9b9f3e8",
+    "message": "Gracias. Lo revisaremos."
+  }
+}

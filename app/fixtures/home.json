@@ -1,0 +1,38 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "GET /home · con una lección siguiente"
+  },
+  "body": {
+    "user": {
+      "first_name": "Ana"
+    },
+    "today": "2026-11-10T20:40:00.000Z",
+    "next": {
+      "type": "lesson",
+      "assignment_id": "82e2d945-22b9-4f2b-ad54-8bfa11d38eb8",
+      "route_title": "Programa Claude: tu negocio con IA",
+      "lesson": {
+        "id": "5f2b97d6-86d0-498e-9487-b05b783fb230",
+        "title": "Diagnóstico de tu agenda y tus 4 aplicaciones",
+        "level_position": 1,
+        "level_count": 1,
+        "format": "presenter",
+        "duration_s": 180
+      }
+    },
+    "assignments": [
+      {
+        "id": "82e2d945-22b9-4f2b-ad54-8bfa11d38eb8",
+        "kind": "initial",
+        "route_title": "Programa Claude: tu negocio con IA",
+        "pct": 0,
+        "due_at": "2026-12-17T04:59:00.000Z",
+        "late": false,
+        "days_left": 37,
+        "remaining_minutes": 21
+      }
+    ],
+    "certificates_expiring": []
+  }
+}

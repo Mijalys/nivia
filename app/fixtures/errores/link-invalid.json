@@ -1,0 +1,12 @@
+{
+  "_captura": {
+    "status": 400,
+    "nota": "GET /auth/link-info · enlace vencido, usado o inválido"
+  },
+  "body": {
+    "error": {
+      "code": "LINK_INVALID",
+      "message": "Este enlace ya no sirve. Pide uno nuevo."
+    }
+  }
+}

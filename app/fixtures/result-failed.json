@@ -1,0 +1,25 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "POST /attempts/:id/submit · desaprobado, con temas a reforzar y hora para reintentar"
+  },
+  "body": {
+    "attempt_id": "a7dfbfbf-f6d9-493a-929e-d869d35e940b",
+    "status": "submitted",
+    "score": 0,
+    "min_score": 80,
+    "passed": false,
+    "closed_by_time": false,
+    "topics_to_review": [
+      {
+        "id": "5f2b97d6-86d0-498e-9487-b05b783fb230",
+        "title": "Diagnóstico de tu agenda y tus 4 aplicaciones",
+        "level_position": 1
+      }
+    ],
+    "attempts_left": 2,
+    "retry_at": "2026-11-10T21:44:00.000Z",
+    "exhausted_message": null,
+    "certificate": null
+  }
+}

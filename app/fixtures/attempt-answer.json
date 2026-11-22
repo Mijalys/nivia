@@ -1,0 +1,9 @@
+{
+  "_captura": {
+    "status": 200,
+    "nota": "PUT /attempts/:id/answers/:qid"
+  },
+  "body": {
+    "remaining_s": 900
+  }
+}

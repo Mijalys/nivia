@@ -1,0 +1,16 @@
+{
+  "_captura": {
+    "status": 409,
+    "nota": "GET /lessons/:id · nivel bloqueado"
+  },
+  "body": {
+    "error": {
+      "code": "LESSON_LOCKED",
+      "message": "Primero completa el Nivel 3: Candado y tarjeta",
+      "requires_level": {
+        "position": 3,
+        "title": "Candado y tarjeta"
+      }
+    }
+  }
+}

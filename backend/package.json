@@ -13,7 +13,8 @@
     "db:migrate": "tsc -p tsconfig.build.json && node dist/db/cli.js migrate",
     "db:seed": "tsc -p tsconfig.build.json && node dist/db/cli.js seed",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
+    "fixtures": "CAPTURAR=1 NODE_OPTIONS=--experimental-vm-modules jest --runInBand test/fixtures.capture.spec.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "0.5.14",

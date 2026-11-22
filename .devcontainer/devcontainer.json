@@ -1,9 +1,23 @@
 {
   "name": "Nivia",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
-  "hostRequirements": { "cpus": 2 },
-  "forwardPorts": [3000],
-  "portsAttributes": { "3000": { "label": "Nivia (app y API)", "onAutoForward": "notify" } },
+  "hostRequirements": {
+    "cpus": 2
+  },
+  "forwardPorts": [
+    3000
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "Nivia (app y API)",
+      "onAutoForward": "notify"
+    }
+  },
   "postCreateCommand": "cd backend && npm ci",
-  "postStartCommand": "bash .devcontainer/start.sh"
+  "postStartCommand": "bash .devcontainer/start.sh",
+  "features": {
+    "ghcr.io/devcontainers/features/sshd:1": {
+      "version": "latest"
+    }
+  }
 }

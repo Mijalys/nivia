@@ -9,6 +9,16 @@ import { DEMO_PASSWORD, DEMO_POSTER_KEY, DEMO_VIDEO_KEY, PERSONAS, TENANTS } fro
 
 const DAY = 86_400_000;
 
+/** Crea el administrador de plataforma desde ADMIN_PASSWORD si aún no existe (producción, sin datos demo). */
+export async function ensurePlatformAdmin(db: Db): Promise<boolean> {
+  if (!process.env.ADMIN_PASSWORD) return false;
+  const r = await db.system((q) => q.query('select 1 from platform_admin where username = $1', ['admin']));
+  if (r.rows.length) return false;
+  const hash = await hashPassword(process.env.ADMIN_PASSWORD);
+  await db.system((q) => q.query('insert into platform_admin (username, password_hash) values ($1, $2)', ['admin', hash]));
+  return true;
+}
+
 /** Carga los datos de demostración si la base está vacía. Devuelve false si ya había datos. */
 export async function seed(db: Db, clock: Clock): Promise<boolean> {
   const exists = await db.system((q) => q.query('select 1 from tenant limit 1'));

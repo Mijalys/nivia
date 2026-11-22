@@ -13,6 +13,8 @@ APP_SECRET=cambia-esto npm run dev
 - Sin `DATABASE_URL` usa **PGlite**: PostgreSQL embebido en `./.data/pglite`, sin instalar nada.
 - La primera vez aplica las migraciones y carga los clientes, rutas y aprendices de demostración.
 - Copia el video vertical de demostración de `../prototipo/media` a `./storage/demo`.
+- Sirve la app del aprendiz (`../app`) en `http://localhost:3000/app/`, en el mismo origen que la API. `/` redirige ahí.
+- Con varios clientes de demostración, la app elige la empresa por `?empresa=<slug>` o por `DEFAULT_TENANT`. Ejemplo: `DEFAULT_TENANT=riomar`.
 
 Para usar PostgreSQL real:
 
@@ -62,9 +64,9 @@ Todas las rutas, salvo las públicas, usan `Authorization: Bearer <access_token>
 | `GET /me` · `PATCH /me` | Ficha y área faltante |
 | `GET /home` | Inicio: asignaciones por urgencia, siguiente lección, certificados por vencer |
 | `GET /assignments/:id` | Ruta con niveles, estado y bloqueo secuencial |
-| `GET /lessons/:id` | Lección: video firmado, resumen y reto (con respuestas, para usarlo sin señal) |
-| `GET /lessons/:id/offline-package` | Tamaño y archivos para descargar |
-| `POST /sync/events` | Avance con o sin señal: `video.position`, `lesson.watched`, `quiz.completed` |
+| `GET /lessons/:id` | Lección: video firmado, resumen y reto **sin respuestas** |
+| `POST /lessons/:id/quiz/check` | Verifica una respuesta del reto y recién ahí devuelve la correcta y el "por qué" |
+| `POST /sync/events` | Avance en lotes: `video.position`, `lesson.watched`, `quiz.completed` |
 | `POST /content-reports` | Reportar un problema con el contenido |
 | `GET /assignments/:id/exam` | Reglas, intentos, espera y si puede empezar |
 | `POST /assignments/:id/attempts` | Empieza o reanuda la evaluación |
@@ -118,7 +120,9 @@ curl -s -X POST $API/admin/tenants/minera-sur/assignments -H "Authorization: Bea
   -d '{"route_id":"<route_id>","user_ids":["<user_id>"],"due_at":"2026-12-15T23:59:00-05:00"}'
 ```
 
-Las preguntas llevan `in_quiz` (reto, viaja con la respuesta) e `in_exam` (evaluación, la respuesta nunca sale del servidor). Una pregunta puede estar en ambos, pero conviene separar los bancos. Sin `video_key`, la lección usa el video de demostración hasta que se suba uno.
+Cada pregunta va al reto (`in_quiz`, por defecto) o a la evaluación (`in_exam: true, in_quiz: false`), nunca a ambos: el reto muestra la respuesta correcta al elegir. Cada lección necesita al menos una de evaluación para publicar.
+
+Videos: copia el MP4 (vertical, H.264) y su portada a `STORAGE_DIR`, por ejemplo `storage/minera-sur/leccion-1.mp4`, y pasa esa ruta como `video_key` y `poster_key`. La API comprueba que existan y toma el tamaño real. En producción `video_key` es obligatorio; en desarrollo, sin él, la lección usa el video de demostración.
 
 ## Estructura
 
@@ -139,6 +143,14 @@ src/
     admin.ts           consola: empresas, personas, rutas, publicación, asignaciones, seguimiento
 test/                  pruebas de punta a punta
 ```
+
+## Piloto
+
+El modo sin señal quedó fuera del piloto. Ver [../DESPLIEGUE.md](../DESPLIEGUE.md) para publicar la API con la app.
+
+- Cada pregunta va al reto **o** a la evaluación, nunca a ambos: el reto revela la respuesta al elegir. La API de administración lo valida.
+- Los datos de demostración aún comparten preguntas entre reto y evaluación. No se cargan en producción.
+- Con `NODE_ENV=production` la API no arranca sin `APP_SECRET` (32+ caracteres), `DATABASE_URL`, `PUBLIC_URL` y `ADMIN_PASSWORD` (12+). Tampoco carga datos de demostración.
 
 ## Qué falta para producción
 

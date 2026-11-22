@@ -1,6 +1,8 @@
 import { Body, CanActivate, Controller, ExecutionContext, Get, HttpCode, Inject, Injectable, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { hash, verify } from '@node-rs/argon2';
 import { Request } from 'express';
+import { existsSync, statSync } from 'node:fs';
+import { resolve, sep } from 'node:path';
 import { z } from 'zod';
 import { Public } from '../common/auth';
 import { brandingContrastIssues } from '../common/color';
@@ -80,15 +82,22 @@ const UserIn = z.object({
 const QuestionIn = z.object({
   prompt: z.string().min(1), options: z.array(z.string().min(1)).min(2).max(6), correct_index: z.number().int().min(0),
   why: z.string().min(1), video_t: z.number().int().min(0).default(0),
-  in_quiz: z.boolean().default(true), in_exam: z.boolean().default(true),
+  in_quiz: z.boolean().default(true), in_exam: z.boolean().default(false),
   source_refs: z.array(z.record(z.string(), z.unknown())).default([])
-}).refine((q) => q.correct_index < q.options.length, { message: 'correct_index fuera de rango' });
+}).refine((q) => q.correct_index < q.options.length, { message: 'correct_index fuera de rango' })
+  // El reto revela la respuesta al elegir: una pregunta del reto no puede estar en la evaluación.
+  .refine((q) => q.in_quiz !== q.in_exam, { message: 'Cada pregunta va al reto o a la evaluación, no a ambos.' });
 const LessonIn = z.object({
   title: z.string().min(1), format: z.enum(['presenter', 'animated']).default('presenter'),
   duration_s: z.number().int().min(1), summary: z.array(z.string().min(1)).min(1),
   ai_generated: z.boolean().default(false),
   video_key: z.string().optional(), poster_key: z.string().optional(), size_bytes: z.number().int().min(1).optional(),
-  questions: z.array(QuestionIn).min(1)
+  questions: z.array(QuestionIn).min(1),
+  /** Material de apoyo: archivos ya subidos al almacenamiento (key) o enlaces externos (url). */
+  resources: z.array(z.union([
+    z.object({ title: z.string().min(1).max(120), kind: z.literal('file'), key: z.string().min(1) }),
+    z.object({ title: z.string().min(1).max(120), kind: z.literal('link'), url: z.string().url().refine((u) => /^https:\/\//.test(u), 'El enlace debe empezar con https://') })
+  ])).max(10).default([])
 });
 const RouteIn = z.object({
   slug: z.string().regex(/^[a-z0-9-]{2,60}$/), title: z.string().min(1), overline: z.string().min(1),
@@ -215,6 +224,18 @@ export class AdminService {
   async createRoute(admin: AdminCtx, slug: string, raw: unknown) {
     const t = await this.scope(admin, slug);
     const r = parse(RouteIn, raw);
+    // Los videos se suben antes al almacenamiento (STORAGE_DIR/<clave>); aquí solo se comprueba que existan.
+    const sizes = new Map<string, number>();
+    const missing: string[] = [];
+    for (const l of r.levels.flatMap((lv) => lv.lessons)) {
+      if (!l.video_key && this.cfg.production) missing.push(`${l.title}: falta video_key`);
+      for (const key of [l.video_key, l.poster_key, ...l.resources.flatMap((x) => x.kind === 'file' ? [x.key] : [])]) {
+        if (!key) continue;
+        const size = this.storedSize(key);
+        if (size == null) missing.push(`${l.title}: no existe ${key}`); else sizes.set(key, size);
+      }
+    }
+    if (missing.length) throw new ApiError(400, 'MEDIA_NOT_FOUND', 'Sube los videos y archivos antes de crear la ruta.', { lessons: missing });
     return this.db.tenant(t.id, async (q) => {
       const dup = (await q.query('select 1 from route where slug = $1', [r.slug])).rows.length;
       if (dup) throw new ApiError(409, 'SLUG_TAKEN', 'Ya existe una ruta con ese identificador.');
@@ -233,8 +254,9 @@ export class AdminService {
              values ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9) returning id`,
             [t.id, rv, levelId, pos, l.title, l.format, l.duration_s, JSON.stringify(l.summary), l.ai_generated])).rows[0].id;
           // Sin video propio, la lección usa el de demostración hasta que se suba uno (paso 3).
-          const video = l.video_key ?? DEMO_VIDEO_KEY; const size = l.size_bytes ?? 2_634_000;
-          for (const [kind, key, sz] of [['hls', video, size], ['mp4_offline', video, size], ['poster', l.poster_key ?? DEMO_POSTER_KEY, 24_000]] as const) {
+          const video = l.video_key ?? DEMO_VIDEO_KEY; const size = (l.video_key && sizes.get(l.video_key)) || l.size_bytes || 2_634_000;
+          const poster = l.poster_key ?? DEMO_POSTER_KEY; const psize = (l.poster_key && sizes.get(l.poster_key)) || 24_000;
+          for (const [kind, key, sz] of [['hls', video, size], ['mp4_offline', video, size], ['poster', poster, psize]] as const) {
             await q.query('insert into lesson_asset (tenant_id, lesson_id, kind, storage_key, size_bytes) values ($1, $2, $3, $4, $5)', [t.id, lessonId, kind, key, sz]);
           }
           for (const [qi, qq] of l.questions.entries()) {
@@ -243,7 +265,14 @@ export class AdminService {
                values ($1, $2, $3, $4, $5::jsonb, $6, $7, $8, $9::jsonb, $10, $11)`,
               [t.id, lessonId, qi + 1, qq.prompt, JSON.stringify(qq.options), qq.correct_index, qq.why, qq.video_t, JSON.stringify(qq.source_refs), qq.in_quiz, qq.in_exam]);
           }
-          lessons.push({ id: lessonId, level: li + 1, title: l.title, questions: l.questions.length });
+          for (const [ri, res] of l.resources.entries()) {
+            await q.query(
+              `insert into lesson_resource (tenant_id, lesson_id, position, title, kind, storage_key, url, size_bytes)
+               values ($1, $2, $3, $4, $5, $6, $7, $8)`,
+              [t.id, lessonId, ri + 1, res.title, res.kind, res.kind === 'file' ? res.key : null, res.kind === 'link' ? res.url : null,
+                res.kind === 'file' ? sizes.get(res.key) ?? null : null]);
+          }
+          lessons.push({ id: lessonId, level: li + 1, title: l.title, questions: l.questions.length, resources: l.resources.length });
         }
       }
       await audit(q, t.id, admin.kind === 'tenant' ? admin.id : null, 'admin.route_created', { route_id: routeId, version_id: rv });
@@ -260,6 +289,14 @@ export class AdminService {
                 (select count(*)::int from assignment a where a.route_version_id = rv.id and a.status = 'active') as active_assignments
            from route r join route_version rv on rv.route_id = r.id order by r.slug, rv.version`)).rows
     }));
+  }
+
+  /** Tamaño de un archivo del almacenamiento local, o null si no existe o sale de la carpeta. */
+  private storedSize(key: string): number | null {
+    const root = resolve(this.cfg.storageDir);
+    const file = resolve(root, key);
+    if (!file.startsWith(root + sep) || !existsSync(file)) return null;
+    return statSync(file).size;
   }
 
   /** Publicar congela la versión: desde aquí solo se asigna, no se edita. */

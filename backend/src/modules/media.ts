@@ -1,7 +1,7 @@
 import { Controller, Get, Inject, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { existsSync } from 'node:fs';
-import { resolve, sep } from 'node:path';
+import { basename, resolve, sep } from 'node:path';
 import { Public } from '../common/auth';
 import { checkPathSig } from '../common/crypto';
 import { ApiError } from '../common/errors';
@@ -26,6 +26,9 @@ export class MediaController {
     const file = resolve(root, path.replace(/^\/media\//, ''));
     if (!file.startsWith(root + sep) || !existsSync(file)) throw new ApiError(404, 'NOT_FOUND', 'Archivo no encontrado');
     // sendFile responde con Range, así el video se puede adelantar y la descarga retomar desde donde quedó.
-    res.sendFile(file, { acceptRanges: true, maxAge: '1h' });
+    // Con ?dl=1 el navegador lo descarga con su nombre (material de apoyo) en vez de abrirlo.
+    const headers: Record<string, string> = {};
+    if (req.query.dl === '1') headers['Content-Disposition'] = `attachment; filename="${basename(file).replace(/"/g, '')}"`;
+    res.sendFile(file, { acceptRanges: true, maxAge: '1h', headers });
   }
 }

@@ -13,7 +13,7 @@ const lesson = (title: string, i: number) => ({
   title, duration_s: 180, summary: [`Resumen de ${title}.`],
   questions: [
     { prompt: `Pregunta ${i}.1`, options: ['Mala', 'Buena', 'Peor'], correct_index: 1, why: 'Porque sí.', in_exam: false },
-    { prompt: `Pregunta ${i}.2 (evaluación)`, options: ['Buena', 'Mala'], correct_index: 0, why: 'Porque también.', in_quiz: false }
+    { prompt: `Pregunta ${i}.2 (evaluación)`, options: ['Buena', 'Mala'], correct_index: 0, why: 'Porque también.', in_quiz: false, in_exam: true }
   ]
 });
 
@@ -70,12 +70,50 @@ describe('Consola de administración', () => {
     expect(again.body.invite_sent).toBe(true);
   });
 
+  it('rechaza una ruta con videos que no se subieron o preguntas en reto y evaluación a la vez', async () => {
+    const noVideo = await ctx.http.post('/admin/tenants/minera-sur/routes').set(bearer(adminToken)).send({
+      slug: 'sin-video', title: 'Sin video', overline: 'Prueba',
+      levels: [{ title: 'Uno', lessons: [{ ...lesson('Falta el video', 9), video_key: 'minera-sur/no-existe.mp4' }] }]
+    });
+    expect(noVideo.status).toBe(400);
+    expect(noVideo.body.error.code).toBe('MEDIA_NOT_FOUND');
+    const escape = await ctx.http.post('/admin/tenants/minera-sur/routes').set(bearer(adminToken)).send({
+      slug: 'fuera', title: 'Fuera', overline: 'Prueba',
+      levels: [{ title: 'Uno', lessons: [{ ...lesson('Fuera de la carpeta', 9), video_key: '../package.json' }] }]
+    });
+    expect(escape.body.error.code).toBe('MEDIA_NOT_FOUND');
+    const badFile = await ctx.http.post('/admin/tenants/minera-sur/routes').set(bearer(adminToken)).send({
+      slug: 'sin-guia', title: 'Sin guía', overline: 'Prueba',
+      levels: [{ title: 'Uno', lessons: [{ ...lesson('Guía que falta', 9), resources: [{ title: 'Guía', kind: 'file', key: 'minera-sur/no-existe.pdf' }] }] }]
+    });
+    expect(badFile.body.error.code).toBe('MEDIA_NOT_FOUND');
+    const httpLink = await ctx.http.post('/admin/tenants/minera-sur/routes').set(bearer(adminToken)).send({
+      slug: 'enlace-http', title: 'Enlace http', overline: 'Prueba',
+      levels: [{ title: 'Uno', lessons: [{ ...lesson('Enlace inseguro', 9), resources: [{ title: 'Grabación', kind: 'link', url: 'http://example.com/x' }] }] }]
+    });
+    expect(httpLink.status).toBe(400);
+    const both = await ctx.http.post('/admin/tenants/minera-sur/routes').set(bearer(adminToken)).send({
+      slug: 'ambos', title: 'Ambos', overline: 'Prueba',
+      levels: [{ title: 'Uno', lessons: [{ ...lesson('Mezcla', 9), questions: [{ prompt: 'P', options: ['a', 'b'], correct_index: 0, why: 'x', in_quiz: true, in_exam: true }] }] }]
+    });
+    expect(both.status).toBe(400);
+    const withVideo = await ctx.http.post('/admin/tenants/minera-sur/routes').set(bearer(adminToken)).send({
+      slug: 'con-video', title: 'Con video', overline: 'Prueba',
+      levels: [{ title: 'Uno', lessons: [{ ...lesson('Video subido', 9), video_key: 'demo/leccion-demo.mp4', poster_key: 'demo/portada.jpg' }] }]
+    });
+    expect(withVideo.status).toBe(201);
+  });
+
   it('crea una ruta, no la asigna hasta publicarla, y luego sí', async () => {
     const r = await ctx.http.post('/admin/tenants/minera-sur/routes').set(bearer(adminToken)).send({
       slug: 'induccion-mina', title: 'Inducción en mina', overline: 'Inducción',
-      levels: [{ title: 'Antes de bajar', lessons: [lesson('Equipo de protección', 1), lesson('Señalización', 2)] }]
+      levels: [{ title: 'Antes de bajar', lessons: [{ ...lesson('Equipo de protección', 1), resources: [
+        { title: 'Guía de la clase', kind: 'file', key: 'demo/portada.jpg' },
+        { title: 'Grabación de la clase', kind: 'link', url: 'https://example.com/grabacion' }
+      ] }, lesson('Señalización', 2)] }]
     });
     expect(r.status).toBe(201);
+    expect(r.body.lessons[0].resources).toBe(2);
     expect(r.body.status).toBe('draft');
     routeId = r.body.route_id;
     const due = new Date(ctx.clock.now().getTime() + 15 * DAY).toISOString();
@@ -102,6 +140,15 @@ describe('Consola de administración', () => {
     const l = (await ctx.http.get(`/lessons/${home.next.lesson.id}`).set(bearer(token))).body;
     expect(l.quiz).toHaveLength(1);
     expect(l.quiz[0].prompt).toBe('Pregunta 1.1');
+    // Material de apoyo: el archivo se descarga con URL firmada; el enlace llega tal cual.
+    expect(l.resources.map((x: any) => [x.title, x.kind])).toEqual([['Guía de la clase', 'file'], ['Grabación de la clase', 'link']]);
+    expect(l.resources[0]).toMatchObject({ filename: 'portada.jpg' });
+    expect(l.resources[0].size_bytes).toBeGreaterThan(0);
+    expect(l.resources[1].url).toBe('https://example.com/grabacion');
+    const fileUrl = new URL(l.resources[0].url);
+    const dl = await ctx.http.get(fileUrl.pathname + fileUrl.search);
+    expect(dl.status).toBe(200);
+    expect(dl.headers['content-disposition']).toBe('attachment; filename="portada.jpg"');
     expect((await login(ctx, 'minera-sur', 'jorge.ticona@minerasur.example', 'Jorge2026x')).access_token).toBeTruthy();
     const list = await ctx.http.get('/admin/tenants/minera-sur/users').set(bearer(adminToken));
     expect(list.body.users.find((u: any) => u.first_name === 'Jorge')).toMatchObject({ status: 'active', has_password: true });

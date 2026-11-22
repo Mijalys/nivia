@@ -20,17 +20,33 @@ export interface Config {
   emailFrom: string;
   accessTtlS: number;
   refreshTtlDays: number;
+  /** Carpeta de la app del aprendiz que la API sirve en /app/ (mismo origen, sin CORS). */
+  appDir?: string;
+  /** Orígenes externos con permiso de CORS. Vacío: solo mismo origen. */
+  corsOrigins?: string[];
+  production?: boolean;
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   const port = Number(env.PORT || 3000);
+  const production = env.NODE_ENV === 'production';
+  if (production) {
+    const missing = ['APP_SECRET', 'DATABASE_URL', 'PUBLIC_URL', 'ADMIN_PASSWORD'].filter((k) => !env[k]);
+    if (missing.length) throw new Error(`Faltan variables obligatorias en producción: ${missing.join(', ')}`);
+    if (env.APP_SECRET!.length < 32) throw new Error('APP_SECRET debe tener al menos 32 caracteres.');
+    if (env.ADMIN_PASSWORD!.length < 12) throw new Error('ADMIN_PASSWORD debe tener al menos 12 caracteres.');
+  }
+  const publicUrl = (env.PUBLIC_URL || `http://localhost:${port}`).replace(/\/$/, '');
   return {
     port,
+    production,
     databaseUrl: env.DATABASE_URL || undefined,
     pgliteDir: env.PGLITE_DIR || './.data/pglite',
     secret: env.APP_SECRET || randomBytes(32).toString('hex'),
-    publicUrl: (env.PUBLIC_URL || `http://localhost:${port}`).replace(/\/$/, ''),
-    appUrl: (env.APP_URL || 'http://localhost:4178/prototipo/').replace(/\/?$/, '/'),
+    publicUrl,
+    appUrl: (env.APP_URL || `${publicUrl}/app/`).replace(/\/?$/, '/'),
+    appDir: env.APP_DIR || '../app',
+    corsOrigins: (env.CORS_ORIGINS || '').split(',').map((x) => x.trim()).filter(Boolean),
     storageDir: env.STORAGE_DIR || './storage',
     googleClientId: env.GOOGLE_CLIENT_ID || undefined,
     brevoApiKey: env.BREVO_API_KEY || undefined,

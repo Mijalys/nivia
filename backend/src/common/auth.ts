@@ -62,6 +62,8 @@ export class AuthGuard implements CanActivate {
 export function tenantSlugFrom(req: Request): string {
   const header = req.headers['x-tenant'];
   if (typeof header === 'string' && header) return header.toLowerCase();
+  // Piloto con una sola empresa: el dominio no lleva subdominio de cliente.
+  if (process.env.DEFAULT_TENANT) return process.env.DEFAULT_TENANT.toLowerCase();
   const host = (req.headers.host || '').split(':')[0];
   const parts = host.split('.');
   const isIp = /^\d+(\.\d+){3}$/.test(host);

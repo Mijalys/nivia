@@ -217,9 +217,14 @@ export class LearningService {
     const assets = (await q.query<{ kind: string; storage_key: string; size_bytes: number }>(
       'select kind, storage_key, size_bytes from lesson_asset where lesson_id = $1', [lessonId])).rows;
     const quiz = (await q.query(
-      `select id, prompt, options, correct_index, why, video_t from question where lesson_id = $1 and in_quiz order by position`,
+      `select id, prompt, options, video_t from question where lesson_id = $1 and in_quiz order by position`,
       [lessonId])).rows;
     const p = st.levels.flatMap((lv) => lv.lessons).find((x) => x.id === lessonId)!;
+    const resources = (await q.query<{ id: string; title: string; kind: string; storage_key: string | null; url: string | null; size_bytes: number | null }>(
+      'select id, title, kind, storage_key, url, size_bytes from lesson_resource where lesson_id = $1 order by position', [lessonId])).rows
+      .map((r) => r.kind === 'file'
+        ? { id: r.id, title: r.title, kind: 'file', url: this.mediaUrl(r.storage_key!, ttlS) + '&dl=1', size_bytes: r.size_bytes, filename: r.storage_key!.split('/').pop() }
+        : { id: r.id, title: r.title, kind: 'link', url: r.url });
     return {
       assets,
       body: {
@@ -228,8 +233,9 @@ export class LearningService {
         ai_generated: l.ai_generated,
         summary: l.summary,
         media: Object.fromEntries(assets.map((x) => [x.kind, { url: this.mediaUrl(x.storage_key, ttlS), size_bytes: x.size_bytes }])),
-        // El reto es de bajo riesgo y debe funcionar sin señal: viaja con respuestas y "por qué".
+        // Sin respuestas: cada opción se verifica en el servidor (POST /lessons/:id/quiz/check).
         quiz,
+        resources,
         progress: { completed: p.completed, watched: p.watched, video_position_s: p.video_position_s }
       }
     };
@@ -239,18 +245,15 @@ export class LearningService {
     return this.db.tenant(auth.tenantId, async (q) => (await this.lessonPayload(q, auth, lessonId, 3600)).body);
   }
 
-  /** Paquete para ver sin señal: tamaño real antes de descargar, URLs firmadas por 24 h y el JSON de la lección. */
-  async offlinePackage(auth: AuthCtx, lessonId: string) {
+  /** Verifica una respuesta del reto. Solo revela la correcta y el "por qué" después de elegir. */
+  async checkQuiz(auth: AuthCtx, lessonId: string, raw: unknown) {
+    const b = parse(z.object({ question_id: uuid, choice: z.number().int().min(0) }), raw);
     return this.db.tenant(auth.tenantId, async (q) => {
-      const { assets, body } = await this.lessonPayload(q, auth, lessonId, 86_400);
-      const files = assets.filter((x) => x.kind !== 'hls').map((x) => ({ kind: x.kind, url: this.mediaUrl(x.storage_key, 86_400), size_bytes: x.size_bytes }));
-      return {
-        lesson_id: lessonId,
-        size_bytes: files.reduce((s, f) => s + f.size_bytes, 0),
-        expires_at: new Date(this.clock.now().getTime() + 86_400_000).toISOString(),
-        files,
-        bundle: body
-      };
+      await this.lessonPayload(q, auth, lessonId, 60);
+      const qq = (await q.query<{ correct_index: number; why: string; video_t: number }>(
+        'select correct_index, why, video_t from question where id = $1 and lesson_id = $2 and in_quiz', [b.question_id, lessonId])).rows[0];
+      if (!qq) throw notFound('Pregunta');
+      return { correct: b.choice === qq.correct_index, correct_index: qq.correct_index, why: qq.why, video_t: qq.video_t };
     });
   }
 
@@ -362,7 +365,7 @@ export class LearningController {
   @Get('home') home(@Auth() a: AuthCtx) { return this.learning.home(a); }
   @Get('assignments/:id') assignment(@Auth() a: AuthCtx, @Param('id') id: string) { return this.learning.assignment(a, parse(uuid, id)); }
   @Get('lessons/:id') lesson(@Auth() a: AuthCtx, @Param('id') id: string) { return this.learning.lesson(a, parse(uuid, id)); }
-  @Get('lessons/:id/offline-package') pkg(@Auth() a: AuthCtx, @Param('id') id: string) { return this.learning.offlinePackage(a, parse(uuid, id)); }
+  @Post('lessons/:id/quiz/check') @HttpCode(200) check(@Auth() a: AuthCtx, @Param('id') id: string, @Body() body: unknown) { return this.learning.checkQuiz(a, parse(uuid, id), body); }
   @Post('sync/events') @HttpCode(200) sync(@Auth() a: AuthCtx, @Body() body: unknown) { return this.learning.sync(a, body); }
   @Post('content-reports') report(@Auth() a: AuthCtx, @Body() body: unknown) { return this.learning.report(a, body); }
 }

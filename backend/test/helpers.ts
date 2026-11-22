@@ -38,7 +38,8 @@ export async function boot(): Promise<Ctx> {
   copyDemoMedia(storageDir, join(__dirname, '../../prototipo/media'));
   const config: Config = {
     port: 0, secret: 'test-secret', publicUrl: 'http://test', appUrl: 'http://app.test/', storageDir,
-    googleClientId: 'test-client', emailFrom: 'no-responder@nivia.test', accessTtlS: 900, refreshTtlDays: 30
+    googleClientId: 'test-client', emailFrom: 'no-responder@nivia.test', accessTtlS: 900, refreshTtlDays: 30,
+    appDir: join(__dirname, '../../app')
   };
   const db = await Db.connect();
   await db.migrate();

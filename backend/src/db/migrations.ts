@@ -354,5 +354,30 @@ grant select, insert, update, delete on ${t} to nivia_app;`).join('\n')}
 -- Ya no se usa: la recuperación es por correo.
 drop table otp_challenge;
 `
+  },
+  {
+    id: '004_lesson_resources',
+    sql: `
+-- Material de apoyo de una lección: archivos del almacenamiento (guía, plantilla) o enlaces (grabación).
+create table lesson_resource (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references tenant(id),
+  lesson_id uuid not null references lesson(id),
+  position int not null,
+  title text not null,
+  kind text not null check (kind in ('file', 'link')),
+  storage_key text,
+  url text,
+  size_bytes int,
+  check ((kind = 'file' and storage_key is not null) or (kind = 'link' and url is not null)),
+  unique (lesson_id, position)
+);
+alter table lesson_resource enable row level security;
+alter table lesson_resource force row level security;
+create policy tenant_isolation on lesson_resource
+  using (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid)
+  with check (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+grant select, insert, update, delete on lesson_resource to nivia_app;
+`
   }
 ];

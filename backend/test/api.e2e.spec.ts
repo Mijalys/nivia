@@ -23,13 +23,31 @@ async function lessonIds(token: string, assignmentId: string): Promise<string[]>
 async function completeLessons(token: string, ids: string[]) {
   for (const id of ids) {
     const lesson = (await ctx.http.get(`/lessons/${id}`).set(bearer(token))).body;
+    const key = await correctAnswers(ctx.db, lesson.quiz.map((q: any) => q.id));
     const r = await ctx.http.post('/sync/events').set(bearer(token)).send({ events: [{
       event_id: eventId(), type: 'quiz.completed', lesson_id: id, occurred_at: ctx.clock.now().toISOString(),
-      payload: { answers: lesson.quiz.map((q: any) => q.correct_index) }
+      payload: { answers: lesson.quiz.map((q: any) => key.get(q.id)) }
     }] });
     expect(r.body.results[0].status).toBe('accepted');
   }
 }
+
+describe('App del aprendiz', () => {
+  it('se sirve en /app/ desde el mismo origen, con cabeceras de seguridad y sin CORS abierto', async () => {
+    const root = await ctx.http.get('/?empresa=riomar');
+    expect(root.status).toBe(302);
+    expect(root.headers.location).toBe('/app/?empresa=riomar');
+    const page = await ctx.http.get('/app/');
+    expect(page.status).toBe(200);
+    expect(page.text).toContain('app.js');
+    expect(page.headers['x-content-type-options']).toBe('nosniff');
+    expect(page.headers['x-frame-options']).toBe('DENY');
+    const js = await ctx.http.get('/app/app.js');
+    expect(js.status).toBe(200);
+    const cors = await ctx.http.get('/tenant/config').set('X-Tenant', 'riomar').set('Origin', 'https://otro.example');
+    expect(cors.headers['access-control-allow-origin']).toBeUndefined();
+  });
+});
 
 describe('Marca blanca', () => {
   it('entrega la configuración del cliente por cabecera', async () => {
@@ -212,14 +230,23 @@ describe('Lecciones, video y descargas', () => {
     expect(tampered.status).toBe(403);
   });
 
-  it('informa el tamaño del paquete antes de descargar', async () => {
+  it('el reto no viaja con respuestas y se verifica en el servidor', async () => {
     const s = await login(ctx, 'riomar', 'rosa');
     const ids = await lessonIds(s.access_token, (await homeOf(s.access_token)).assignments[0].id);
-    const pkg = await ctx.http.get(`/lessons/${ids[2]}/offline-package`).set(bearer(s.access_token));
-    expect(pkg.status).toBe(200);
-    expect(pkg.body.files.map((f: any) => f.kind).sort()).toEqual(['mp4_offline', 'poster']);
-    expect(pkg.body.size_bytes).toBe(78_000_000 + 24_000);
-    expect(pkg.body.bundle.quiz[0]).toHaveProperty('why');
+    const lesson = (await ctx.http.get(`/lessons/${ids[0]}`).set(bearer(s.access_token))).body;
+    expect(lesson.quiz[0]).not.toHaveProperty('correct_index');
+    expect(lesson.quiz[0]).not.toHaveProperty('why');
+    const key = await correctAnswers(ctx.db, [lesson.quiz[0].id]);
+    const right = key.get(lesson.quiz[0].id)!;
+    const ok = await ctx.http.post(`/lessons/${ids[0]}/quiz/check`).set(bearer(s.access_token)).send({ question_id: lesson.quiz[0].id, choice: right });
+    expect(ok.status).toBe(200);
+    expect(ok.body).toMatchObject({ correct: true, correct_index: right });
+    expect(typeof ok.body.why).toBe('string');
+    const bad = await ctx.http.post(`/lessons/${ids[0]}/quiz/check`).set(bearer(s.access_token)).send({ question_id: lesson.quiz[0].id, choice: right === 0 ? 1 : 0 });
+    expect(bad.body.correct).toBe(false);
+    const other = await ctx.http.post(`/lessons/${ids[1]}/quiz/check`).set(bearer(s.access_token)).send({ question_id: lesson.quiz[0].id, choice: 0 });
+    expect(other.status).toBe(404);
+    expect((await ctx.http.get(`/lessons/${ids[0]}/offline-package`).set(bearer(s.access_token))).status).toBe(404);
   });
 
   it('registra el reporte de un problema', async () => {
@@ -238,8 +265,9 @@ describe('Avance sin señal', () => {
     const ids = await lessonIds(s.access_token, a.id);
     const t0 = ctx.clock.now().getTime();
     const lesson3 = (await ctx.http.get(`/lessons/${ids[2]}`).set(bearer(s.access_token))).body;
+    const key3 = await correctAnswers(ctx.db, [lesson3.quiz[2].id]);
     const quiz = { event_id: eventId(), type: 'quiz.completed', lesson_id: ids[2],
-      occurred_at: new Date(t0 - 50 * MIN).toISOString(), payload: { answers: [0, 0, lesson3.quiz[2].correct_index] } };
+      occurred_at: new Date(t0 - 50 * MIN).toISOString(), payload: { answers: [0, 0, key3.get(lesson3.quiz[2].id)] } };
     const pos = { event_id: eventId(), type: 'video.position', lesson_id: ids[2],
       occurred_at: new Date(t0 - 60 * MIN).toISOString(), payload: { position_s: 120 } };
     // Llega en el mismo lote pero ocurrió antes de completar el Nivel 2: en ese momento estaba bloqueada.

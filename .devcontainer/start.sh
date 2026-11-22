@@ -13,6 +13,10 @@ export ADMIN_PASSWORD="$(cat .data/admin-password)"
 [ -f .data/app-secret ] || openssl rand -hex 32 > .data/app-secret
 export APP_SECRET="$(cat .data/app-secret)"
 export DEFAULT_TENANT=programa-claude
+# Por SSH estas variables no llegan: se leen del archivo que Codespaces deja en el espacio.
+if [ -z "${CODESPACE_NAME:-}" ] && [ -f /workspaces/.codespaces/shared/.env ]; then
+  set -a; . /workspaces/.codespaces/shared/.env; set +a
+fi
 if [ -n "${CODESPACE_NAME:-}" ]; then
   export PUBLIC_URL="https://${CODESPACE_NAME}-3000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
 else

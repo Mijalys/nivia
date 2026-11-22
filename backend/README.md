@@ -23,6 +23,20 @@ docker compose up -d
 DATABASE_URL=postgres://nivia:nivia@localhost:5432/nivia APP_SECRET=cambia-esto npm run dev
 ```
 
+## Probar en un GitHub Codespace
+
+En GitHub: **Code → Codespaces → Create codespace on main**. Al arrancar, `.devcontainer/start.sh` compila, levanta la API con la app en el puerto 3000 y carga el programa de `../contenido/programa-claude`. La terminal muestra el enlace (`https://<codespace>-3000.app.github.dev/app/`) y la clave del administrador. Para abrirlo desde otro dispositivo sin iniciar sesión en GitHub, en la pestaña **Ports** cambia la visibilidad del puerto 3000 a **Public**.
+
+El video de demostración no está en el repositorio: súbelo a `backend/storage/demo/leccion-demo.mp4` del Codespace (arrastrándolo al explorador de archivos) o la lección mostrará que no se pudo reproducir.
+
+## Cargar contenido
+
+```bash
+node scripts/cargar-contenido.mjs --api http://localhost:3000 --dir ../contenido/programa-claude --storage ./storage
+```
+
+Lee `programa.json`, `lecciones.csv` y `preguntas.csv`; crea la empresa, copia el material de apoyo, crea y publica la ruta y una persona de prueba con la ruta asignada. Se puede correr varias veces: lo que ya existe no se toca.
+
 ## Pruebas
 
 ```bash

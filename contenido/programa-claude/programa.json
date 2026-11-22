@@ -1,0 +1,17 @@
+{
+  "empresa": {
+    "slug": "programa-claude", "name": "Programa Claude", "cert_prefix": "PCL", "cert_validity_months": 12,
+    "branding": { "mono": "C", "accent": "#D4FF3A", "on_accent": "#11140C", "principal": "#2B3514", "principal_text": "#D4FF3A",
+      "areas": ["Comercio", "Servicios", "Industria", "Salud", "Educación", "Otro"] },
+    "exam_policy": { "min_score": 80, "attempts": 3, "wait_minutes": 60, "question_count": 10, "minutes": 15,
+      "exhausted_message": "Escríbele al equipo del programa para habilitar un nuevo intento." }
+  },
+  "ruta": { "slug": "programa-claude-2026", "title": "Programa Claude: tu negocio con IA", "overline": "Programa Claude", "fecha_limite": "2026-12-16T23:59:00-05:00" },
+  "recursos": {
+    "n1-l1": [
+      { "title": "Guía paso a paso de la clase 1", "kind": "file", "archivo": "clase-01/guia-clase-1.pdf", "key": "programa-claude/clase-01/guia-clase-1.pdf" },
+      { "title": "Plantilla: diagnóstico de agenda", "kind": "file", "archivo": "clase-01/diagnostico-agenda.xlsx", "key": "programa-claude/clase-01/diagnostico-agenda.xlsx" }
+    ]
+  },
+  "persona_de_prueba": { "first_name": "Prueba", "last_name": "Alumno", "email": "prueba@programa-claude.example", "area": "Servicios", "temporary_password": "Clase2026x" }
+}
